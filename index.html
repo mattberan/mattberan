@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matt Beran — The IT Community Connector</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect x='12' y='8' width='40' height='30' rx='3' fill='%23555' stroke='%23333' stroke-width='2'/><rect x='15' y='11' width='34' height='24' rx='1' fill='%2344aaff'/><rect x='22' y='42' width='20' height='4' rx='1' fill='%23666'/><rect x='18' y='46' width='28' height='3' rx='1.5' fill='%23777'/></svg>">
+<style>
+  /* ========== THEME VARIABLES ========== */
+  :root {
+    --transition-speed: 0.3s;
+  }
+
+  [data-theme="dark"] {
+    --bg: #0f0f0f;
+    --bg-card: #1a1a2e;
+    --bg-card-hover: #1f1f38;
+    --border: #2a2a3e;
+    --border-hover: #3b82f6;
+    --text: #f0f0f0;
+    --text-secondary: #888;
+    --text-muted: #555;
+    --accent: #3b82f6;
+    --accent-hover: #60a5fa;
+    --accent-glow: rgba(59,130,246,0.4);
+    --accent-subtle: rgba(59,130,246,0.08);
+    --selection-bg: #3b82f6;
+    --selection-text: #fff;
+    --headshot-border: rgba(59,130,246,0.4);
+    --toggle-bg: #1a1a2e;
+    --year-bg: #252540;
+    --year-text: #3b82f6;
+    --podcast-bg: #111128;
+    --podcast-border: #1a1a3e;
+  }
+
+  [data-theme="light"] {
+    --bg: #ffffff;
+    --bg-card: #f8f8f8;
+    --bg-card-hover: #f0f4ff;
+    --border: #e8e8e8;
+    --border-hover: #2563eb;
+    --text: #333;
+    --text-secondary: #666;
+    --text-muted: #999;
+    --accent: #2563eb;
+    --accent-hover: #1d4ed8;
+    --accent-glow: rgba(37,99,235,0.25);
+    --accent-subtle: rgba(37,99,235,0.06);
+    --selection-bg: #2563eb;
+    --selection-text: #fff;
+    --headshot-border: rgba(37,99,235,0.3);
+    --toggle-bg: #f0f0f0;
+    --year-bg: #e8f0ff;
+    --year-text: #2563eb;
+    --podcast-bg: #f0f4ff;
+    --podcast-border: #d4e0f7;
+  }
+
+  /* ========== RESET & BASE ========== */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.7;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+  }
+
+  ::selection { background: var(--selection-bg); color: var(--selection-text); }
+  a { color: var(--accent); text-decoration: none; transition: color 0.2s ease; }
+  a:hover { color: var(--accent-hover); }
+
+  /* ========== THEME TOGGLE (inline slider) ========== */
+  .theme-switch-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .theme-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: color var(--transition-speed) ease;
+    line-height: 1;
+  }
+
+  .theme-label.active { color: var(--text-secondary); }
+
+  .theme-switch {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+  }
+
+  .theme-switch input { opacity: 0; width: 0; height: 0; }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: var(--border);
+    border-radius: 22px;
+    transition: background var(--transition-speed) ease;
+  }
+
+  .slider::before {
+    content: '';
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background: var(--text);
+    border-radius: 50%;
+    transition: transform var(--transition-speed) ease, background var(--transition-speed) ease;
+  }
+
+  .theme-switch input:checked + .slider { background: var(--accent); }
+  .theme-switch input:checked + .slider::before { transform: translateX(18px); }
+
+  /* ========== HEADER ========== */
+  header {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 72px 24px 48px;
+    text-align: center;
+  }
+
+  .headshot-wrapper {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 28px;
+  }
+
+  .headshot-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid var(--headshot-border);
+    transition: opacity 0.3s ease, border-color var(--transition-speed) ease;
+    opacity: 0.6;
+  }
+
+  .headshot-wrapper:hover::after { opacity: 1; }
+
+  .headshot {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  header .tagline {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+
+  header .bio {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    max-width: 560px;
+    margin: 0 auto 28px;
+    line-height: 1.7;
+  }
+
+  /* Social row */
+  .social-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+
+  .social-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+  }
+
+  .social-link:hover { color: var(--accent); }
+  .social-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  /* CTAs */
+  .cta-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .cta svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .cta-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .cta-primary:hover {
+    background: var(--accent-hover);
+    color: #fff;
+    box-shadow: 0 0 20px var(--accent-glow);
+    transform: translateY(-2px);
+  }
+
+  .cta-secondary {
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease, background var(--transition-speed) ease;
+  }
+
+  .cta-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-subtle);
+    transform: translateY(-2px);
+  }
+
+  /* ========== MAIN ========== */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  section { margin-bottom: 56px; }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    transition: border-color var(--transition-speed) ease;
+  }
+
+  .section-header h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+
+  .section-header .line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+
+  /* ========== CARDS ========== */
+  .card-grid { display: grid; gap: 14px; }
+  .card-grid.cols-2 { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s ease, background var(--transition-speed) ease, border-color var(--transition-speed) ease;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 0 24px var(--accent-subtle);
+  }
+
+  .card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .card p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .card { position: relative; cursor: pointer; }
+
+  .card .card-link {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent);
+    transition: all 0.2s ease;
+  }
+
+  .card .card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: 12px;
+  }
+
+  .card .card-link:hover { color: var(--accent-hover); }
+
+  /* ========== COMMUNITIES ========== */
+  .community-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    gap: 14px;
+  }
+
+  .community-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 16px;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.3s ease, background var(--transition-speed) ease;
+  }
+
+  .community-item:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px var(--accent-subtle);
+    color: var(--text);
+  }
+
+  .community-logo {
+    width: 50px;
+    height: 50px;
+    background: var(--year-bg);
+    border-radius: 10px;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    transition: background var(--transition-speed) ease;
+    overflow: hidden;
+    padding: 6px;
+  }
+
+  .community-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  [data-theme="dark"] .community-logo img.invert-dark {
+    filter: brightness(0) invert(1);
+  }
+
+  .company-logo-img {
+    height: 28px;
+    margin-bottom: 12px;
+  }
+
+  [data-theme="dark"] .company-logo-img {
+    filter: brightness(0) invert(1);
+  }
+
+  .community-item span {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+  }
+
+  .community-item small {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  /* ========== PRESENTATIONS (Timeline) ========== */
+  .presentations-list {
+    list-style: none;
+  }
+
+  .pres-year-group { margin-bottom: 20px; }
+
+  .pres-year {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--year-text);
+    background: var(--year-bg);
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    letter-spacing: 0.03em;
+    transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+  }
+
+  .pres-item {
+    padding: 10px 0 10px 16px;
+    border-left: 2px solid var(--border);
+    margin-left: 8px;
+    font-size: 0.92rem;
+    color: var(--text);
+    transition: border-color 0.2s ease, color var(--transition-speed) ease;
+    line-height: 1.5;
+  }
+
+  .pres-item:hover { border-left-color: var(--accent); }
+
+  .pres-venue {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .pres-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .badge-proposed {
+    background: rgba(234, 179, 8, 0.15);
+    color: #eab308;
+  }
+
+  /* Expand/Collapse for older presentations */
+  .pres-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--accent);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .pres-toggle:hover {
+    border-color: var(--accent);
+    background: var(--accent-subtle);
+  }
+
+  .pres-older { display: none; }
+  .pres-older.show { display: block; }
+
+  /* ========== COMPANY ========== */
+  .company-role {
+    font-size: 0.82rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  /* ========== QUICK LINKS ========== */
+  .quick-links { list-style: none; }
+
+  .quick-links li {
+    border-bottom: 1px solid var(--border);
+    transition: border-color var(--transition-speed) ease;
+  }
+
+  .quick-links a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 8px;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+
+  .quick-links a:hover {
+    color: var(--accent);
+    padding-left: 14px;
+  }
+
+  .quick-links a::after {
+    content: '\2192';
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+  }
+
+  .quick-links a:hover::after { color: var(--accent); }
+
+  /* ========== VIDEO ========== */
+  .video-thumb {
+    background: var(--year-bg);
+    border-radius: 8px;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: background 0.3s ease;
+  }
+
+  .card:hover .video-thumb { background: var(--bg-card-hover); }
+
+  /* ========== FOOTER ========== */
+  footer {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 24px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    transition: border-color var(--transition-speed) ease;
+  }
+
+  /* ========== FADE-IN ANIMATION ========== */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 600px) {
+    header { padding: 48px 20px 36px; }
+    header h1 { font-size: 1.7rem; }
+    main { padding: 0 20px 48px; }
+    .card-grid.cols-2 { grid-template-columns: 1fr; }
+    .community-grid { grid-template-columns: repeat(2, 1fr); }
+    .cta { padding: 10px 20px; font-size: 0.9rem; }
+    .social-row { flex-wrap: wrap; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="fade-in">
+  <div class="headshot-wrapper">
+    <img src="./images/headshot.jpg" alt="Matt Beran" class="headshot">
+  </div>
+  <h1>Matt Beran</h1>
+  <p class="tagline">The IT Community Connector</p>
+
+  <div class="theme-switch-wrapper">
+    <span class="theme-label" id="labelDark">Dark</span>
+    <label class="theme-switch" aria-label="Toggle light/dark mode">
+      <input type="checkbox" id="themeToggle">
+      <span class="slider"></span>
+    </label>
+    <span class="theme-label" id="labelLight">Light</span>
+  </div>
+  <p class="bio">Service Management geek with two decades of implementation experience. Challenging industry norms, giving practical advice, and providing unique approaches to Service Management. Sr. Product Marketing Manager at InvGate and a highly regarded speaker at conferences worldwide.</p>
+
+  <div class="social-row">
+    <a href="http://linkedin.com/in/mattberan" class="social-link" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      LinkedIn
+    </a>
+    <a href="https://www.youtube.com/@ticketvolumepodcast" class="social-link" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v18"/><path d="M6 9a6 6 0 0 0 12 0"/></svg>
+      Podcast
+    </a>
+    <a href="mailto:mattberan@gmail.com" class="social-link">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      Email
+    </a>
+  </div>
+
+  <div class="cta-group">
+    <a href="http://linkedin.com/in/mattberan" class="cta cta-primary" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      Connect with Matt
+    </a>
+    <a href="mailto:mattberan@gmail.com" class="cta cta-secondary">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      Send an email to Matt
+    </a>
+  </div>
+</header>
+
+<main>
+
+  <!-- COMMUNITIES -->
+  <section class="fade-in">
+    <div class="section-header">
+      <h2>Communities</h2>
+      <div class="line"></div>
+    </div>
+    <div class="community-grid">
+      <a href="https://openservicecommunity.com" class="community-item" target="_blank" rel="noopener">
+        <div class="community-logo"><img src="./images/osc-logo.jpg" alt="OSC"></div>
+        <span>OSC</span>
+        <small>Open Service Community</small>
+      </a>
+      <a href="https://www.thinkhdi.com/member/CommunityMembers" class="community-item" target="_blank" rel="noopener">
+        <div class="community-logo"><img src="./images/hdi-logo.png" alt="HDI" class="invert-dark"></div>
+        <span>HDI</span>
+        <small>Help Desk Institute</small>
+      </a>
+      <a href="https://www.servicedeskinstitute.com/" class="community-item" target="_blank" rel="noopener">
+        <div class="community-logo"><img src="./images/sdi-logo.png" alt="SDI"></div>
+        <span>SDI</span>
+        <small>Service Desk Institute</small>
+      </a>
+      <a href="https://www.scopism.com/siam-community/" class="community-item" target="_blank" rel="noopener">
+        <div class="community-logo"><img src="./images/siam-logo.png" alt="SIAM"></div>
+        <span>SIAM</span>
+        <small>SIAM Foundation</small>
+      </a>
+    </div>
+  </section>
+
+  <!-- PRESENTATIONS -->
+  <section class="fade-in">
+    <div class="section-header">
+      <h2>Presentations &amp; Speaking</h2>
+      <div class="line"></div>
+    </div>
+
+    <!-- 2026 -->
+    <div class="pres-year-group">
+      <div class="pres-year">2026</div>
+      <div class="pres-item">Breaking the Mold: Inspiration for Teams Looking to Break Out
+        <div class="pres-venue">Service &amp; Support World National HDI Conference &middot; <a href="https://www.hdiconference.com/why-attend/" target="_blank" rel="noopener">Register</a></div>
+      </div>
+      <div class="pres-item">Optimizing IT Costs Across IT Practices by Leveraging AI
+        <div class="pres-venue">ACE Conference by IAITAM &middot; <a href="https://ace.iaitam.org/" target="_blank" rel="noopener">Register</a></div>
+      </div>
+      <div class="pres-item">Experiment Management: How I Learned to Survive and Celebrate Mistakes
+        <div class="pres-venue">SDI Spark26 &middot; <a href="https://www.sdiconference.co.uk/" target="_blank" rel="noopener">Register</a></div>
+      </div>
+    </div>
+
+    <!-- 2025 -->
+    <div class="pres-year-group">
+      <div class="pres-year">2025</div>
+      <div class="pres-item">The Best IT Services are INVISIBLE
+        <div class="pres-venue">SDI Spark &middot; <a href="https://docs.google.com/presentation/d/1k_nib4Sqx3hmvOowsjq7J6VYACvToIRszOsnkPIgc2A/edit?usp=sharing" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+      <div class="pres-item">User Research Methods for IT Service and Support
+        <div class="pres-venue">Service Management World &middot; <a href="https://docs.google.com/presentation/d/1rd4g9PHf-cHM7USLFHWBrP5WawlCrSSc5h0fCwZzqsc/edit?usp=sharing" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+      <div class="pres-item">How to Stay Relevant During the AI Transformation
+        <div class="pres-venue">MiniCon (HDI Minnesota), Unofficial Support World Live &middot; <a href="https://docs.google.com/presentation/d/1pLHWYm0lxxl8WI49KPTlGoOzYs015ea7XQejoL6LtwM/edit?usp=drive_link" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+    </div>
+
+    <!-- 2024 -->
+    <div class="pres-year-group">
+      <div class="pres-year">2024</div>
+      <div class="pres-item">How to Provide 5 Star Service
+        <div class="pres-venue">SITS &middot; <a href="https://docs.google.com/presentation/d/1f16x4PuzKApYD3-CXS2R5scgDO0VXvlvBHdxMzkOczg/edit?usp=sharing" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+      <div class="pres-item">Unlearning IT: How Service Management Is Letting Your Business and Department Down
+        <div class="pres-venue">Support World Live, SDI Mexico &middot; <a href="https://docs.google.com/presentation/d/1MJpnlRW2UADebisti9x5_o1S1S2PWHHPR6tMivEH3Vg/edit?usp=drive_link" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+      <div class="pres-item">Service Blueprinting: How to Build a Process Map on Steroids
+        <div class="pres-venue">Support Driven &middot; <a href="https://docs.google.com/presentation/d/1ACdKZd171ctLY-KcvG31URuZQv2YZN8x6ImhSJ05YS0/edit?usp=drive_link" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+      <div class="pres-item">AI in Service and Support: Past, Present and Future
+        <div class="pres-venue">MiniCon (HDI Minnesota) &middot; <a href="https://docs.google.com/presentation/d/1AKI_Kb8XihfWUZD_ibV7A1OF-J4xozYCOUbj75YAfNw/edit?usp=drive_link" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+      <div class="pres-item">Visualizing Work: Streams, Journeys, Maps and More
+        <div class="pres-venue">Support World Live &middot; <a href="https://docs.google.com/presentation/d/1kEHoGg3vWCQtDOygiUBjLvbjCgzNs78MjLnOuJmkVZU/edit?usp=drive_link" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+    </div>
+
+    <!-- 2023 -->
+    <div class="pres-year-group">
+      <div class="pres-year">2023</div>
+      <div class="pres-item">Co-creation of Value: Pairing the Design Cycle with ITIL
+        <div class="pres-venue"><a href="https://docs.google.com/presentation/d/1ayU6p4i4PhlxhkuHFemdlSmj8U5rI0AboZV2yOKVT1k/edit?usp=drive_link" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+      <div class="pres-item">Your Career is Yours: Your Personal Brand
+        <div class="pres-venue"><a href="https://docs.google.com/presentation/d/1etHkryaETbadpv-k9q8eUsvAJUvWlfez/edit?usp=drive_link&ouid=109652887907827179928&rtpof=true&sd=true" target="_blank" rel="noopener">View slides</a></div>
+      </div>
+    </div>
+
+    <!-- Older (collapsed) -->
+    <div class="pres-older" id="olderPresentations">
+      <div class="pres-year-group">
+        <div class="pres-year">2022</div>
+        <div class="pres-item">Demystifying User Research and Improving Surveys
+          <div class="pres-venue"><a href="https://docs.google.com/presentation/d/1ayU6p4i4PhlxhkuHFemdlSmj8U5rI0AboZV2yOKVT1k/edit?usp=drive_link" target="_blank" rel="noopener">View slides</a></div>
+        </div>
+        <div class="pres-item">Distributed IT: How I Got in a Fight with a Wall Street Journalist
+          <div class="pres-venue"><a href="https://docs.google.com/presentation/d/1t3WY3P1U__o58lZp2x5wYMtTCDaG3fStozh_j_WzAio/edit?usp=drive_link" target="_blank" rel="noopener">View slides</a></div>
+        </div>
+        <div class="pres-item">Co-creation of Value: How to Design IT Processes That People Enjoy
+          <div class="pres-venue"><a href="https://docs.google.com/presentation/d/1d0RHEoEurXqV7UaFitRLblxLGS7QkKP5fQxz4MXq8gc/edit?usp=drive_link" target="_blank" rel="noopener">View slides</a></div>
+        </div>
+        <div class="pres-item">Enterprise Service Management: Living the ESM Dream
+          <div class="pres-venue"><a href="https://docs.google.com/presentation/d/1vVHPhb-D8p1nZ6IFI0KpIxQaOp0kD7fT7NYUGAAVgCY/edit?usp=sharing" target="_blank" rel="noopener">View slides</a></div>
+        </div>
+      </div>
+      <div class="pres-year-group">
+        <div class="pres-year">2021</div>
+        <div class="pres-item">Bootstrapping Experience: Using the Design Lifecycle to Co-create Value
+          <div class="pres-venue"><a href="https://docs.google.com/presentation/d/1GRDvh-rxRQ8K_A0vFSK1YWK9ifU3C62kTEljFFlkPEk/edit?usp=sharing" target="_blank" rel="noopener">View slides</a></div>
+        </div>
+      </div>
+      <div class="pres-year-group">
+        <div class="pres-year">2019</div>
+        <div class="pres-item">How to Implement Enterprise Service Management</div>
+      </div>
+      <div class="pres-year-group">
+        <div class="pres-year">2018</div>
+        <div class="pres-item">Hacking the Value of Approvals</div>
+      </div>
+      <div class="pres-year-group">
+        <div class="pres-year">2016</div>
+        <div class="pres-item">Tracking Users and Improving Experiences</div>
+      </div>
+      <div class="pres-year-group">
+        <div class="pres-year">2015</div>
+        <div class="pres-item">Everyone Can Be a Millennial: Collaboration Ageism</div>
+      </div>
+      <div class="pres-year-group">
+        <div class="pres-year">2013</div>
+        <div class="pres-item">Keeping Up with Consumers: Modern IT</div>
+      </div>
+      <div class="pres-year-group">
+        <div class="pres-year">2011</div>
+        <div class="pres-item">IT in the Age of Social Media</div>
+      </div>
+    </div>
+
+    <button class="pres-toggle" id="presToggle" onclick="toggleOlderPresentations()">
+      <span id="presToggleText">Show earlier presentations (2011–2022)</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="presToggleIcon"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+  </section>
+
+  <!-- COMPANY -->
+  <section class="fade-in">
+    <div class="section-header">
+      <h2>Company</h2>
+      <div class="line"></div>
+    </div>
+    <div class="card">
+      <img src="./images/invgate-logo.svg" alt="InvGate" class="company-logo-img">
+      <div class="company-role">Sr. Product Marketing Manager</div>
+      <p>A non-platform, fit-for-purpose Service Management software company. InvGate provides modern IT service management and asset management software that helps organizations streamline operations, improve service delivery, and empower teams with intuitive tools.</p>
+      <a href="https://invgate.com" class="card-link" target="_blank" rel="noopener">Visit InvGate &rarr;</a>
+    </div>
+  </section>
+
+  <!-- YOUTUBE / VIDEOS -->
+  <section class="fade-in">
+    <div class="section-header">
+      <h2>Videos</h2>
+      <div class="line"></div>
+    </div>
+    <div class="card-grid cols-2">
+      <div class="card">
+        <div class="video-thumb"><img src="./images/ticket-volume-youtube.jpg" alt="Ticket Volume" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></div>
+        <h3>Ticket Volume Episodes</h3>
+        <a href="https://www.youtube.com/@ticketvolumepodcast" class="card-link" target="_blank" rel="noopener">Watch episodes &rarr;</a>
+      </div>
+      <div class="card">
+        <div class="video-thumb"><img src="./images/ticket-volume-art.jpg" alt="Conference Talks" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></div>
+        <h3>Conference Talks</h3>
+        <a href="https://www.youtube.com/c/MattBeran" class="card-link" target="_blank" rel="noopener">Watch on YouTube &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PODCAST ARCHIVE -->
+  <section class="fade-in">
+    <div class="section-header">
+      <h2>Podcast Archive</h2>
+      <div class="line"></div>
+    </div>
+    <div class="card">
+      <h3>Ticket Volume</h3>
+      <p>Hundreds of episodes covering IT, ITSM, Asset Management, cybersecurity, governance, and career development with guests who introduce new ways of thinking about service experiences and improving collaboration. Browse the full archive.</p>
+      <a href="https://www.youtube.com/@ticketvolumepodcast" class="card-link" target="_blank" rel="noopener">Browse all episodes &rarr;</a>
+    </div>
+  </section>
+
+  <!-- RESOURCES -->
+  <section class="fade-in">
+    <div class="section-header">
+      <h2>Resources</h2>
+      <div class="line"></div>
+    </div>
+    <div class="card-grid cols-2">
+      <div class="card">
+        <h3>ITAM Compliance Gap Assessment</h3>
+        <p>Need to do a quick gap analysis for compliance? Here's a VERY easy to use cheat sheet.</p>
+        <a href="https://docs.google.com/document/d/1s-AmcMiVcvWGGUup0FOYW1AZK-Ntyw4ANkUzHXBHETo/edit?usp=drive_link" class="card-link" target="_blank" rel="noopener">View resource &rarr;</a>
+      </div>
+      <div class="card">
+        <h3>Example of an XLA</h3>
+        <p>Need to see what a team ACTUALLY uses for their XLA? Here's one to view.</p>
+        <a href="https://drive.google.com/file/d/1BNAtQ7VvoLeWDbuKsBM3fPChV9jdEV4l/view?usp=drivesdk" class="card-link" target="_blank" rel="noopener">View resource &rarr;</a>
+      </div>
+      <div class="card">
+        <h3>Service Blueprint MIRO Template</h3>
+        <p>Start with this rough Service Blueprint to design an agreed upon view. Then iterate!</p>
+        <a href="https://miro.com/app/board/uXjVNQ4ToCA=/?share_link_id=314894827543" class="card-link" target="_blank" rel="noopener">Open in Miro &rarr;</a>
+      </div>
+      <div class="card">
+        <h3>Service Blueprint Example</h3>
+        <p>Here's an example output of months of honing a service blueprint into an onboarding experience.</p>
+        <a href="https://drive.google.com/file/d/1AS-wVjhfwfjlpnj1UgxjlQ3OLCT4OdlH/view?usp=drive_link" class="card-link" target="_blank" rel="noopener">View resource &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="fade-in">
+    <div class="section-header">
+      <h2>Projects</h2>
+      <div class="line"></div>
+    </div>
+    <div class="card-grid cols-2">
+      <div class="card">
+        <h3>IT Asset Tycoon</h3>
+        <p>A satirical browser-based simulation game where you manage IT Asset Management at MegaCorp Inc. Survive audits, tame shadow IT, and chase ISO 27001 certification through corporate chaos.</p>
+        <a href="./projects/it-asset-tycoon/" class="card-link">Play the game &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK LINKS -->
+  <section class="fade-in">
+    <div class="section-header">
+      <h2>Quick Links</h2>
+      <div class="line"></div>
+    </div>
+    <ul class="quick-links">
+      <li><a href="mailto:mattberan@gmail.com">Speaking Inquiries</a></li>
+      <li><a href="http://linkedin.com/in/mattberan" target="_blank" rel="noopener">LinkedIn Profile</a></li>
+      <li><a href="https://www.youtube.com/@ticketvolumepodcast" target="_blank" rel="noopener">Ticket Volume Podcast</a></li>
+      <li><a href="https://invgate.com" target="_blank" rel="noopener">InvGate</a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <p>&copy; 2026 Matt Beran. All rights reserved.</p>
+</footer>
+
+<script>
+  // ===== THEME TOGGLE =====
+  const toggle = document.getElementById('themeToggle');
+  const html = document.documentElement;
+  const labelDark = document.getElementById('labelDark');
+  const labelLight = document.getElementById('labelLight');
+
+  function updateLabels(theme) {
+    labelDark.classList.toggle('active', theme === 'dark');
+    labelLight.classList.toggle('active', theme === 'light');
+  }
+
+  // Check saved preference or default to dark
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  html.setAttribute('data-theme', savedTheme);
+  toggle.checked = savedTheme === 'light';
+  updateLabels(savedTheme);
+
+  toggle.addEventListener('change', () => {
+    const next = toggle.checked ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateLabels(next);
+  });
+
+  // ===== FADE-IN ON SCROLL =====
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+  });
+
+  // ===== CARD GLOW EFFECT (dark mode only) =====
+  document.querySelectorAll('.card, .community-item').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      if (html.getAttribute('data-theme') !== 'dark') return;
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      card.style.background = `radial-gradient(circle 200px at ${x}px ${y}px, rgba(59,130,246,0.06), var(--bg-card))`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.background = '';
+    });
+  });
+
+  // ===== OLDER PRESENTATIONS TOGGLE =====
+  function toggleOlderPresentations() {
+    const older = document.getElementById('olderPresentations');
+    const text = document.getElementById('presToggleText');
+    const icon = document.getElementById('presToggleIcon');
+    const isShown = older.classList.contains('show');
+
+    older.classList.toggle('show');
+    text.textContent = isShown ? 'Show earlier presentations (2011–2022)' : 'Hide earlier presentations';
+    icon.style.transform = isShown ? '' : 'rotate(180deg)';
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IT Asset Tycoon</title>
+<meta name="description" content="A satirical office tycoon game about IT Asset Management. Wrangle shadow IT, survive audits, and prove that boring work saves the world.">
+<meta property="og:title" content="IT Asset Tycoon">
+<meta property="og:description" content="You're the new IT Asset Manager at MegaCorp Inc. Survive 12 quarters of chaos, audits, and shadow IT. Can you earn ISO 27001 certification?">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mattberan.github.io/IT-Asset-Tycoon/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="IT Asset Tycoon">
+<meta name="twitter:description" content="A satirical browser game about IT Asset Management. No install needed — just click and play.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💻</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;overflow:hidden;height:100vh;width:100vw}
+#game-container{display:none;width:100%;height:100vh;flex-direction:column}
+#game-container.active{display:flex}
+#ticker{height:32px;background:#1a1a2e;border-bottom:1px solid #333;display:flex;align-items:center;overflow:hidden;position:relative}
+#ticker-content{white-space:nowrap;animation:tickerScroll 360s linear infinite;font-size:13px;color:#7faaff;font-family:'Courier New',monospace}
+@keyframes tickerScroll{0%{transform:translateX(100vw)}100%{transform:translateX(-200%)}}
+#main-area{display:flex;flex:1;overflow:hidden}
+#canvas-container{width:65%;position:relative;background:#1a1a2e}
+#office-canvas{width:100%;height:100%;display:block}
+#dashboard{width:35%;background:#12121f;border-left:2px solid #2a2a4a;display:flex;flex-direction:column;overflow-y:auto;padding:10px;gap:8px}
+.dash-card{background:#1a1a30;border:1px solid #2a2a4a;border-radius:8px;padding:10px}
+.dash-card h3{font-size:13px;color:#8899bb;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.quarter-display{text-align:center;font-size:18px;font-weight:bold;color:#fff}
+.quarter-sub{font-size:12px;color:#6677aa;margin-top:2px}
+.progress-bar-outer{height:8px;background:#0a0a15;border-radius:4px;margin-top:6px;overflow:hidden}
+.progress-bar-inner{height:100%;border-radius:4px;transition:width 0.8s ease}
+.metric-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.metric-label{font-size:12px;color:#8899bb;flex:0 0 140px}
+.metric-bar-outer{flex:1;height:14px;background:#0a0a15;border-radius:3px;margin:0 8px;overflow:hidden;position:relative}
+.metric-bar-inner{height:100%;border-radius:3px;transition:width 1s ease}
+.metric-value{font-size:12px;font-weight:bold;flex:0 0 80px;text-align:right;font-family:'Courier New',monospace}
+.team-member{display:flex;align-items:center;gap:8px;padding:6px;border-radius:6px;margin-bottom:4px;background:#0f0f20;cursor:default}
+.team-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;color:#fff;flex-shrink:0}
+.team-info{flex:1;min-width:0}
+.team-name{font-size:12px;font-weight:bold;color:#ddd}
+.team-title{font-size:10px;color:#6677aa}
+.team-assignment{font-size:10px;color:#44cc88;margin-top:1px}
+.mini-bars{display:flex;gap:3px;margin-top:3px}
+.mini-bar{height:4px;border-radius:2px;flex:1}
+.event-log{max-height:120px;overflow-y:auto;font-size:11px}
+.event-log-item{padding:3px 0;border-bottom:1px solid #1a1a30;color:#8899bb}
+.event-log-item:last-child{border:none}
+#modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:1000;justify-content:center;align-items:center}
+#modal-overlay.active{display:flex}
+#modal{background:#1e1e35;border:2px solid #3a3a6a;border-radius:12px;padding:24px;max-width:650px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+#modal h2{color:#fff;margin-bottom:4px;font-size:20px}
+#modal .modal-subtitle{color:#6677aa;font-size:13px;margin-bottom:16px}
+#modal .modal-body{color:#bbc;font-size:14px;line-height:1.6;margin-bottom:16px}
+#modal .modal-body p{margin-bottom:8px}
+.modal-choices{display:flex;flex-direction:column;gap:8px}
+.choice-btn{background:#252545;border:1px solid #3a3a6a;color:#dde;padding:12px 16px;border-radius:8px;cursor:pointer;font-size:13px;text-align:left;transition:all 0.2s}
+.choice-btn:hover{background:#2a2a55;border-color:#5566aa;transform:translateX(4px)}
+.choice-btn.primary{background:#1a3a6a;border-color:#2255aa}
+.choice-btn.primary:hover{background:#1a4a8a}
+.choice-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important}
+.character-quote{background:#0f0f20;border-left:3px solid #4477cc;padding:8px 12px;margin:8px 0;border-radius:0 6px 6px 0;font-size:12px;font-style:italic;color:#99aabb}
+.character-quote .speaker{font-style:normal;font-weight:bold;color:#ddd}
+#title-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;text-align:center}
+#title-screen h1{font-size:48px;color:#fff;margin-bottom:4px;text-shadow:0 0 30px rgba(68,119,255,0.5)}
+#title-screen .subtitle{font-size:18px;color:#6677aa;margin-bottom:40px}
+#title-screen .tagline{font-size:14px;color:#556;margin-bottom:30px;max-width:500px;line-height:1.6}
+.title-btn{background:#1a3a6a;border:2px solid #2255aa;color:#fff;padding:14px 40px;border-radius:8px;font-size:16px;cursor:pointer;transition:all 0.2s;margin:6px}
+.title-btn:hover{background:#1a4a8a;transform:scale(1.05)}
+.title-btn.secondary{background:transparent;border-color:#333;color:#888;font-size:13px;padding:10px 30px}
+.title-btn.secondary:hover{border-color:#555;color:#bbb}
+#assign-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.assign-task{background:#1a1a30;border:2px solid #2a2a4a;border-radius:8px;padding:10px;cursor:pointer;transition:all 0.2s}
+.assign-task:hover{border-color:#4466aa}
+.assign-task.selected{border-color:#44cc88;background:#1a2a20}
+.assign-task.taken{opacity:0.4;cursor:not-allowed}
+.assign-task .task-name{font-size:13px;font-weight:bold;color:#ddd}
+.assign-task .task-desc{font-size:11px;color:#6677aa;margin-top:2px}
+.assign-task .task-assigned{font-size:11px;color:#44cc88;margin-top:4px}
+.assign-char{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;margin-bottom:6px;cursor:pointer;border:2px solid transparent;transition:all 0.2s}
+.assign-char:hover{background:#1a1a40}
+.assign-char.selected{border-color:#4488ff;background:#1a1a40}
+.assign-char.assigned{opacity:0.5}
+#budget-grid{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.budget-row{display:flex;align-items:center;gap:10px}
+.budget-label{flex:0 0 180px;font-size:13px;color:#bbc}
+.budget-slider{flex:1}
+.budget-slider input[type=range]{width:100%;accent-color:#4488ff}
+.budget-val{flex:0 0 70px;text-align:right;font-family:'Courier New',monospace;font-size:13px;color:#44cc88}
+#budget-remaining{text-align:center;font-size:16px;font-weight:bold;margin-top:10px;padding:8px;border-radius:6px}
+.results-metric{display:flex;justify-content:space-between;padding:4px 0;font-size:14px}
+.results-metric .change{font-weight:bold}
+.change.positive{color:#44cc88}
+.change.negative{color:#cc4444}
+.grade-display{text-align:center;font-size:64px;font-weight:bold;margin:16px 0}
+.grade-A{color:#44cc88}.grade-B{color:#88cc44}.grade-C{color:#cccc44}.grade-D{color:#cc8844}.grade-F{color:#cc4444}
+#cmdb-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:999;justify-content:center;align-items:center}
+#cmdb-overlay.active{display:flex}
+#cmdb-view{background:#1a1a2e;border:2px solid #3a3a6a;border-radius:12px;width:90%;max-width:900px;max-height:80vh;overflow:auto;padding:16px}
+#cmdb-view h2{margin-bottom:12px;color:#fff}
+.cmdb-table{width:100%;border-collapse:collapse;font-size:12px;font-family:'Courier New',monospace}
+.cmdb-table th{background:#0f0f20;color:#6688aa;padding:6px 8px;text-align:left;position:sticky;top:0}
+.cmdb-table td{padding:4px 8px;border-bottom:1px solid #1a1a30}
+.cmdb-table tr.error td{background:rgba(200,50,50,0.15);color:#ff8888}
+.cmdb-table tr.duplicate td{background:rgba(200,200,50,0.1);color:#dddd88}
+.cmdb-table tr.unknown td{color:#666}
+.cmdb-close{position:absolute;top:12px;right:16px;background:none;border:none;color:#888;font-size:24px;cursor:pointer}
+.audit-dim{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #2a2a4a}
+.audit-dim .dim-name{font-size:14px;color:#bbc}
+.audit-dim .dim-score{font-size:14px;font-weight:bold;font-family:'Courier New',monospace}
+.ending-text{font-size:15px;line-height:1.7;color:#bbc;margin:16px 0}
+.tooltip{position:relative;cursor:help;border-bottom:1px dotted #556}
+.tooltip:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#000;color:#ddd;padding:6px 10px;border-radius:4px;font-size:11px;white-space:nowrap;z-index:100}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0a0a15}
+::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#3a3a6a}
+</style>
+</head>
+<body>
+<div id="title-screen">
+<h1>IT Asset Tycoon</h1>
+<div class="subtitle">An Office Simulation Game</div>
+<div class="tagline">You've just been hired as the IT Asset Manager for MegaCorp Inc. Your job: bring order to chaos, survive audits, wrangle shadow IT, and prove that boring work saves the world. Good luck. You'll need it.</div>
+<div style="margin-bottom:8px;color:#8899bb;font-size:13px">Choose your game length:</div>
+<div style="display:flex;gap:10px;margin-bottom:16px">
+<button class="title-btn" onclick="startNewGame(4)">1 Year<div style="font-size:11px;color:#8899bb;margin-top:2px">4 Quarters — Quick</div></button>
+<button class="title-btn" onclick="startNewGame(8)">2 Years<div style="font-size:11px;color:#8899bb;margin-top:2px">8 Quarters — Standard</div></button>
+<button class="title-btn" onclick="startNewGame(12)">3 Years<div style="font-size:11px;color:#8899bb;margin-top:2px">12 Quarters — Full</div></button>
+</div>
+<button class="title-btn secondary" onclick="loadGame()">Continue Saved Game</button>
+<div id="highscore-display" style="margin-top:20px;color:#6677aa;font-size:13px"></div>
+<script>
+(function(){let hs=localStorage.getItem('itam_highscore');if(hs)document.getElementById('highscore-display').textContent='High Score: '+JSON.parse(hs)+'%';})();
+</script>
+</div>
+<div id="game-container">
+<div id="ticker"><div id="ticker-content"></div></div>
+<div id="main-area">
+<div id="canvas-container"><canvas id="office-canvas"></canvas></div>
+<div id="dashboard">
+<div class="dash-card" id="quarter-card"></div>
+<div class="dash-card" id="metrics-card"><h3>Core Metrics</h3><div id="metrics-display"></div></div>
+<div class="dash-card" id="team-card"><h3>Your Team</h3><div id="team-display"></div></div>
+<div class="dash-card" style="display:flex;gap:6px;flex-wrap:wrap" id="action-buttons"></div>
+<div class="dash-card" id="log-card"><h3>Event Log</h3><div class="event-log" id="event-log"></div></div>
+</div>
+</div>
+</div>
+<div id="modal-overlay"><div id="modal"></div></div>
+<div id="cmdb-overlay" onclick="if(event.target===this)closeCMDB()"><div id="cmdb-view"></div></div>
+<script>
+// ===================== CONFIGURATION =====================
+const TICKER_HEADLINES = [
+"BREAKING: Gartner Announces New Magic Quadrant For Magic Quadrants",
+"Local Sysadmin Discovers 47 Unauthorized Raspberry Pis In Drop Ceiling",
+"Survey: 94% Of IT Pros Say 'It Depends'",
+"Entire IT Department Held Hostage By Printer Error",
+"Study Finds 90% of Shadow IT Was Actually Just Someone's Personal Spotify",
+"New Zero-Day Vulnerability Discovered In Concept Of Having Computers",
+"Area IT Manager Achieves Enlightenment After 47th Spreadsheet Reconciliation",
+"Vendor Claims Their Solution Uses AI; It's Actually Just a VLOOKUP",
+"Report: 60% of 'Urgent' IT Requests Are Actually 'I Forgot My Password'",
+"Local Man Claims He's 'Basically IT' Because He Restarted His Router Once",
+"Breaking: Cloud Provider Assures Customers The Cloud Is Just Someone Else's Computer",
+"ITIL Framework Updated To Include 'Crying In Server Room' As Official Process",
+"Company Discovers Entire Shadow IT Department Complete With Shadow IT Manager",
+"Audit Reveals Company Has Been Paying For Software That Was Discontinued In 2019",
+"Developer Insists 64GB RAM Is 'Bare Minimum' For Writing JavaScript",
+"Survey: Average IT Asset Lifecycle Is 3 Years Or Until CEO Sees A Shinier One",
+"Breaking: Intern Accidentally Deploys To Production, Somehow Fixes 3 Bugs",
+"New Study Links Spreadsheet Complexity To Existential Dread",
+"Area CISO Achieves New Record: 47 Days Without A Phishing Incident",
+"Report: 78% Of IT Budgets Spent On Things Nobody Remembers Buying",
+];
+const TASKS = [
+{id:'inventory',name:'Physical Inventory Audit',desc:'Physically verify assets exist where the CMDB says they are',icon:'📋'},
+{id:'cleanup',name:'CMDB Data Cleanup',desc:'Fix bad records, merge duplicates, correct serial numbers',icon:'🧹'},
+{id:'license',name:'Software License Reconciliation',desc:'Compare owned vs installed licenses, find discrepancies',icon:'📊'},
+{id:'procurement',name:'Procurement Processing',desc:'Handle incoming purchase requests from departments',icon:'🛒'},
+{id:'documentation',name:'Process Documentation',desc:'Write and improve ITAM procedures',icon:'📝'},
+{id:'shadowit',name:'Shadow IT Investigation',desc:'Hunt for unauthorized hardware, software, and SaaS',icon:'🔍'},
+{id:'requests',name:'Employee Asset Requests',desc:'Handle the queue of people wanting new/better equipment',icon:'💻'},
+{id:'patching',name:'Security Patching Support',desc:'Ensure tracked assets are up to date on patches',icon:'🔒'},
+];
+const BRIEFINGS = [
+{speaker:"CEO",msg:"Welcome aboard, new IT Asset Manager! We just need you to get things organized. The last person left... suddenly. Their desk was covered in sticky notes that just said 'WHY'. I'm sure it's fine.",sub:"Quarter 1 of 12 — The Honeymoon Phase"},
+{speaker:"CEO",msg:"Great first quarter! Or at least, nothing caught fire. The CFO wants to know why we have 'a lot of computers.' That's a direct quote. Maybe get some numbers together?",sub:"Quarter 2 of 12"},
+{speaker:"CTO",msg:"Hey, so we're growing fast. Like, REALLY fast. HR just hired 15 people and forgot to tell IT. They start Monday. Yes, this Monday. Good luck!",sub:"Quarter 3 of 12"},
+{speaker:"CFO",msg:"I've been looking at the numbers and I have questions. Many questions. Why are we paying for 6 different project management tools? Who approved this? Was it Kevin?",sub:"Quarter 4 of 12 — Reality Sets In"},
+{speaker:"CEO",msg:"The board is asking about 'operational efficiency' and 'risk posture.' I told them we have a great IT asset team. Please don't make me a liar.",sub:"Quarter 5 of 12"},
+{speaker:"CISO",msg:"So, fun fact: I just found out we have devices on the network that aren't in any inventory. How many? Great question. That's what I need YOU to tell ME.",sub:"Quarter 6 of 12"},
+{speaker:"CEO",msg:"A vendor called. They want to 'audit our licenses.' I asked if that was like a friendly visit. The legal team's reaction suggests it is not.",sub:"Quarter 7 of 12"},
+{speaker:"New CIO",msg:"Hi, I'm the new CIO. I've been here 3 days and I already have concerns. My first question: do we actually know what we own? My second question: why is everyone looking at the floor?",sub:"Quarter 8 of 12 — The Gauntlet"},
+{speaker:"CEO",msg:"We're moving to a new office next year. Every. Single. Asset. needs to be tracked. Also the board mentioned something about ISO 27001. No pressure.",sub:"Quarter 9 of 12"},
+{speaker:"Board Rep",msg:"The board has mandated ISO 27001 certification. Your asset management program will be a critical component of the audit. I trust you're prepared? ...You ARE prepared, right?",sub:"Quarter 10 of 12"},
+{speaker:"CEO",msg:"Three quarters until the certification audit. The auditors have been selected. They have a reputation for being... thorough. Diane seems excited. That worries me.",sub:"Quarter 11 of 12"},
+{speaker:"Lead Auditor",msg:"Good morning. I'm here for the ISO 27001 certification audit. I'll need to review your complete asset inventory, risk management processes, documentation, and incident response records. Shall we begin?",sub:"Quarter 12 of 12 — THE FINAL AUDIT"},
+];
+const TIER1_EVENTS = [
+{id:'laptop_hunt',title:'The Great Laptop Hunt',desc:'3 laptops are unaccounted for. Probably in someone\'s desk drawer. Or their house. Or listed on eBay.',
+quotes:[{s:'Diane',t:'"I TOLD you we should tag everything. I have a 14-point tagging protocol document if anyone cares."'},{s:'Kevin',t:'"I\'ll find them! Give me 20 minutes and a barcode scanner."'},{s:'TJ',t:'"Wait... are we sure we had those laptops? My count says we\'re short 7, not 3."'}],
+choices:[
+{text:'Launch a thorough investigation (costs $3,000)',fx:{budget:-3000,cmdbAccuracy:4,riskScore:-5,execConfidence:2}},
+{text:'Send a company-wide email asking people to check',fx:{riskScore:-2,employeeSatisfaction:-3,cmdbAccuracy:1}},
+{text:'Write them off as lost and move on',fx:{budget:-4500,riskScore:8,cmdbAccuracy:-2}},
+]},
+{id:'vp_macbook',title:'The VP\'s Special Request',desc:'VP of Marketing wants the newest MacBook Pro. Your company is standardized on Dell. "But I NEED it for... presentations," she says, making air quotes around a word that definitely doesn\'t need air quotes.',
+quotes:[{s:'Priya',t:'"She already has three monitors and a tablet. I checked."'},{s:'Kevin',t:'"Just give it to her. Life\'s too short for laptop arguments with VPs."'}],
+choices:[
+{text:'Approve the MacBook (break standardization, keep VP happy)',fx:{budget:-3500,employeeSatisfaction:3,execConfidence:3,cmdbAccuracy:-2}},
+{text:'Politely decline and explain the standardization policy',fx:{employeeSatisfaction:-2,execConfidence:-4,cmdbAccuracy:1}},
+{text:'Offer a top-spec Dell as a compromise',fx:{budget:-2000,employeeSatisfaction:1,execConfidence:1}},
+]},
+{id:'onboarding',title:'Onboarding Tsunami',desc:'Company hired 15 people this quarter. Each needs a laptop, monitors, peripherals, and software. HR sent the list... this morning. They start tomorrow.',
+quotes:[{s:'TJ',t:'"I can set up all 15! I pulled an all-nighter once for a LAN party, this is basically the same thing!"'},{s:'Diane',t:'"If even ONE of these gets entered into the CMDB wrong, I will know. I will ALWAYS know."'}],
+choices:[
+{text:'Rush order equipment overnight (expensive but fast)',fx:{budget:-8000,employeeSatisfaction:5,execConfidence:3,cmdbAccuracy:-3}},
+{text:'Use existing inventory and provision carefully over the week',fx:{budget:-2000,employeeSatisfaction:-2,cmdbAccuracy:2}},
+{text:'Push back on HR and request 2 weeks lead time going forward',fx:{employeeSatisfaction:-4,execConfidence:2,riskScore:-2}},
+]},
+{id:'mystery_saas',title:'The Mystery Software',desc:'Someone discovers 40 employees using an unauthorized SaaS tool called "TaskMagic Pro." Nobody approved it. Nobody\'s paying for it. It\'s on the free tier. For now.',
+quotes:[{s:'Priya',t:'"I\'ve been tracking this for weeks. It\'s spreading through Marketing like a virus. A very organized, kanban-based virus."'},{s:'Kevin',t:'"I mean, it IS pretty good. I\'ve been using it too."'}],
+choices:[
+{text:'Shut it down immediately (security risk)',fx:{riskScore:-5,employeeSatisfaction:-6,cmdbAccuracy:2}},
+{text:'Negotiate an enterprise license ($5K)',fx:{budget:-5000,riskScore:-3,employeeSatisfaction:3}},
+{text:'Investigate further before deciding',fx:{riskScore:2,cmdbAccuracy:1}},
+]},
+{id:'kevin_script',title:'Kevin\'s 2 AM Script',desc:'Kevin wrote a script at 2 AM to auto-populate 200 asset records. He\'s very proud. Diane has been silently auditing his work and has gone through three stress balls.',
+quotes:[{s:'Kevin',t:'"Automated, baby! 200 records in 12 minutes. You\'re welcome."'},{s:'Diane',t:'"Thirty-five percent of these serial numbers belong to printers we decommissioned in 2021. THIRTY. FIVE. PERCENT."'}],
+choices:[
+{text:'Have Diane fix all the errors (slow but thorough)',fx:{cmdbAccuracy:5,riskScore:-2}},
+{text:'Have Kevin re-run the script with fixes (fast but risky)',fx:{cmdbAccuracy:-3,riskScore:3}},
+{text:'Accept the good records, flag the bad ones for later',fx:{cmdbAccuracy:1,riskScore:1}},
+]},
+{id:'diane_spreadsheet',title:'Diane\'s Spreadsheet',desc:'Diane presents a 47-tab spreadsheet proving your CMDB has duplicate records, orphaned entries, and "at least 12% fictional assets." She\'s printed copies for everyone. In color.',
+quotes:[{s:'Diane',t:'"Page 34, column Q. That\'s where the real horror begins."'},{s:'TJ',t:'"This is... actually really impressive. Terrifying, but impressive."'}],
+choices:[
+{text:'Launch a full data cleanup initiative this quarter',fx:{cmdbAccuracy:8,riskScore:-4,employeeSatisfaction:-2}},
+{text:'Acknowledge the problem and schedule it for next quarter',fx:{cmdbAccuracy:1,execConfidence:-2,riskScore:2}},
+{text:'Thank Diane and assign her to fix it',fx:{cmdbAccuracy:5,riskScore:-2}},
+]},
+];
+const TIER2_EVENTS = [
+{id:'software_audit',title:'Surprise Software Audit!',desc:'A major software vendor has announced a license compliance audit. You have until next quarter to get your records straight. The legal team is "concerned." The CFO is using words not suitable for a family game.',
+quotes:[{s:'Priya',t:'"I predicted this 3 quarters ago. It\'s in my report. Page 7. Which nobody read."'},{s:'Diane',t:'"This is fine. This is FINE. I just need everyone to stop what they\'re doing and reconcile licenses with me for the next 72 hours."'}],
+choices:[
+{text:'Emergency license reconciliation — all hands on deck',fx:{budget:-5000,cmdbAccuracy:6,riskScore:-8,employeeSatisfaction:-4}},
+{text:'Assign Priya to handle it (she\'s the expert)',fx:{riskScore:-4,cmdbAccuracy:3}},
+{text:'Hire outside consultants to prepare ($12K)',fx:{budget:-12000,riskScore:-10,cmdbAccuracy:4,execConfidence:3}},
+]},
+{id:'coffee_shop',title:'The Coffee Shop Incident',desc:'An employee\'s laptop was stolen from a coffee shop. It had customer data. It may or may not have been encrypted. Do you know what was on it? Does ANYONE know what was on it?',
+quotes:[{s:'Priya',t:'"If our CMDB is accurate, I can tell you exactly what was on that device in 30 seconds. IF."'},{s:'Kevin',t:'"I think I set up that laptop. Pretty sure I encrypted it. Like, 70% sure. Maybe 60."'}],
+choices:[
+{text:'Invoke full incident response protocol',fx:{budget:-8000,riskScore:-5,execConfidence:-5,cmdbAccuracy:2}},
+{text:'Check CMDB records and assess the actual risk',fx:function(g){let acc=g.metrics.cmdbAccuracy;if(acc>75)return{riskScore:-3,execConfidence:2,budget:-2000};return{riskScore:12,execConfidence:-8,budget:-15000};}},
+{text:'Report to legal and let them handle it',fx:{budget:-5000,riskScore:3,execConfidence:-3}},
+]},
+{id:'budget_cuts',title:'Budget Cuts',desc:'The CFO has decided that IT Asset Management is "a cost center, not a profit center" and has slashed your budget by 25% for the next 2 quarters. She suggests you "do more with less" and "leverage synergies."',
+quotes:[{s:'Kevin',t:'"More with less? I\'ve been doing that since day one. It\'s called cutting corners and it\'s an art form."'},{s:'TJ',t:'"What if we just... don\'t buy things? Is that an option? I can share my laptop."'}],
+choices:[
+{text:'Accept the cuts and reprioritize',fx:{budget:-10000,execConfidence:3,employeeSatisfaction:-5}},
+{text:'Push back with data showing ITAM ROI',fx:function(g){if(g.metrics.cmdbAccuracy>70)return{budget:-3000,execConfidence:5};return{execConfidence:-5,budget:-10000};}},
+{text:'Propose cutting software licenses instead of hardware',fx:{budget:-5000,riskScore:5,employeeSatisfaction:2}},
+]},
+{id:'shadow_empire',title:'Shadow IT Empire',desc:'An entire department has been running their own IT infrastructure — 3 servers under a desk, a consumer NAS, and a WiFi access point named "TotallyNotIT." They\'ve been at it for 18 months.',
+quotes:[{s:'Priya',t:'"Found it. Department of Strategic Innovation. They have their own ticket system. It\'s a shared Google Sheet."'},{s:'Diane',t:'"None of this is in the CMDB. NONE OF IT. I need to sit down. I\'m already sitting. I need to sit down MORE."'}],
+choices:[
+{text:'Shut it all down immediately',fx:{riskScore:-10,employeeSatisfaction:-8,cmdbAccuracy:3}},
+{text:'Audit it, document it, bring it under management',fx:{budget:-3000,riskScore:-6,cmdbAccuracy:5,employeeSatisfaction:-2}},
+{text:'Let them keep it but add monitoring',fx:{budget:-2000,riskScore:-2,employeeSatisfaction:2}},
+]},
+{id:'warranty_cliff',title:'The Warranty Cliff',desc:'40% of your hardware fleet goes out of warranty next month. Nobody tracked refresh cycles. Replacing everything costs a fortune. Not replacing means gambling on no failures. Your risk appetite just got tested.',
+quotes:[{s:'Diane',t:'"I have a lifecycle tracking spreadsheet I\'ve been maintaining ON MY OWN TIME for 2 years. Nobody wanted to see it. DO YOU WANT TO SEE IT NOW?"'},{s:'TJ',t:'"What happens when a warranty expires? Does the laptop just... stop working?"'}],
+choices:[
+{text:'Replace all out-of-warranty equipment',fx:{budget:-20000,riskScore:-10,employeeSatisfaction:8,cmdbAccuracy:3}},
+{text:'Replace the highest-risk 50% and extend support on the rest',fx:{budget:-12000,riskScore:-5,employeeSatisfaction:3}},
+{text:'Gamble — skip replacement, boost emergency reserve',fx:{riskScore:12,employeeSatisfaction:-3}},
+]},
+{id:'compliance',title:'Compliance Comes Knocking',desc:'A new regulation requires proof that you know where every device with customer data is located. The compliance officer wants a report by end of quarter. She is not smiling.',
+quotes:[{s:'Priya',t:'"This is exactly why I kept saying we need better data classification. But sure, let\'s panic NOW."'},{s:'Kevin',t:'"I can generate that report in like an hour. It\'ll be mostly accurate. Probably."'}],
+choices:[
+{text:'Task the whole team with a complete device audit',fx:{cmdbAccuracy:6,riskScore:-8,employeeSatisfaction:-4,execConfidence:4}},
+{text:'Generate report from current CMDB data (accuracy dependent)',fx:function(g){let a=g.metrics.cmdbAccuracy;if(a>75)return{execConfidence:5,riskScore:-4};if(a>55)return{execConfidence:-2,riskScore:3};return{execConfidence:-8,riskScore:10,budget:-10000};}},
+{text:'Hire a compliance consultant ($8K)',fx:{budget:-8000,riskScore:-6,execConfidence:3}},
+]},
+];
+const TIER3_EVENTS = [
+{id:'data_breach',title:'The Data Breach',desc:'A device you didn\'t know existed got compromised. Patient zero is unknown. The blast radius is unknown. The CEO is on line 1. The press is on line 2. Your mom is on line 3 asking if you\'re eating enough.',
+quotes:[{s:'Priya',t:'"If our asset discovery was better, I could contain this in hours. As it stands... I genuinely don\'t know how bad this is."'},{s:'Diane',t:'"I am going to need a VERY large cup of coffee and approximately 72 hours of uninterrupted CMDB access."'}],
+choices:[
+{text:'Full incident response with forensics',fx:function(g){let a=g.metrics.cmdbAccuracy;let cost=a>70?-15000:-35000;let risk=a>70?5:20;return{budget:cost,riskScore:risk,execConfidence:-10,revenueImpact:-0.05};}},
+{text:'Contain what you can, assess damage later',fx:{budget:-10000,riskScore:15,execConfidence:-8,revenueImpact:-0.03}},
+{text:'Call in a third-party security firm',fx:{budget:-25000,riskScore:5,execConfidence:-5,revenueImpact:-0.02}},
+]},
+{id:'exec_shakeup',title:'Executive Shakeup',desc:'The new CIO wants a complete inventory of every IT asset in the company within ONE quarter. "Just export it from your system," she says. If only it were that simple.',
+quotes:[{s:'Kevin',t:'"I can do a walkthrough of the whole building in 2 days. It won\'t be pretty, but it\'ll be fast."'},{s:'Diane',t:'"A complete inventory requires methodical, systematic... oh, she wants it by FRIDAY?!"'}],
+choices:[
+{text:'All-hands inventory blitz (everyone drops everything)',fx:{cmdbAccuracy:10,riskScore:-3,employeeSatisfaction:-6,execConfidence:8}},
+{text:'Present current data honestly and propose a plan',fx:function(g){if(g.metrics.cmdbAccuracy>70)return{execConfidence:5,cmdbAccuracy:2};return{execConfidence:-5};}},
+{text:'Promise it by Friday, panic internally',fx:{cmdbAccuracy:3,execConfidence:2,riskScore:5}},
+]},
+{id:'great_migration',title:'The Great Migration',desc:'The company is moving to a new building. Every asset needs to be inventoried, packed, transported, and re-verified. This is either your finest hour or your last.',
+quotes:[{s:'TJ',t:'"I made labels! Color-coded by floor! And department! And... should I have asked first?"'},{s:'Priya',t:'"I\'ve modeled 14 scenarios. In 3 of them, we lose fewer than 10 assets. Those are the good ones."'}],
+choices:[
+{text:'Methodical migration with full tracking ($15K)',fx:{budget:-15000,cmdbAccuracy:8,riskScore:-5,execConfidence:8}},
+{text:'Fast migration, fix inventory after',fx:{budget:-5000,cmdbAccuracy:-8,riskScore:8,employeeSatisfaction:3}},
+{text:'Use it as opportunity for a complete refresh',fx:{budget:-25000,cmdbAccuracy:12,riskScore:-8,employeeSatisfaction:10,execConfidence:5}},
+]},
+{id:'vendor_audit_hell',title:'Vendor Audit From Hell',desc:'Remember that software audit? They found discrepancies. The vendor\'s compliance team has the personality of a parking meter and the mercy of a compiler. Fines are coming.',
+quotes:[{s:'Diane',t:'"I have every license receipt organized by date, vendor, and purchase order. Come at me."'},{s:'Priya',t:'"Our reconciliation data is either going to save us $200K or cost us $200K. There is no in between."'}],
+choices:[
+{text:'Present your records and negotiate (data quality matters!)',fx:function(g){let a=g.metrics.cmdbAccuracy;if(a>80)return{budget:15000,execConfidence:8,riskScore:-8};if(a>60)return{budget:-20000,execConfidence:-3,riskScore:-2};return{budget:-50000,execConfidence:-10,riskScore:10,revenueImpact:-0.05};}},
+{text:'Hire a licensing specialist lawyer ($15K)',fx:{budget:-15000,riskScore:-5,execConfidence:2}},
+{text:'Accept the initial fine and dispute later',fx:{budget:-30000,riskScore:5,execConfidence:-5}},
+]},
+{id:'tj_discovery',title:'TJ\'s Discovery',desc:'TJ was updating a spreadsheet (as he does) and accidentally stumbled onto something huge: the company has been paying for 500 seats of enterprise software that only 200 people use. That\'s potentially $150K in annual savings.',
+quotes:[{s:'TJ',t:'"I was just trying to figure out why my login didn\'t work and I found... all of this. Is this bad? This seems bad."'},{s:'Diane',t:'"If we can prove this with clean data, it\'s the biggest win this department has ever had."'}],
+choices:[
+{text:'Full audit to verify and reclaim savings',fx:function(g){let a=g.metrics.cmdbAccuracy;if(a>75)return{budget:25000,execConfidence:12,revenueImpact:0.08};if(a>55)return{budget:10000,execConfidence:5,revenueImpact:0.03};return{budget:3000,execConfidence:1};}},
+{text:'Quick estimate and present to CFO',fx:{budget:8000,execConfidence:5,revenueImpact:0.02}},
+{text:'Log it for future investigation',fx:{execConfidence:-2}},
+]},
+{id:'ransomware',title:'The Ransomware Scare',desc:'Systems are going down. The security team is in full panic mode. Your asset inventory determines how fast they can identify affected systems and recover. No pressure.',
+quotes:[{s:'Priya',t:'"I need to cross-reference every affected IP against our asset inventory. If the data is good, I can have a scope in 2 hours. If not... days."'},{s:'Kevin',t:'"I\'m physically unplugging servers. Don\'t try to stop me. This is what I was born for."'}],
+choices:[
+{text:'Provide security team full CMDB access for response',fx:function(g){let a=g.metrics.cmdbAccuracy;if(a>75)return{riskScore:-5,execConfidence:10,revenueImpact:-0.02};if(a>55)return{riskScore:5,execConfidence:-3,revenueImpact:-0.05};return{riskScore:15,execConfidence:-10,revenueImpact:-0.1};}},
+{text:'Manual triage — physically check critical systems',fx:{budget:-5000,riskScore:3,execConfidence:-2,revenueImpact:-0.05}},
+{text:'Shut everything down until scope is clear',fx:{budget:-10000,riskScore:-8,employeeSatisfaction:-8,revenueImpact:-0.08}},
+]},
+];
+const ASSET_TYPES = ['Laptop','Desktop','Monitor','Server','Switch','Printer','Tablet','Phone','Dock','License'];
+const LOCATIONS = ['Floor 1','Floor 2','Floor 3','Server Room','Remote','Warehouse','Unknown'];
+const STATUSES = ['Active','In Storage','Decommissioned','Lost','In Transit'];
+const NAMES_POOL = ['J. Smith','A. Johnson','M. Williams','S. Brown','R. Jones','L. Garcia','K. Miller','T. Davis','P. Martinez','D. Wilson','C. Anderson','E. Taylor','N. Thomas','H. Jackson','F. White','B. Harris','G. Martin','W. Thompson','V. Robinson','Q. Clark'];
+
+// ===================== GAME STATE =====================
+let G = null;
+function newGameState(totalQuarters) {
+totalQuarters = totalQuarters || 12;
+return {
+quarter:1, totalQuarters:totalQuarters, phase:'briefing', gameOver:false, started:false,
+metrics:{budget:50000,cmdbAccuracy:65,riskScore:30,employeeSatisfaction:70,execConfidence:60,revenueImpact:1.0},
+team:[
+{id:0,name:'Diane Chen',title:'The Perfectionist',accuracy:95,speed:40,morale:70,color:'#4488cc',assignment:null,bio:'Has been in ITAM for 15 years. Her spreadsheets have spreadsheets.'},
+{id:1,name:'Kevin Murphy',title:'The Cowboy',accuracy:45,speed:90,morale:80,color:'#cc5544',assignment:null,bio:'Types 120 WPM. 40% of those keystrokes are wrong.'},
+{id:2,name:'Priya Sharma',title:'The Analyst',accuracy:80,speed:70,morale:60,color:'#9955cc',assignment:null,bio:'Built a dashboard that tracks dashboards.'},
+{id:3,name:'TJ Washington',title:'The Intern',accuracy:55,speed:60,morale:90,color:'#44aa55',assignment:null,bio:'Started as an intern 14 months ago. Nobody filed the paperwork.'},
+],
+history:{cleanupGap:0,docsDone:0,trainingSpent:0,toolSpent:0,auditsDone:0,incidentScores:[],quarterGrades:[],tjTraining:0,priyaOffer:0,softwareAuditActive:false,budgetCutQuarters:0,cmdbHistory:[],riskHistory:[]},
+office:{desks:4,clutter:0,trophies:[],serverRacks:2},
+budgetAlloc:{hardware:0,software:0,tools:0,training:0,reserve:0},
+quarterBudgetBase:45000,
+eventLog:[],
+pendingEvents:[],
+currentEventIdx:0,
+cmdbErrors:20,cmdbDuplicates:15,cmdbUnknown:10,cmdbTotal:150,
+processConnections:0,
+prevMetrics:null,
+};
+}
+
+// ===================== RENDERING =====================
+let canvas, ctx, animFrame;
+const TILE_W = 56, TILE_H = 28;
+const GRID_W = 12, GRID_H = 10;
+let offX = 0, offY = 0;
+let animTime = 0;
+let particles = [];
+let speechBubbles = [];
+let floatingTexts = [];
+
+function initCanvas() {
+canvas = document.getElementById('office-canvas');
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+requestAnimationFrame(gameLoop);
+}
+function resizeCanvas() {
+let container = document.getElementById('canvas-container');
+canvas.width = container.clientWidth;
+canvas.height = container.clientHeight;
+offX = canvas.width / 2;
+offY = 60;
+}
+function toIso(gx, gy) {
+return { x: (gx - gy) * TILE_W / 2 + offX, y: (gx + gy) * TILE_H / 2 + offY };
+}
+function gameLoop(ts) {
+animTime = ts || 0;
+if (G && G.started) renderOffice();
+animFrame = requestAnimationFrame(gameLoop);
+}
+function renderOffice() {
+ctx = canvas.getContext('2d');
+ctx.clearRect(0, 0, canvas.width, canvas.height);
+// Ambient ceiling glow
+let gradient = ctx.createRadialGradient(canvas.width/2, 0, 50, canvas.width/2, 0, canvas.height);
+gradient.addColorStop(0, 'rgba(60,60,100,0.15)');
+gradient.addColorStop(1, 'rgba(0,0,0,0)');
+ctx.fillStyle = gradient;
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+// Floor
+for (let y = 0; y < GRID_H; y++) {
+for (let x = 0; x < GRID_W; x++) {
+let iso = toIso(x, y);
+let isServer = x >= 9 && y <= 2;
+let isCorridor = y === 0 || x === 0;
+let clr = isServer ? '#2a2a3a' : isCorridor ? '#2e2e44' : ((x + y) % 2 === 0 ? '#3a3a50' : '#33334a');
+drawDiamond(iso.x, iso.y, TILE_W, TILE_H, clr);
+}
+}
+// Floor details — cable runs along server room edge
+for (let y = 0; y <= 2; y++) {
+let iso = toIso(8.5, y + 0.5);
+ctx.strokeStyle = '#444';
+ctx.lineWidth = 2;
+ctx.setLineDash([4,3]);
+ctx.beginPath(); ctx.moveTo(iso.x, iso.y); let iso2 = toIso(8.5, y + 1.5); ctx.lineTo(iso2.x, iso2.y); ctx.stroke();
+ctx.setLineDash([]);
+}
+// Walls (back)
+for (let x = 0; x < GRID_W; x++) {
+let iso = toIso(x, 0);
+// Wall body
+ctx.fillStyle = x >= 9 ? '#3a3a50' : '#4a4a60';
+ctx.fillRect(iso.x - TILE_W/2, iso.y - 44, TILE_W, 44);
+// Baseboard
+ctx.fillStyle = '#3a3a50';
+ctx.fillRect(iso.x - TILE_W/2, iso.y - 4, TILE_W, 4);
+// Top trim
+ctx.fillStyle = '#555570';
+ctx.fillRect(iso.x - TILE_W/2, iso.y - 46, TILE_W, 2);
+}
+// Left wall
+for (let y = 0; y < GRID_H; y++) {
+let iso = toIso(0, y);
+ctx.fillStyle = '#3e3e55';
+ctx.fillRect(iso.x - TILE_W/2 - 6, iso.y - 24, 6, TILE_H + 24);
+}
+// Ceiling lights (glow spots on floor)
+for (let lx = 2; lx < GRID_W; lx += 3) {
+for (let ly = 2; ly < GRID_H; ly += 3) {
+let iso = toIso(lx, ly);
+let lg = ctx.createRadialGradient(iso.x, iso.y, 0, iso.x, iso.y, 35);
+lg.addColorStop(0, 'rgba(100,100,140,0.08)');
+lg.addColorStop(1, 'rgba(0,0,0,0)');
+ctx.fillStyle = lg;
+ctx.fillRect(iso.x - 40, iso.y - 20, 80, 40);
+}
+}
+if (!G) return;
+// Wall decorations
+// Trophies
+G.office.trophies.forEach((t, i) => {
+let iso = toIso(2 + i * 2, 0);
+ctx.fillStyle = '#b8860b';
+ctx.fillRect(iso.x - 9, iso.y - 35, 18, 14);
+ctx.fillStyle = '#ffd700';
+ctx.fillRect(iso.x - 7, iso.y - 33, 14, 10);
+ctx.fillStyle = '#fff';
+ctx.font = 'bold 7px monospace';
+ctx.textAlign = 'center';
+ctx.fillText(t, iso.x, iso.y - 25);
+});
+// Whiteboard
+let wbIso = toIso(6, 0);
+ctx.fillStyle = '#ddd';
+ctx.fillRect(wbIso.x - 22, wbIso.y - 40, 44, 28);
+ctx.fillStyle = '#ccc';
+ctx.fillRect(wbIso.x - 22, wbIso.y - 40, 44, 2);
+ctx.fillStyle = '#888';
+ctx.fillRect(wbIso.x - 1, wbIso.y - 12, 2, 6);
+ctx.fillStyle = '#333';
+ctx.font = 'bold 7px monospace';
+ctx.textAlign = 'center';
+ctx.fillText('Q' + G.quarter + ' GOALS', wbIso.x, wbIso.y - 28);
+ctx.font = '6px monospace';
+let accClr = G.metrics.cmdbAccuracy > 75 ? '#227722' : G.metrics.cmdbAccuracy > 55 ? '#886600' : '#992222';
+ctx.fillStyle = accClr;
+ctx.fillText('CMDB:' + Math.round(G.metrics.cmdbAccuracy) + '%', wbIso.x, wbIso.y - 20);
+// Door on left wall
+let doorIso = toIso(0, 5);
+ctx.fillStyle = '#5a4a2a';
+ctx.fillRect(doorIso.x - TILE_W/2 - 5, doorIso.y - 28, 5, 30);
+ctx.fillStyle = '#ffd700';
+ctx.beginPath(); ctx.arc(doorIso.x - TILE_W/2 - 2, doorIso.y - 12, 1.5, 0, Math.PI*2); ctx.fill();
+// Clock on back wall
+let clkIso = toIso(10, 0);
+ctx.fillStyle = '#eee';
+ctx.beginPath(); ctx.arc(clkIso.x, clkIso.y - 30, 8, 0, Math.PI*2); ctx.fill();
+ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+ctx.beginPath(); ctx.arc(clkIso.x, clkIso.y - 30, 8, 0, Math.PI*2); ctx.stroke();
+let clockAngle = (animTime / 2000) % (Math.PI * 2);
+ctx.beginPath(); ctx.moveTo(clkIso.x, clkIso.y - 30);
+ctx.lineTo(clkIso.x + Math.cos(clockAngle - Math.PI/2)*5, clkIso.y - 30 + Math.sin(clockAngle - Math.PI/2)*5);
+ctx.stroke();
+ctx.lineWidth = 1;
+
+// ---- Back-row objects (drawn before characters for depth) ----
+
+// Server racks
+for (let i = 0; i < Math.min(G.office.serverRacks + Math.floor(G.quarter / 3), 6); i++) {
+drawServer(9 + (i % 3), Math.floor(i / 3), i);
+}
+// Network switch (in server room)
+let swIso = toIso(10, 2.5);
+ctx.fillStyle = '#2a3a4a';
+ctx.fillRect(swIso.x - 12, swIso.y - 6, 24, 8);
+ctx.fillStyle = '#1a2a3a';
+ctx.fillRect(swIso.x - 12, swIso.y - 6, 24, 2);
+for (let p = 0; p < 8; p++) {
+let blink = Math.sin(animTime / 200 + p * 0.8) > 0.3;
+ctx.fillStyle = blink ? '#00cc66' : '#0a3a1a';
+ctx.fillRect(swIso.x - 9 + p * 2.5, swIso.y - 3, 1.5, 1.5);
+}
+// Printer (near the desks)
+drawPrinter(8, 4);
+// Water cooler
+drawWaterCooler(1, 7);
+// Coffee machine on back wall
+drawCoffeeMachine(4, 0.6);
+// Potted plants
+drawPlant(0.5, 1);
+drawPlant(0.5, 8);
+if (G.metrics.employeeSatisfaction > 70) drawPlant(8.5, 8); // Extra plant if morale is high
+// Storage boxes (more appear with more assets / clutter)
+let boxCount = Math.floor(G.cmdbTotal / 50) + Math.floor(G.office.clutter / 25);
+for (let b = 0; b < Math.min(boxCount, 6); b++) {
+let bx = 9 + (b % 2) * 1.5;
+let by = 3 + Math.floor(b / 2) * 1.2;
+drawBox(bx, by, b);
+}
+// Desks with monitors
+let deskCount = Math.min(G.office.desks, 16);
+for (let i = 0; i < deskCount; i++) {
+let dx = 1 + (i % 4) * 2;
+let dy = 2 + Math.floor(i / 4) * 2;
+if (dx < 8.5) drawDesk(dx, dy, i);
+}
+// Laptops scattered on some desks (visual variety)
+for (let i = 0; i < Math.min(deskCount, 8); i++) {
+if ((i * 7 + G.quarter) % 3 === 0) {
+let dx = 1 + (i % 4) * 2;
+let dy = 2 + Math.floor(i / 4) * 2;
+if (dx < 8.5) drawLaptop(dx + 0.4, dy + 0.3, i);
+}
+}
+// Clutter — tangled cables, random boxes, stray peripherals
+if (G.office.clutter > 20) {
+let clutterCount = Math.floor(G.office.clutter / 12);
+for (let c = 0; c < clutterCount; c++) {
+let cx = ((c * 7 + 3) % 7) + 1;
+let cy = ((c * 5 + 2) % 6) + 2;
+let iso = toIso(cx, cy);
+// Random clutter type
+if (c % 3 === 0) {
+// Tangled cables
+ctx.strokeStyle = 'rgba(100,100,100,0.5)';
+ctx.lineWidth = 1;
+ctx.beginPath();
+ctx.moveTo(iso.x - 6, iso.y + 2);
+ctx.bezierCurveTo(iso.x - 2, iso.y - 3, iso.x + 3, iso.y + 5, iso.x + 7, iso.y);
+ctx.stroke();
+} else if (c % 3 === 1) {
+// Stray keyboard/peripheral
+ctx.fillStyle = 'rgba(80,80,80,0.5)';
+ctx.fillRect(iso.x - 5, iso.y - 1, 10, 4);
+ctx.fillStyle = 'rgba(120,120,120,0.3)';
+for(let k=0;k<5;k++) ctx.fillRect(iso.x - 4 + k*2, iso.y, 1, 2);
+} else {
+// Cardboard box
+ctx.fillStyle = 'rgba(160,120,60,0.5)';
+ctx.fillRect(iso.x - 4, iso.y - 4, 8, 6);
+ctx.fillStyle = 'rgba(140,100,40,0.5)';
+ctx.fillRect(iso.x - 4, iso.y - 4, 8, 2);
+}
+}
+}
+// ? marks over messy CMDB spots
+if (G.metrics.cmdbAccuracy < 60) {
+let qCount = Math.floor((60 - G.metrics.cmdbAccuracy) / 8);
+for (let q = 0; q < qCount; q++) {
+let qx = 2 + (q * 3) % 7;
+let qy = 2 + (q * 5) % 6;
+let iso = toIso(qx, qy);
+let bob = Math.sin(animTime / 600 + q * 2) * 3;
+ctx.fillStyle = `rgba(255,100,50,${0.5 + Math.sin(animTime/400+q)*0.2})`;
+ctx.font = 'bold 14px monospace';
+ctx.textAlign = 'center';
+ctx.fillText('?', iso.x, iso.y - 12 + bob);
+}
+}
+// Warning flash over server room during high risk
+if (G.metrics.riskScore > 60) {
+let flashAlpha = (Math.sin(animTime / 300) + 1) / 2 * 0.15;
+for (let sy = 0; sy <= 2; sy++) {
+for (let sx = 9; sx < 12; sx++) {
+let iso = toIso(sx, sy);
+ctx.fillStyle = `rgba(255,0,0,${flashAlpha})`;
+drawDiamond(iso.x, iso.y, TILE_W, TILE_H, `rgba(255,0,0,${flashAlpha})`);
+}
+}
+}
+// Characters — positions based on assignment
+G.team.forEach((member, i) => {
+let pos;
+switch(member.assignment) {
+case 'inventory': pos = {gx: 3 + Math.sin(animTime/2000 + i) * 3, gy: 3 + Math.cos(animTime/1800 + i) * 2.5}; break;
+case 'shadowit': pos = {gx: 7 + Math.sin(animTime/1500 + i) * 1.5, gy: 6 + Math.cos(animTime/1700 + i) * 2}; break;
+case 'cleanup': pos = {gx: 1 + (i % 4) * 2, gy: 2 + Math.floor(i / 4) * 2}; break;
+case 'license': pos = {gx: 1 + (i % 4) * 2, gy: 2 + Math.floor(i / 4) * 2}; break;
+case 'patching': pos = {gx: 9.5 + Math.sin(animTime/2500)*0.5, gy: 1 + i * 0.5}; break;
+case 'documentation': pos = {gx: 1 + (i % 4) * 2, gy: 2 + Math.floor(i / 4) * 2}; break;
+case 'procurement': pos = {gx: 8.5, gy: 5 + Math.sin(animTime/3000) * 0.5}; break;
+case 'requests': pos = {gx: 4 + Math.sin(animTime/2200 + i) * 2, gy: 5 + Math.cos(animTime/2000 + i)}; break;
+default: pos = {gx: 1 + (i % 4) * 2, gy: 2 + Math.floor(i / 4) * 2};
+}
+let iso = toIso(pos.gx, pos.gy);
+drawCharacter(iso.x, iso.y - 10, member, i);
+});
+// Floating texts
+floatingTexts = floatingTexts.filter(ft => {
+let age = animTime - ft.start;
+if (age > 2000) return false;
+ctx.globalAlpha = 1 - age / 2000;
+ctx.fillStyle = ft.color || '#fff';
+ctx.font = 'bold 12px monospace';
+ctx.textAlign = 'center';
+ctx.fillText(ft.text, ft.x, ft.y - age / 80);
+ctx.globalAlpha = 1;
+return true;
+});
+// Speech bubbles
+speechBubbles = speechBubbles.filter(sb => {
+let age = animTime - sb.start;
+if (age > 4000) return false;
+ctx.globalAlpha = age < 500 ? age/500 : age > 3500 ? (4000-age)/500 : 1;
+ctx.font = '10px sans-serif';
+let bw = ctx.measureText(sb.text).width + 16;
+ctx.fillStyle = '#fff';
+roundRect(ctx, sb.x - bw/2, sb.y - 24, bw, 20, 6, true, false);
+ctx.fillStyle = '#333';
+ctx.textAlign = 'center';
+ctx.fillText(sb.text, sb.x, sb.y - 11);
+ctx.globalAlpha = 1;
+return true;
+});
+// Phase indicator on canvas
+ctx.fillStyle = 'rgba(0,0,0,0.6)';
+roundRect(ctx, 8, 8, 200, 30, 6, true, false);
+ctx.fillStyle = '#7faaff';
+ctx.font = '12px monospace';
+ctx.textAlign = 'left';
+let phaseNames = {briefing:'BRIEFING',team:'TEAM ASSIGNMENT',budget:'BUDGET',events:'EVENTS',results:'RESULTS',audit:'FINAL AUDIT',review:'REVIEW DASHBOARD'};
+ctx.fillText('Q' + G.quarter + ' — ' + (phaseNames[G.phase] || ''), 18, 28);
+}
+function drawDiamond(x, y, w, h, color) {
+ctx.fillStyle = color;
+ctx.beginPath();
+ctx.moveTo(x, y);
+ctx.lineTo(x + w/2, y + h/2);
+ctx.lineTo(x, y + h);
+ctx.lineTo(x - w/2, y + h/2);
+ctx.closePath();
+ctx.fill();
+ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+ctx.stroke();
+}
+function drawDesk(gx, gy, idx) {
+let iso = toIso(gx, gy);
+let x = iso.x, y = iso.y;
+// Desk surface
+ctx.fillStyle = '#6b5b3a';
+ctx.beginPath();
+ctx.moveTo(x, y - 8);
+ctx.lineTo(x + 22, y + 3);
+ctx.lineTo(x, y + 14);
+ctx.lineTo(x - 22, y + 3);
+ctx.closePath();
+ctx.fill();
+// Desk front
+ctx.fillStyle = '#5a4a2a';
+ctx.beginPath();
+ctx.moveTo(x, y + 14);
+ctx.lineTo(x + 22, y + 3);
+ctx.lineTo(x + 22, y + 8);
+ctx.lineTo(x, y + 19);
+ctx.closePath();
+ctx.fill();
+// Monitor
+ctx.fillStyle = '#222';
+ctx.fillRect(x - 6, y - 20, 12, 10);
+ctx.fillStyle = '#3366aa';
+let flicker = Math.sin(animTime / 300 + idx) * 0.1 + 0.9;
+ctx.globalAlpha = flicker;
+ctx.fillRect(x - 5, y - 19, 10, 8);
+ctx.globalAlpha = 1;
+// Monitor stand
+ctx.fillStyle = '#333';
+ctx.fillRect(x - 1, y - 10, 2, 4);
+}
+function drawServer(gx, gy, idx) {
+let iso = toIso(gx, gy);
+let x = iso.x, y = iso.y;
+// Rack body
+ctx.fillStyle = '#2a2a3a';
+ctx.fillRect(x - 10, y - 30, 20, 32);
+ctx.fillStyle = '#222233';
+ctx.fillRect(x - 10, y - 30, 20, 2);
+// Blink lights
+for (let r = 0; r < 4; r++) {
+let on = Math.sin(animTime / 500 + idx * 2 + r * 1.5) > 0;
+ctx.fillStyle = on ? '#00ff44' : '#0a2a0a';
+ctx.fillRect(x - 6, y - 26 + r * 7, 3, 3);
+ctx.fillStyle = '#555';
+ctx.fillRect(x - 1, y - 26 + r * 7, 10, 3);
+}
+}
+function drawCharacter(x, y, member, idx) {
+let bobY = Math.sin(animTime / 400 + idx * 1.3) * 2;
+// Shadow
+ctx.fillStyle = 'rgba(0,0,0,0.3)';
+ctx.beginPath();
+ctx.ellipse(x, y + 12, 8, 4, 0, 0, Math.PI * 2);
+ctx.fill();
+// Body
+ctx.fillStyle = member.color;
+ctx.fillRect(x - 5, y - 4 + bobY, 10, 12);
+// Head
+ctx.beginPath();
+ctx.arc(x, y - 8 + bobY, 6, 0, Math.PI * 2);
+ctx.fillStyle = '#ffd5aa';
+ctx.fill();
+// Hair
+ctx.fillStyle = member.id === 0 ? '#222' : member.id === 1 ? '#c66' : member.id === 2 ? '#333' : '#543';
+ctx.beginPath();
+ctx.arc(x, y - 10 + bobY, 6, Math.PI, Math.PI * 2);
+ctx.fill();
+// Label
+ctx.fillStyle = '#fff';
+ctx.font = '8px sans-serif';
+ctx.textAlign = 'center';
+ctx.fillText(member.name.split(' ')[0], x, y + 24);
+// Activity icon
+if (member.assignment) {
+let task = TASKS.find(t => t.id === member.assignment);
+if (task) {
+ctx.font = '12px sans-serif';
+ctx.fillText(task.icon, x, y - 18 + bobY);
+}
+}
+// Morale indicator
+if (member.morale < 40) {
+ctx.fillStyle = '#ff4444';
+ctx.font = '10px sans-serif';
+ctx.fillText('😤', x + 10, y - 10 + bobY);
+} else if (member.morale > 80) {
+ctx.fillStyle = '#44ff44';
+ctx.font = '10px sans-serif';
+ctx.fillText('😊', x + 10, y - 10 + bobY);
+}
+}
+function drawPrinter(gx, gy) {
+let iso = toIso(gx, gy);
+let x = iso.x, y = iso.y;
+// Body
+ctx.fillStyle = '#e8e8e0';
+ctx.fillRect(x - 12, y - 12, 24, 14);
+// Top
+ctx.fillStyle = '#d8d8d0';
+ctx.fillRect(x - 12, y - 14, 24, 3);
+// Paper tray
+ctx.fillStyle = '#f5f5f0';
+ctx.fillRect(x - 8, y - 16, 16, 3);
+// Output tray
+ctx.fillStyle = '#ccc';
+ctx.fillRect(x - 6, y + 1, 12, 2);
+// Paper coming out (animated)
+if (Math.sin(animTime / 1000) > 0) {
+ctx.fillStyle = '#fff';
+ctx.fillRect(x - 4, y + 2, 8, 3 + Math.sin(animTime / 500) * 2);
+}
+// Status light
+ctx.fillStyle = G.metrics.riskScore > 50 ? '#ff4444' : '#00cc44';
+ctx.fillRect(x + 8, y - 11, 3, 3);
+// Label
+ctx.fillStyle = '#999';
+ctx.font = '6px monospace';
+ctx.textAlign = 'center';
+ctx.fillText('HP-4200', x, y + 8);
+}
+function drawWaterCooler(gx, gy) {
+let iso = toIso(gx, gy);
+let x = iso.x, y = iso.y;
+// Base
+ctx.fillStyle = '#ccc';
+ctx.fillRect(x - 5, y - 4, 10, 12);
+// Tank
+ctx.fillStyle = 'rgba(100,180,255,0.4)';
+ctx.beginPath(); ctx.arc(x, y - 12, 6, 0, Math.PI * 2); ctx.fill();
+ctx.strokeStyle = 'rgba(150,200,255,0.3)';
+ctx.lineWidth = 1;
+ctx.beginPath(); ctx.arc(x, y - 12, 6, 0, Math.PI * 2); ctx.stroke();
+// Bubble animation
+let bubbleY = (animTime / 20) % 12;
+ctx.fillStyle = 'rgba(200,230,255,0.5)';
+ctx.beginPath(); ctx.arc(x + 1, y - 8 - bubbleY, 1.5, 0, Math.PI * 2); ctx.fill();
+// Spigot
+ctx.fillStyle = '#888';
+ctx.fillRect(x - 2, y - 5, 4, 2);
+}
+function drawCoffeeMachine(gx, gy) {
+let iso = toIso(gx, gy);
+let x = iso.x, y = iso.y;
+// Machine body (on counter against wall)
+ctx.fillStyle = '#333';
+ctx.fillRect(x - 8, y - 28, 16, 16);
+// Top
+ctx.fillStyle = '#444';
+ctx.fillRect(x - 8, y - 30, 16, 3);
+// Cup area
+ctx.fillStyle = '#222';
+ctx.fillRect(x - 5, y - 16, 10, 5);
+// Coffee mug
+ctx.fillStyle = '#eee';
+ctx.fillRect(x - 2, y - 15, 5, 4);
+ctx.fillStyle = '#6b3a1a';
+ctx.fillRect(x - 1, y - 14, 3, 2);
+// Steam
+let steamPhase = animTime / 300;
+ctx.strokeStyle = 'rgba(200,200,200,0.3)';
+ctx.lineWidth = 1;
+ctx.beginPath();
+ctx.moveTo(x, y - 16);
+ctx.bezierCurveTo(x - 2, y - 20 - Math.sin(steamPhase)*2, x + 2, y - 24 - Math.cos(steamPhase)*2, x, y - 28);
+ctx.stroke();
+// Status light
+ctx.fillStyle = '#00cc44';
+ctx.beginPath(); ctx.arc(x + 5, y - 26, 1.5, 0, Math.PI * 2); ctx.fill();
+}
+function drawPlant(gx, gy) {
+let iso = toIso(gx, gy);
+let x = iso.x, y = iso.y;
+// Pot
+ctx.fillStyle = '#a0522d';
+ctx.fillRect(x - 5, y - 2, 10, 8);
+ctx.fillStyle = '#8b4513';
+ctx.fillRect(x - 6, y - 3, 12, 3);
+// Soil
+ctx.fillStyle = '#3a2a1a';
+ctx.fillRect(x - 4, y - 3, 8, 2);
+// Leaves
+let sway = Math.sin(animTime / 1500 + gx * 3) * 2;
+ctx.fillStyle = '#2d8a4e';
+ctx.beginPath(); ctx.ellipse(x + sway, y - 10, 4, 7, 0.2, 0, Math.PI * 2); ctx.fill();
+ctx.fillStyle = '#3aa85e';
+ctx.beginPath(); ctx.ellipse(x - 3 + sway * 0.5, y - 8, 3, 5, -0.3, 0, Math.PI * 2); ctx.fill();
+ctx.fillStyle = '#25754a';
+ctx.beginPath(); ctx.ellipse(x + 3 + sway * 0.7, y - 7, 3, 5, 0.4, 0, Math.PI * 2); ctx.fill();
+}
+function drawBox(gx, gy, idx) {
+let iso = toIso(gx, gy);
+let x = iso.x, y = iso.y;
+// Cardboard box
+let h = 8 + (idx % 3) * 3;
+ctx.fillStyle = '#b8924a';
+ctx.fillRect(x - 7, y - h, 14, h);
+ctx.fillStyle = '#a07838';
+ctx.fillRect(x - 7, y - h, 14, 2);
+// Tape
+ctx.fillStyle = '#d4b068';
+ctx.fillRect(x - 1, y - h, 2, h);
+// Label
+if (idx % 2 === 0) {
+ctx.fillStyle = '#fff';
+ctx.fillRect(x - 5, y - h + 4, 6, 4);
+ctx.fillStyle = '#888';
+ctx.font = '4px monospace';
+ctx.textAlign = 'center';
+ctx.fillText('IT', x - 2, y - h + 7);
+}
+}
+function drawLaptop(gx, gy, idx) {
+let iso = toIso(gx, gy);
+let x = iso.x, y = iso.y;
+// Base
+ctx.fillStyle = '#888';
+ctx.beginPath();
+ctx.moveTo(x, y - 2);
+ctx.lineTo(x + 8, y + 2);
+ctx.lineTo(x, y + 6);
+ctx.lineTo(x - 8, y + 2);
+ctx.closePath();
+ctx.fill();
+// Screen (angled up)
+ctx.fillStyle = '#666';
+ctx.fillRect(x - 5, y - 10, 10, 8);
+let screenOn = (idx * 3 + G.quarter) % 4 !== 0;
+ctx.fillStyle = screenOn ? '#3366aa' : '#222';
+ctx.fillRect(x - 4, y - 9, 8, 6);
+if (screenOn) {
+// Screen content lines
+ctx.fillStyle = 'rgba(255,255,255,0.3)';
+for(let l = 0; l < 3; l++) ctx.fillRect(x - 3, y - 8 + l * 2, 4 + (l % 2) * 2, 1);
+}
+}
+function roundRect(c, x, y, w, h, r, fill, stroke) {
+c.beginPath();
+c.moveTo(x + r, y);
+c.lineTo(x + w - r, y);
+c.quadraticCurveTo(x + w, y, x + w, y + r);
+c.lineTo(x + w, y + h - r);
+c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+c.lineTo(x + r, y + h);
+c.quadraticCurveTo(x, y + h, x, y + h - r);
+c.lineTo(x, y + r);
+c.quadraticCurveTo(x, y, x + r, y);
+c.closePath();
+if (fill) c.fill();
+if (stroke) c.stroke();
+}
+function addFloatingText(text, color) {
+let iso = toIso(5 + Math.random() * 3, 3 + Math.random() * 3);
+floatingTexts.push({text, color, x: iso.x, y: iso.y, start: animTime});
+}
+function addSpeechBubble(charIdx, text) {
+let pos = toIso(1 + (charIdx % 4) * 2, 2 + Math.floor(charIdx / 4) * 2);
+speechBubbles.push({text, x: pos.x, y: pos.y - 30, start: animTime});
+}
+
+// ===================== UI MANAGER =====================
+function updateDashboard() {
+if (!G) return;
+// Quarter card
+let qCard = document.getElementById('quarter-card');
+let yearNum = Math.ceil(G.quarter / 4);
+let qNum = ((G.quarter - 1) % 4) + 1;
+let progress = ((G.quarter - 1) / G.totalQuarters) * 100;
+qCard.innerHTML = `<div class="quarter-display">Q${qNum} — Year ${yearNum}</div>
+<div class="quarter-sub">Quarter ${G.quarter} of ${G.totalQuarters}</div>
+<div class="progress-bar-outer"><div class="progress-bar-inner" style="width:${progress}%;background:linear-gradient(90deg,#2255aa,#44aaff)"></div></div>`;
+// Metrics
+let md = document.getElementById('metrics-display');
+md.innerHTML = '';
+const metrics = [
+{label:'Budget',key:'budget',fmt:v=>'$'+Math.round(v).toLocaleString(),max:100000,color:'#44cc88',invert:false,tip:'Your available money for the quarter'},
+{label:'CMDB Accuracy',key:'cmdbAccuracy',fmt:v=>Math.round(v)+'%',max:100,color:'#4488ff',invert:false,tip:'How clean and trustworthy your asset data is'},
+{label:'Risk Score',key:'riskScore',fmt:v=>Math.round(v),max:100,color:'#ff5544',invert:true,tip:'Organizational exposure — lower is better!'},
+{label:'Employee Satisfaction',key:'employeeSatisfaction',fmt:v=>Math.round(v),max:100,color:'#ffaa44',invert:false,tip:'How happy employees are with their equipment'},
+{label:'Exec Confidence',key:'execConfidence',fmt:v=>Math.round(v),max:100,color:'#aa66ff',invert:false,tip:'How much leadership trusts your department'},
+{label:'Revenue Impact',key:'revenueImpact',fmt:v=>v.toFixed(2)+'x',max:1.5,color:'#44ddaa',invert:false,tip:'How your ITAM work affects company revenue'},
+];
+metrics.forEach(m => {
+let v = G.metrics[m.key];
+let pct = m.key === 'budget' ? Math.min(v / m.max * 100, 100) : m.key === 'revenueImpact' ? (v / m.max) * 100 : Math.min(v, 100);
+let barColor = m.color;
+if (!m.invert) {
+if (m.key !== 'budget' && m.key !== 'revenueImpact') {
+barColor = v > 70 ? '#44cc88' : v > 50 ? '#cccc44' : '#cc4444';
+}
+} else {
+barColor = v < 30 ? '#44cc88' : v < 60 ? '#cccc44' : '#cc4444';
+}
+let change = '';
+if (G.prevMetrics) {
+let diff = v - G.prevMetrics[m.key];
+if (Math.abs(diff) > 0.01) {
+let cls = (m.invert ? diff < 0 : diff > 0) ? 'positive' : 'negative';
+let sign = diff > 0 ? '+' : '';
+change = ` <span class="change ${cls}">${sign}${m.key==='revenueImpact'?diff.toFixed(2):Math.round(diff)}</span>`;
+}
+}
+md.innerHTML += `<div class="metric-row"><span class="metric-label tooltip" data-tip="${m.tip}">${m.label}</span>
+<div class="metric-bar-outer"><div class="metric-bar-inner" style="width:${pct}%;background:${barColor}"></div></div>
+<span class="metric-value">${m.fmt(v)}${change}</span></div>`;
+});
+// Team
+let td = document.getElementById('team-display');
+td.innerHTML = '';
+G.team.forEach(m => {
+let taskName = m.assignment ? TASKS.find(t => t.id === m.assignment)?.name || m.assignment : 'Unassigned';
+let moraleEmoji = m.morale > 75 ? '😊' : m.morale > 50 ? '😐' : m.morale > 30 ? '😟' : '😤';
+td.innerHTML += `<div class="team-member">
+<div class="team-avatar" style="background:${m.color}">${m.name[0]}</div>
+<div class="team-info">
+<div class="team-name">${m.name} ${moraleEmoji}</div>
+<div class="team-title">${m.title}</div>
+${m.assignment ? '<div class="team-assignment">→ ' + taskName + '</div>' : ''}
+<div class="mini-bars">
+<div class="mini-bar" style="background:linear-gradient(90deg,#4488ff ${m.accuracy}%,#1a1a30 ${m.accuracy}%)" title="Accuracy: ${m.accuracy}"></div>
+<div class="mini-bar" style="background:linear-gradient(90deg,#44cc88 ${m.speed}%,#1a1a30 ${m.speed}%)" title="Speed: ${m.speed}"></div>
+<div class="mini-bar" style="background:linear-gradient(90deg,#ffaa44 ${m.morale}%,#1a1a30 ${m.morale}%)" title="Morale: ${m.morale}"></div>
+</div>
+</div></div>`;
+});
+// Action buttons
+updateActionButtons();
+// Event log
+let el = document.getElementById('event-log');
+el.innerHTML = '';
+G.eventLog.slice(-10).reverse().forEach(e => {
+el.innerHTML += `<div class="event-log-item">${e}</div>`;
+});
+}
+function updateActionButtons() {
+let ab = document.getElementById('action-buttons');
+ab.innerHTML = '';
+if (G.phase === 'review') {
+ab.innerHTML += `<button class="choice-btn primary" onclick="startPhase('briefing')" style="flex:1;text-align:center;padding:10px;font-size:14px;font-weight:bold">▶ Begin Quarter ${G.quarter} →</button>`;
+}
+ab.innerHTML += `<button class="choice-btn" onclick="openCMDB()" style="flex:1;text-align:center;padding:8px;font-size:12px">📊 CMDB View</button>`;
+ab.innerHTML += `<button class="choice-btn" onclick="saveGame()" style="flex:1;text-align:center;padding:8px;font-size:12px">💾 Save Game</button>`;
+}
+
+// ===================== PHASE SYSTEM =====================
+function startPhase(phase) {
+G.phase = phase;
+updateDashboard();
+switch(phase) {
+case 'briefing': showBriefing(); break;
+case 'team': showTeamAssignment(); break;
+case 'budget': showBudget(); break;
+case 'events': processEvents(); break;
+case 'results': showResults(); break;
+case 'audit': showFinalAudit(); break;
+case 'review': break; // Dashboard is visible, player clicks "Begin Quarter" in sidebar
+}
+}
+function getBriefingIndex(quarter, total) {
+if (total === 12) return quarter - 1;
+// Map current quarter into the 12-briefing array proportionally, always use last for final
+if (quarter === total) return 11;
+return Math.min(11, Math.floor((quarter - 1) / (total - 1) * 11));
+}
+function showBriefing() {
+let bi = getBriefingIndex(G.quarter, G.totalQuarters);
+let b = BRIEFINGS[bi];
+let yearNum = Math.ceil(G.quarter / 4);
+let qNum = ((G.quarter - 1) % 4) + 1;
+let sub = `Quarter ${G.quarter} of ${G.totalQuarters} — Year ${yearNum}`;
+if (G.quarter === G.totalQuarters) sub += ' — THE FINAL AUDIT';
+else if (G.quarter === 1) sub += ' — The Honeymoon Phase';
+else if (G.quarter > G.totalQuarters * 0.66) sub += ' — The Gauntlet';
+else if (G.quarter > G.totalQuarters * 0.25) sub += ' — Reality Sets In';
+let html = `<h2>📢 ${b.speaker} Briefing</h2>
+<div class="modal-subtitle">${sub}</div>
+<div class="modal-body"><p>"${b.msg}"</p></div>`;
+// Add previous quarter summary if not Q1
+if (G.quarter > 1) {
+let pg = G.history.quarterGrades[G.history.quarterGrades.length - 1];
+html += `<div class="modal-body" style="color:#6677aa"><p>Last quarter grade: <strong style="color:#fff">${pg || '?'}</strong></p></div>`;
+}
+html += `<div class="modal-choices"><button class="choice-btn primary" onclick="closeModal();setTimeout(function(){startPhase('team')},600)">Let's get to work →</button></div>`;
+showModal(html);
+}
+function showTeamAssignment() {
+let selectedChar = null;
+let assignments = {};
+G.team.forEach(m => { m.assignment = null; });
+function render() {
+let html = `<h2>👥 Team Assignment — Q${G.quarter}</h2>
+<div class="modal-subtitle">Assign each team member to one task this quarter. Click a person, then click a task.</div>`;
+// Characters
+html += '<div style="margin-bottom:12px">';
+G.team.forEach((m, i) => {
+let isSelected = selectedChar === i;
+let isAssigned = assignments[i] !== undefined;
+html += `<div class="assign-char ${isSelected?'selected':''} ${isAssigned?'assigned':''}" onclick="window._selectChar(${i})">
+<div class="team-avatar" style="background:${m.color};width:28px;height:28px;font-size:12px">${m.name[0]}</div>
+<div><strong style="font-size:13px">${m.name}</strong> <span style="color:#6677aa;font-size:11px">${m.title}</span>
+<div style="font-size:10px;color:#556">ACC:${m.accuracy} SPD:${m.speed} MRL:${m.morale}</div>
+${isAssigned ? '<div style="font-size:10px;color:#44cc88">→ ' + TASKS.find(t=>t.id===assignments[i]).name + '</div>' : ''}
+</div></div>`;
+});
+html += '</div>';
+// Tasks
+html += '<div id="assign-grid">';
+TASKS.forEach(t => {
+let assignedTo = Object.entries(assignments).find(([k,v]) => v === t.id);
+let taken = !!assignedTo;
+let charName = taken ? G.team[parseInt(assignedTo[0])].name.split(' ')[0] : '';
+// Hint about character fit
+let hint = getTaskHint(t.id, selectedChar !== null ? G.team[selectedChar] : null);
+html += `<div class="assign-task ${taken?'taken':''}" onclick="window._selectTask('${t.id}')">
+<div class="task-name">${t.icon} ${t.name}</div>
+<div class="task-desc">${t.desc}</div>
+${hint ? '<div style="font-size:10px;color:#7faaff;margin-top:2px">'+hint+'</div>' : ''}
+${taken ? '<div class="task-assigned">✓ ' + charName + '</div>' : ''}
+</div>`;
+});
+html += '</div>';
+let allAssigned = Object.keys(assignments).length >= 4;
+html += `<div class="modal-choices" style="margin-top:16px">
+<button class="choice-btn primary" ${allAssigned?'':'disabled style="opacity:0.4;cursor:not-allowed"'} onclick="window._confirmAssignments()">
+${allAssigned ? 'Confirm Assignments →' : 'Assign all 4 team members to continue'}
+</button></div>`;
+document.getElementById('modal').innerHTML = html;
+}
+window._selectChar = function(i) {
+if (assignments[i] !== undefined) {
+delete assignments[i];
+selectedChar = null;
+} else {
+selectedChar = i;
+}
+render();
+};
+window._selectTask = function(tid) {
+if (selectedChar === null) return;
+if (Object.values(assignments).includes(tid)) return;
+assignments[selectedChar] = tid;
+selectedChar = null;
+render();
+};
+window._confirmAssignments = function() {
+Object.entries(assignments).forEach(([ci, tid]) => {
+G.team[parseInt(ci)].assignment = tid;
+});
+closeModal();
+G.phase = 'team';
+updateDashboard();
+setTimeout(function(){startPhase('budget')},600);
+};
+showModal('');
+render();
+}
+function getTaskHint(taskId, char) {
+if (!char) return '';
+let hints = {
+'inventory': char.id===1 ? '⚡ Kevin is fast but error-prone here' : char.id===0 ? '✨ Diane is thorough but slow' : '',
+'cleanup': char.id===0 ? '✨ Diane excels at data cleanup!' : char.id===1 ? '⚠️ Kevin hates this (morale ↓)' : char.id===2 ? '⚠️ Priya prefers automated work' : '',
+'license': char.id===2 ? '✨ Priya\'s specialty! Bonus effectiveness' : '',
+'procurement': char.id===3 ? '💰 TJ is cheapest for this' : '',
+'documentation': char.id===1 ? '⚠️ Kevin despises documentation (morale ↓↓)' : char.id===0 ? '✨ Diane\'s docs are impeccable' : '',
+'shadowit': char.id===2 ? '✨ Priya\'s specialty! Bonus effectiveness' : char.id===1 ? '⚡ Kevin loves field work (morale ↑)' : '',
+'requests': '',
+'patching': char.id===2 ? '✨ Priya excels here with her analysis skills' : '',
+};
+return hints[taskId] || '';
+}
+function showBudget() {
+G.budgetAlloc = {hardware:0,software:0,tools:0,training:0,reserve:0};
+let total = Math.round(G.metrics.budget);
+function render() {
+let spent = Object.values(G.budgetAlloc).reduce((a,b)=>a+b,0);
+let remaining = total - spent;
+let html = `<h2>💰 Budget Allocation — Q${G.quarter}</h2>
+<div class="modal-subtitle">Allocate your $${total.toLocaleString()} budget across spending categories.</div>
+<div id="budget-grid">`;
+const cats = [
+{key:'hardware',label:'🖥️ Hardware Refresh',desc:'Replace aging equipment. Reduces risk, boosts satisfaction.'},
+{key:'software',label:'📜 Software Licenses',desc:'Stay compliant. Underspending is a ticking time bomb.'},
+{key:'tools',label:'🔧 ITAM Tools & Automation',desc:'Better discovery and scanning. Reduces manual errors over time.'},
+{key:'training',label:'📚 Training',desc:'Improve team skills. Makes everyone more effective.'},
+{key:'reserve',label:'🏦 Emergency Reserve',desc:'Unspent funds for surprise costs. Events can drain budget fast.'},
+];
+cats.forEach(c => {
+let max = Math.min(total, remaining + G.budgetAlloc[c.key]);
+let val = G.budgetAlloc[c.key];
+html += `<div class="budget-row">
+<div class="budget-label">${c.label}<div style="font-size:10px;color:#556">${c.desc}</div></div>
+<div class="budget-slider"><input type="range" min="0" max="${Math.floor(max/1000)*1000}" step="1000" value="${val}" oninput="window._setBudget('${c.key}',this.value)"></div>
+<div class="budget-val">$${val.toLocaleString()}</div>
+</div>`;
+});
+html += '</div>';
+let color = remaining >= 0 ? '#44cc88' : '#cc4444';
+html += `<div id="budget-remaining" style="color:${color};border:1px solid ${color}">Remaining: $${remaining.toLocaleString()}</div>`;
+html += `<div class="modal-choices" style="margin-top:12px">
+<button class="choice-btn" onclick="window._presetBudget('balanced')">Balanced</button>
+<button class="choice-btn" onclick="window._presetBudget('data')">Data Focus</button>
+<button class="choice-btn" onclick="window._presetBudget('hardware')">Hardware Focus</button>
+<button class="choice-btn primary" ${remaining>=0?'':'disabled style="opacity:0.4"'} onclick="window._confirmBudget()">Confirm Budget →</button>
+</div>`;
+document.getElementById('modal').innerHTML = html;
+}
+window._setBudget = function(key, val) {
+val = parseInt(val);
+G.budgetAlloc[key] = val;
+render();
+};
+window._presetBudget = function(preset) {
+let t = total;
+if (preset === 'balanced') {
+G.budgetAlloc = {hardware:Math.floor(t*0.25/1000)*1000,software:Math.floor(t*0.2/1000)*1000,tools:Math.floor(t*0.15/1000)*1000,training:Math.floor(t*0.15/1000)*1000,reserve:Math.floor(t*0.15/1000)*1000};
+} else if (preset === 'data') {
+G.budgetAlloc = {hardware:Math.floor(t*0.1/1000)*1000,software:Math.floor(t*0.25/1000)*1000,tools:Math.floor(t*0.3/1000)*1000,training:Math.floor(t*0.2/1000)*1000,reserve:Math.floor(t*0.1/1000)*1000};
+} else if (preset === 'hardware') {
+G.budgetAlloc = {hardware:Math.floor(t*0.4/1000)*1000,software:Math.floor(t*0.2/1000)*1000,tools:Math.floor(t*0.1/1000)*1000,training:Math.floor(t*0.1/1000)*1000,reserve:Math.floor(t*0.15/1000)*1000};
+}
+render();
+};
+window._confirmBudget = function() {
+let spent = Object.values(G.budgetAlloc).reduce((a,b)=>a+b,0);
+if (spent > total) return;
+G.metrics.budget -= spent;
+closeModal();
+G.phase = 'budget';
+updateDashboard();
+setTimeout(function(){startPhase('events')},600);
+};
+showModal('');
+render();
+}
+function processEvents() {
+let pct = G.quarter / G.totalQuarters;
+let tier = pct <= 0.3 ? 1 : pct <= 0.65 ? 2 : 3;
+let pool;
+if (tier === 1) pool = TIER1_EVENTS;
+else if (tier === 2) pool = [...TIER2_EVENTS, ...TIER1_EVENTS.slice(0,2)];
+else pool = [...TIER3_EVENTS, ...TIER2_EVENTS.slice(0,2)];
+let numEvents = tier === 1 ? 1 + (Math.random() > 0.6 ? 1 : 0) : tier === 2 ? 1 + (Math.random() > 0.4 ? 1 : 0) : 2 + (Math.random() > 0.5 ? 1 : 0);
+// Shuffle and pick
+let shuffled = pool.sort(() => Math.random() - 0.5);
+G.pendingEvents = shuffled.slice(0, Math.min(numEvents, shuffled.length));
+G.currentEventIdx = 0;
+// Check for character quirk events
+checkCharacterQuirkEvents();
+showNextEvent();
+}
+function checkCharacterQuirkEvents() {
+// Diane: angry if cleanup skipped 2+ quarters
+let cleanupDone = G.team.some(m => m.assignment === 'cleanup');
+if (!cleanupDone) G.history.cleanupGap++;
+else G.history.cleanupGap = 0;
+if (G.history.cleanupGap >= 2 && G.team[0].morale > 20) {
+G.team[0].morale -= 10;
+G.eventLog.push('📧 Diane sent a passive-aggressive email about skipping CMDB cleanup.');
+addSpeechBubble(0, 'We SKIPPED cleanup AGAIN?!');
+}
+// Kevin: morale from assignments
+let kevin = G.team[1];
+if (kevin.assignment === 'inventory' || kevin.assignment === 'shadowit') kevin.morale = Math.min(100, kevin.morale + 5);
+if (kevin.assignment === 'documentation' || kevin.assignment === 'cleanup') kevin.morale = Math.max(10, kevin.morale - 10);
+// Priya: morale from tools investment
+let priya = G.team[2];
+if (G.budgetAlloc.tools > 5000) priya.morale = Math.min(100, priya.morale + 5);
+if (priya.assignment === 'inventory' || priya.assignment === 'requests') priya.morale = Math.max(10, priya.morale - 3);
+// Priya: poaching risk every 3 quarters
+G.history.priyaOffer++;
+if (G.history.priyaOffer >= 3) {
+G.history.priyaOffer = 0;
+if (G.budgetAlloc.training < 3000 && G.budgetAlloc.tools < 5000) {
+G.pendingEvents.push({
+id:'priya_poached',title:'Priya Got an Offer',
+desc:'LinkedIn recruiter strikes again. Priya has a competing offer for 30% more salary. She\'ll stay if you invest in tools or training — otherwise she\'s considering it seriously.',
+quotes:[{s:'Priya',t:'"Look, I love the team. But they\'re offering me a tool budget that isn\'t a sad joke."'}],
+choices:[
+{text:'Promise more tool investment next quarter',fx:{execConfidence:-2}},
+{text:'Counter with a $5K retention bonus',fx:{budget:-5000}},
+{text:'Let her make her decision (risky)',fx:function(g){if(g.team[2].morale>60)return{};g.team[2].morale-=15;return{cmdbAccuracy:-3};}},
+]});
+}
+}
+// TJ: moments
+let tj = G.team[3];
+let tjMomentChance = G.history.tjTraining > 4 ? 0.05 : G.history.tjTraining > 2 ? 0.1 : 0.2;
+if (Math.random() < tjMomentChance && G.quarter > 1) {
+let moments = [
+{title:'TJ Moment: The Great Reimage',desc:'TJ accidentally reimaged the CFO\'s laptop instead of the test machine. The CFO\'s face is... memorable.',fx:{execConfidence:-8,employeeSatisfaction:-3}},
+{title:'TJ Moment: Bulk Order Oops',desc:'TJ ordered 50 monitors instead of 5. The warehouse is calling. They sound confused.',fx:{budget:-8000}},
+{title:'TJ Moment: Admin Access',desc:'TJ granted admin access to the entire printer fleet. To an intern. Who is also TJ.',fx:{riskScore:8}},
+];
+let moment = moments[Math.floor(Math.random() * moments.length)];
+G.pendingEvents.push({
+id:'tj_moment',title:moment.title,desc:moment.desc,
+quotes:[{s:'TJ',t:'"I am SO sorry. But also, did you know our printer fleet has an API? Because I do now."'}],
+choices:[
+{text:'Fix it and use it as a training moment',fx:{...moment.fx}},
+{text:'Sigh deeply and add it to the incident log',fx:{...moment.fx, riskScore:(moment.fx.riskScore||0)+2}},
+]});
+}
+// TJ: training improvement
+if (G.budgetAlloc.training >= 3000) {
+G.history.tjTraining++;
+if (G.history.tjTraining <= 8) {
+tj.accuracy = Math.min(90, tj.accuracy + 3);
+tj.speed = Math.min(85, tj.speed + 3);
+}
+}
+}
+function showNextEvent() {
+if (G.currentEventIdx >= G.pendingEvents.length) {
+closeModal();
+startPhase('results');
+return;
+}
+let ev = G.pendingEvents[G.currentEventIdx];
+let html = `<h2>⚡ ${ev.title}</h2>
+<div class="modal-subtitle">Event ${G.currentEventIdx + 1} of ${G.pendingEvents.length}</div>
+<div class="modal-body"><p>${ev.desc}</p></div>`;
+if (ev.quotes) {
+ev.quotes.forEach(q => {
+html += `<div class="character-quote"><span class="speaker">${q.s}:</span> ${q.t}</div>`;
+});
+}
+html += '<div class="modal-choices">';
+ev.choices.forEach((c, i) => {
+html += `<button class="choice-btn" onclick="window._pickChoice(${i})">${c.text}</button>`;
+});
+html += '</div>';
+showModal(html);
+window._pickChoice = function(ci) {
+let choice = ev.choices[ci];
+let fx = typeof choice.fx === 'function' ? choice.fx(G) : choice.fx;
+applyEffects(fx);
+G.eventLog.push('⚡ ' + ev.title + ': ' + choice.text.substring(0, 50));
+G.currentEventIdx++;
+// Show outcome screen
+let ohtml = `<h2>📋 Outcome: ${ev.title}</h2>
+<div class="modal-subtitle">You chose: ${choice.text}</div>
+<div class="modal-body">`;
+let fxLabels = {budget:'Budget',cmdbAccuracy:'CMDB Accuracy',riskScore:'Risk Score',employeeSatisfaction:'Employee Satisfaction',execConfidence:'Exec Confidence',revenueImpact:'Revenue Impact'};
+let hasFx = false;
+if (fx) {
+Object.entries(fx).forEach(([k,v]) => {
+if (!(k in fxLabels)) return;
+hasFx = true;
+let isGood = k === 'riskScore' ? v < 0 : v > 0;
+let cls = isGood ? 'positive' : 'negative';
+let sign = v > 0 ? '+' : '';
+let fmt = k === 'revenueImpact' ? v.toFixed(2) : k === 'budget' ? '$' + Math.round(v).toLocaleString() : Math.round(v);
+ohtml += `<div class="results-metric"><span>${fxLabels[k]}</span><span class="change ${cls}" style="font-size:15px">${sign}${fmt}</span></div>`;
+});
+}
+if (!hasFx) ohtml += '<p style="color:#6677aa">No immediate measurable impact... but consequences may follow.</p>';
+ohtml += '</div>';
+// Flavor text based on outcome
+let goodCount = 0, badCount = 0;
+if (fx) Object.entries(fx).forEach(([k,v]) => { if (k in fxLabels) { let g = k==='riskScore'?v<0:v>0; if(g) goodCount++; else badCount++; }});
+if (goodCount > badCount) ohtml += '<div style="color:#44cc88;text-align:center;margin:8px;font-size:13px">A solid decision. The team approves.</div>';
+else if (badCount > goodCount) ohtml += '<div style="color:#cc8844;text-align:center;margin:8px;font-size:13px">That one stung. But sometimes there are no good options.</div>';
+else ohtml += '<div style="color:#8899bb;text-align:center;margin:8px;font-size:13px">A tradeoff. Time will tell if it was worth it.</div>';
+ohtml += `<div class="modal-choices"><button class="choice-btn primary" onclick="window._nextAfterOutcome()">Continue →</button></div>`;
+showModal(ohtml);
+updateDashboard();
+window._nextAfterOutcome = function() { showNextEvent(); };
+};
+}
+function applyEffects(fx) {
+if (!fx) return;
+Object.entries(fx).forEach(([key, val]) => {
+if (key in G.metrics) {
+G.metrics[key] += val;
+if (val > 0 && key !== 'riskScore') addFloatingText('+' + (key==='revenueImpact'?val.toFixed(2):Math.round(val)) + ' ' + key, '#44cc88');
+if (val < 0 && key !== 'riskScore') addFloatingText(Math.round(val) + ' ' + key, '#cc4444');
+if (key === 'riskScore' && val > 0) addFloatingText('+' + Math.round(val) + ' risk!', '#cc4444');
+if (key === 'riskScore' && val < 0) addFloatingText(Math.round(val) + ' risk', '#44cc88');
+}
+});
+clampMetrics();
+}
+function clampMetrics() {
+let m = G.metrics;
+m.cmdbAccuracy = Math.max(0, Math.min(100, m.cmdbAccuracy));
+m.riskScore = Math.max(0, Math.min(100, m.riskScore));
+m.employeeSatisfaction = Math.max(0, Math.min(100, m.employeeSatisfaction));
+m.execConfidence = Math.max(0, Math.min(100, m.execConfidence));
+m.revenueImpact = Math.max(0.5, Math.min(1.5, m.revenueImpact));
+m.budget = Math.max(-20000, m.budget);
+}
+function showResults() {
+let beforeMetrics = {};
+Object.keys(G.metrics).forEach(k => { beforeMetrics[k] = G.metrics[k]; });
+// Apply team task results
+G.team.forEach(m => applyTaskResults(m));
+// Apply budget spending effects
+applyBudgetEffects();
+// Natural decay
+G.metrics.cmdbAccuracy -= (3 + Math.random() * 2);
+G.metrics.riskScore += (1 + Math.random() * 2);
+G.metrics.employeeSatisfaction -= (1 + Math.random());
+// Process connections bonus
+if (G.processConnections > 3) {
+G.metrics.cmdbAccuracy += G.processConnections * 0.5;
+G.metrics.riskScore -= G.processConnections * 0.3;
+}
+// Clutter
+if (G.history.cleanupGap > 1) G.office.clutter = Math.min(100, G.office.clutter + 10);
+else G.office.clutter = Math.max(0, G.office.clutter - 5);
+// Office growth
+G.office.desks = Math.min(20, 4 + Math.floor(G.quarter * 1.5));
+clampMetrics();
+// Track history
+G.history.cmdbHistory.push(Math.round(G.metrics.cmdbAccuracy));
+G.history.riskHistory.push(Math.round(G.metrics.riskScore));
+// Calculate grade
+let grade = calcQuarterGrade();
+G.history.quarterGrades.push(grade);
+// Calculate next quarter budget
+let nextBudget = G.quarterBudgetBase * (G.metrics.execConfidence / 60) * G.metrics.revenueImpact;
+nextBudget = Math.max(15000, Math.min(80000, nextBudget));
+// Revenue impact adjustment
+G.metrics.revenueImpact += (G.metrics.cmdbAccuracy - 65) * 0.001;
+G.metrics.revenueImpact += (50 - G.metrics.riskScore) * 0.001;
+G.metrics.revenueImpact = Math.max(0.5, Math.min(1.5, G.metrics.revenueImpact));
+// Store for dashboard display
+G.prevMetrics = beforeMetrics;
+// Build results modal
+let changes = {};
+Object.keys(G.metrics).forEach(k => {
+changes[k] = G.metrics[k] - beforeMetrics[k];
+});
+let gradeClass = grade <= 'B' ? 'grade-A' : grade <= 'C' ? 'grade-B' : grade <= 'D' ? 'grade-C' : 'grade-F';
+let html = `<h2>📊 Quarter ${G.quarter} Results</h2>
+<div class="modal-subtitle">Performance Summary</div>
+<div class="grade-display ${gradeClass}">${grade}</div>
+<div class="modal-body">`;
+const labels = {budget:'Budget',cmdbAccuracy:'CMDB Accuracy',riskScore:'Risk Score',employeeSatisfaction:'Employee Satisfaction',execConfidence:'Exec Confidence',revenueImpact:'Revenue Impact'};
+Object.entries(changes).forEach(([k, v]) => {
+let isGood = k === 'riskScore' ? v < 0 : v > 0;
+let cls = Math.abs(v) < 0.5 ? '' : isGood ? 'positive' : 'negative';
+let fmt = k === 'revenueImpact' ? v.toFixed(2) : k === 'budget' ? '$'+Math.round(v).toLocaleString() : Math.round(v);
+let sign = v > 0 ? '+' : '';
+html += `<div class="results-metric"><span>${labels[k]}</span><span class="change ${cls}">${sign}${fmt}</span></div>`;
+});
+html += '</div>';
+// Character comments
+let comments = getQuarterComments(grade);
+comments.forEach(c => {
+html += `<div class="character-quote"><span class="speaker">${c.s}:</span> ${c.t}</div>`;
+});
+// Trophies
+if (G.metrics.cmdbAccuracy > 85 && !G.office.trophies.includes('ACC')) { G.office.trophies.push('ACC'); html += '<div style="color:#ffd700;text-align:center;margin:8px">🏆 Trophy earned: Data Accuracy Excellence!</div>'; }
+if (G.metrics.riskScore < 20 && !G.office.trophies.includes('RSK')) { G.office.trophies.push('RSK'); html += '<div style="color:#ffd700;text-align:center;margin:8px">🏆 Trophy earned: Risk Management Star!</div>'; }
+if (G.history.docsDone >= 4 && !G.office.trophies.includes('DOC')) { G.office.trophies.push('DOC'); html += '<div style="color:#ffd700;text-align:center;margin:8px">🏆 Trophy earned: Documentation Hero!</div>'; }
+if (G.quarter < G.totalQuarters) {
+G.metrics.budget += Math.round(nextBudget);
+html += `<div style="text-align:center;color:#44cc88;margin:8px">Next quarter budget: $${Math.round(nextBudget).toLocaleString()}</div>`;
+html += `<div class="modal-choices"><button class="choice-btn primary" onclick="closeModal();advanceQuarter()">Review Dashboard & Continue →</button></div>`;
+} else {
+html += `<div class="modal-choices"><button class="choice-btn primary" onclick="closeModal();startPhase('audit')">Proceed to Final Audit →</button></div>`;
+}
+showModal(html);
+updateDashboard();
+}
+function applyTaskResults(member) {
+if (!member.assignment) return;
+let eff = (member.accuracy * 0.5 + member.speed * 0.3 + member.morale * 0.2) / 100;
+let comp = Math.min(1, member.speed / 80);
+let errRate = Math.max(0, (100 - member.accuracy) / 200);
+// Character-specific bonuses
+let bonus = 1.0;
+if (member.id === 0 && (member.assignment === 'cleanup' || member.assignment === 'inventory')) bonus = 1.4;
+if (member.id === 1) { comp = 1.0; errRate *= 1.5; } // Kevin always finishes but more errors
+if (member.id === 2 && (member.assignment === 'license' || member.assignment === 'shadowit' || member.assignment === 'patching')) bonus = 1.5;
+if (member.id === 3) bonus *= (0.8 + G.history.tjTraining * 0.05); // TJ improves with training
+switch(member.assignment) {
+case 'inventory':
+G.metrics.cmdbAccuracy += 5 * eff * comp * bonus;
+G.metrics.cmdbAccuracy -= 5 * errRate;
+G.metrics.riskScore -= 3 * eff * bonus;
+G.history.auditsDone++;
+G.cmdbUnknown = Math.max(0, G.cmdbUnknown - Math.floor(4 * eff * bonus));
+break;
+case 'cleanup':
+G.metrics.cmdbAccuracy += 8 * eff * comp * bonus;
+G.metrics.riskScore -= 2 * eff;
+G.cmdbErrors = Math.max(0, G.cmdbErrors - Math.floor(8 * eff * comp * bonus));
+G.cmdbDuplicates = Math.max(0, G.cmdbDuplicates - Math.floor(6 * eff * comp * bonus));
+break;
+case 'license':
+G.metrics.riskScore -= 5 * eff * bonus;
+let savings = Math.floor(5000 * eff * bonus * comp);
+G.metrics.budget += savings;
+G.metrics.cmdbAccuracy += 2 * eff * bonus;
+if (savings > 3000) G.eventLog.push('💰 License reconciliation saved $' + savings.toLocaleString());
+break;
+case 'procurement':
+G.metrics.employeeSatisfaction += 5 * eff;
+G.metrics.execConfidence += 2 * eff;
+G.processConnections += 0.3;
+break;
+case 'documentation':
+G.history.docsDone++;
+G.processConnections += 0.5;
+G.metrics.riskScore -= 1;
+G.metrics.cmdbAccuracy += 1;
+break;
+case 'shadowit':
+G.metrics.riskScore -= 5 * eff * bonus;
+G.metrics.cmdbAccuracy += 3 * eff * bonus;
+G.cmdbUnknown = Math.max(0, G.cmdbUnknown - Math.floor(5 * eff * bonus));
+if (eff * bonus > 0.8) G.eventLog.push('🔍 Shadow IT sweep found ' + Math.floor(3 + Math.random()*5) + ' unauthorized assets');
+break;
+case 'requests':
+G.metrics.employeeSatisfaction += 8 * eff;
+G.metrics.cmdbAccuracy -= errRate * 3;
+break;
+case 'patching':
+G.metrics.riskScore -= 5 * eff * bonus;
+G.metrics.cmdbAccuracy += 1;
+break;
+}
+// Morale decay for overwork
+member.morale = Math.max(10, member.morale - 2);
+// Morale recovery if well-matched
+if (member.id === 1 && (member.assignment === 'inventory' || member.assignment === 'shadowit')) member.morale = Math.min(100, member.morale + 4);
+clampMetrics();
+}
+function applyBudgetEffects() {
+let a = G.budgetAlloc;
+// Hardware refresh
+if (a.hardware > 0) {
+G.metrics.employeeSatisfaction += a.hardware / 3000;
+G.metrics.riskScore -= a.hardware / 5000;
+G.cmdbTotal += Math.floor(a.hardware / 2000);
+}
+// Software licenses
+if (a.software > 0) {
+G.metrics.riskScore -= a.software / 2500;
+}
+// Tools & automation
+if (a.tools > 0) {
+G.history.toolSpent += a.tools;
+G.processConnections += a.tools / 8000;
+G.cmdbErrors = Math.max(0, G.cmdbErrors - Math.floor(a.tools / 3000));
+// Compound benefit
+let toolBonus = Math.min(5, G.history.toolSpent / 10000);
+G.metrics.cmdbAccuracy += toolBonus * 0.5;
+}
+// Training
+if (a.training > 0) {
+G.history.trainingSpent += a.training;
+G.team.forEach(m => {
+m.morale = Math.min(100, m.morale + a.training / 2000);
+});
+}
+}
+function calcQuarterGrade() {
+let score = 0;
+score += G.metrics.cmdbAccuracy * 0.25;
+score += (100 - G.metrics.riskScore) * 0.2;
+score += G.metrics.employeeSatisfaction * 0.15;
+score += G.metrics.execConfidence * 0.2;
+score += G.metrics.revenueImpact * 50 * 0.2;
+if (score >= 85) return 'A';
+if (score >= 70) return 'B';
+if (score >= 55) return 'C';
+if (score >= 40) return 'D';
+return 'F';
+}
+function getQuarterComments(grade) {
+let comments = [];
+if (grade === 'A') {
+comments.push({s:'Diane',t:'"Acceptable. But there\'s always room for improvement. See my 23-page report."'});
+comments.push({s:'TJ',t:'"We got an A?! This is the best day of my professional career! All 14 months of it!"'});
+} else if (grade === 'B') {
+comments.push({s:'Priya',t:'"Not bad. My models predicted a B. I\'m never wrong. Except that one time."'});
+comments.push({s:'Kevin',t:'"B is basically an A minus. I\'ll take it!"'});
+} else if (grade === 'C') {
+comments.push({s:'Diane',t:'"A C. A C! Do you know what a C means? It means MEDIOCRITY. I did not spend 15 years in ITAM for a C."'});
+comments.push({s:'Kevin',t:'"C\'s get degrees! Am I right? ...Why is Diane staring at me like that?"'});
+} else {
+comments.push({s:'Priya',t:'"I\'ve updated my LinkedIn. Just... as a precaution."'});
+comments.push({s:'TJ',t:'"Is this bad? This feels bad. Should I be worried? I\'m worried."'});
+}
+return comments;
+}
+function advanceQuarter() {
+G.quarter++;
+G.prevMetrics = null;
+G.team.forEach(m => { m.assignment = null; });
+if (G.quarter > G.totalQuarters) {
+startPhase('audit');
+} else {
+G.phase = 'review';
+updateDashboard();
+}
+}
+
+// ===================== FINAL AUDIT =====================
+function showFinalAudit() {
+// Calculate audit dimensions
+let dims = {};
+// Asset Inventory Completeness
+let avgAcc = G.history.cmdbHistory.reduce((a,b)=>a+b,0) / G.history.cmdbHistory.length;
+dims.inventory = Math.min(100, avgAcc);
+// Risk Management Maturity
+let avgRisk = G.history.riskHistory.reduce((a,b)=>a+b,0) / G.history.riskHistory.length;
+dims.risk = Math.min(100, Math.max(0, 100 - avgRisk));
+// Process Documentation
+dims.documentation = Math.min(100, (G.history.docsDone / G.totalQuarters) * 100 * 1.2);
+// Data Integrity
+let errorRatio = (G.cmdbErrors + G.cmdbDuplicates) / Math.max(1, G.cmdbTotal);
+dims.dataIntegrity = Math.min(100, Math.max(0, (1 - errorRatio) * 100));
+// Incident Response
+let incAvg = G.history.incidentScores.length > 0 ? G.history.incidentScores.reduce((a,b)=>a+b,0)/G.history.incidentScores.length : 50;
+dims.incidentResponse = Math.min(100, G.metrics.cmdbAccuracy * 0.5 + (100 - G.metrics.riskScore) * 0.3 + incAvg * 0.2);
+// Continuous Improvement
+dims.improvement = Math.min(100, (G.history.toolSpent / 50000) * 50 + (G.history.trainingSpent / 30000) * 50);
+let finalScore = Object.values(dims).reduce((a,b)=>a+b,0) / Object.keys(dims).length;
+let rating, ratingColor, endingText, dianeQuote;
+if (finalScore >= 90) {
+rating = 'PLATINUM'; ratingColor = '#e5e4e2';
+endingText = 'Your ITAM program is a model for the industry. The auditor asks if you do consulting. Diane cries tears of joy — the first emotion anyone has ever seen from her. Kevin takes credit in the company newsletter. Priya already has three job offers from companies that want what you built. TJ writes a heartfelt LinkedIn post that goes viral. The CEO gives you a raise. You earned it.';
+dianeQuote = '"I... I have nothing to correct. This is... *sniff* ...this is the most beautiful day of my career."';
+} else if (finalScore >= 75) {
+rating = 'GOLD'; ratingColor = '#ffd700';
+endingText = 'Certified with minor findings. The boring work paid off. Your CEO personally thanks you in a company all-hands. Diane has a small, almost imperceptible smile. Kevin is already telling the story at the bar. You\'ve built something solid. The company is better for it.';
+dianeQuote = '"Minor findings. I can work with minor findings. I already have a remediation plan. It\'s 34 pages."';
+} else if (finalScore >= 60) {
+rating = 'SILVER'; ratingColor = '#c0c0c0';
+endingText = 'Certified with significant observations. You pass, but barely. The auditor gives you a look. You know the look. It\'s the "I could have failed you but I chose mercy" look. There\'s a lot of remediation work ahead. But hey — you passed.';
+dianeQuote = '"Significant observations. SIGNIFICANT. OBSERVATIONS. I need to be alone with my spreadsheets for a while."';
+} else if (finalScore >= 40) {
+rating = 'BRONZE'; ratingColor = '#cd7f32';
+endingText = 'Certification denied. Major nonconformities. The auditor\'s report is 47 pages long. The CEO calls an emergency meeting. Your LinkedIn starts getting recruiter messages — from companies that want someone who knows what NOT to do. Kevin sends a Teams message: "lol that was rough." Diane has not spoken in 3 days.';
+dianeQuote = '"..." *Diane\'s desk is empty the next Monday*';
+} else {
+rating = 'GAME OVER'; ratingColor = '#cc4444';
+endingText = 'The auditor left early. That\'s never a good sign. Your badge stops working the next Monday. Security walks you out with a box of your things. In the elevator, you pass the new IT Asset Manager. They look so hopeful. So naive. You want to warn them. But the words won\'t come. Kevin sends you a Teams message: "F".';
+dianeQuote = '"I submitted my resignation before the auditor finished. I have standards."';
+}
+let html = `<h2>🏛️ ISO 27001 Certification Audit</h2>
+<div class="modal-subtitle">Final Assessment — All dimensions evaluated</div>
+<div class="modal-body">`;
+const dimLabels = {inventory:'Asset Inventory Completeness',risk:'Risk Management Maturity',documentation:'Process Documentation',dataIntegrity:'Data Integrity',incidentResponse:'Incident Response Capability',improvement:'Continuous Improvement'};
+Object.entries(dims).forEach(([k,v]) => {
+let color = v >= 75 ? '#44cc88' : v >= 50 ? '#cccc44' : '#cc4444';
+html += `<div class="audit-dim"><span class="dim-name">${dimLabels[k]}</span><span class="dim-score" style="color:${color}">${Math.round(v)}%</span></div>`;
+});
+html += '</div>';
+html += `<div style="text-align:center;margin:16px 0">
+<div style="font-size:14px;color:#6677aa">Overall Audit Score</div>
+<div style="font-size:48px;font-weight:bold;color:${ratingColor}">${Math.round(finalScore)}%</div>
+<div style="font-size:24px;font-weight:bold;color:${ratingColor};margin-top:4px">${rating}</div>
+</div>`;
+html += `<div class="ending-text">${endingText}</div>`;
+html += `<div class="character-quote"><span class="speaker">Diane:</span> ${dianeQuote}</div>`;
+// Post-game stats
+html += `<div style="margin-top:16px;padding:12px;background:#0f0f20;border-radius:8px">
+<h3 style="color:#8899bb;font-size:13px;margin-bottom:8px">GAME STATS</h3>
+<div style="font-size:12px;color:#6677aa;line-height:1.8">
+Quarters Played: ${G.quarter}<br>
+Total Audits Done: ${G.history.auditsDone}<br>
+Documentation Quarters: ${G.history.docsDone}<br>
+Training Investment: $${G.history.trainingSpent.toLocaleString()}<br>
+Tool Investment: $${G.history.toolSpent.toLocaleString()}<br>
+Quarter Grades: ${G.history.quarterGrades.join(', ')}<br>
+Final CMDB Accuracy: ${Math.round(G.metrics.cmdbAccuracy)}%<br>
+Final Risk Score: ${Math.round(G.metrics.riskScore)}<br>
+Process Connections: ${G.processConnections.toFixed(1)}<br>
+</div></div>`;
+html += `<div class="modal-choices" style="margin-top:16px">
+<button class="choice-btn primary" onclick="closeModal();showTitleScreen()">Play Again</button>
+</div>`;
+// Save high score
+let hs = JSON.parse(localStorage.getItem('itam_highscore') || '0');
+if (finalScore > hs) {
+localStorage.setItem('itam_highscore', JSON.stringify(Math.round(finalScore)));
+html = html.replace('</div></div><div class="modal-choices"', `<div style="color:#ffd700;text-align:center;font-weight:bold;margin-top:8px">🏆 NEW HIGH SCORE!</div></div></div><div class="modal-choices"`);
+}
+showModal(html);
+G.gameOver = true;
+}
+
+// ===================== CMDB VIEW =====================
+function openCMDB() {
+let ov = document.getElementById('cmdb-overlay');
+let cv = document.getElementById('cmdb-view');
+let html = `<h2>📊 CMDB Asset Database</h2>
+<div style="display:flex;gap:16px;margin:12px 0;font-size:13px">
+<span style="color:#44cc88">Total: ${G.cmdbTotal}</span>
+<span style="color:#cc4444">Errors: ${G.cmdbErrors}</span>
+<span style="color:#dddd44">Duplicates: ${G.cmdbDuplicates}</span>
+<span style="color:#888">Unknown: ${G.cmdbUnknown}</span>
+<span style="flex:1"></span>
+<button onclick="closeCMDB()" style="background:none;border:1px solid #555;color:#aaa;padding:4px 12px;border-radius:4px;cursor:pointer">Close</button>
+</div>
+<table class="cmdb-table"><thead><tr><th>ID</th><th>Type</th><th>Serial</th><th>Location</th><th>User</th><th>Status</th><th>Last Verified</th></tr></thead><tbody>`;
+// Generate mock CMDB data
+let seed = G.quarter * 137;
+for (let i = 0; i < Math.min(G.cmdbTotal, 50); i++) {
+seed = (seed * 31 + 7) % 10000;
+let isError = i < G.cmdbErrors;
+let isDup = !isError && i < G.cmdbErrors + G.cmdbDuplicates;
+let isUnknown = !isError && !isDup && i < G.cmdbErrors + G.cmdbDuplicates + G.cmdbUnknown;
+let cls = isError ? 'error' : isDup ? 'duplicate' : isUnknown ? 'unknown' : '';
+let type = ASSET_TYPES[seed % ASSET_TYPES.length];
+let serial = isError ? 'ERR-' + (seed%999) + '???' : 'SN-' + (10000 + seed%90000);
+let loc = isUnknown ? 'Unknown' : LOCATIONS[seed % LOCATIONS.length];
+let user = isUnknown ? '???' : NAMES_POOL[seed % NAMES_POOL.length];
+let status = isError ? 'ERROR' : STATUSES[seed % STATUSES.length];
+let verified = isError ? 'Never' : isUnknown ? 'Unknown' : 'Q' + Math.max(1, G.quarter - (seed%4));
+let dupNote = isDup ? ' ⚠ DUPLICATE' : '';
+html += `<tr class="${cls}"><td>AST-${1000+i}</td><td>${type}</td><td>${serial}</td><td>${loc}</td><td>${user}</td><td>${status}${dupNote}</td><td>${verified}</td></tr>`;
+seed = (seed * 31 + 7) % 10000;
+}
+html += '</tbody></table>';
+cv.innerHTML = html;
+ov.classList.add('active');
+}
+function closeCMDB() {
+document.getElementById('cmdb-overlay').classList.remove('active');
+}
+
+// ===================== SAVE/LOAD =====================
+function saveGame() {
+localStorage.setItem('itam_save', JSON.stringify(G));
+G.eventLog.push('💾 Game saved.');
+updateDashboard();
+addFloatingText('Game Saved!', '#44cc88');
+}
+function loadGame() {
+let data = localStorage.getItem('itam_save');
+if (!data) { alert('No saved game found!'); return; }
+G = JSON.parse(data);
+if (!G.totalQuarters) G.totalQuarters = 12;
+G.started = true;
+document.getElementById('title-screen').style.display = 'none';
+let gc2 = document.getElementById('game-container');
+gc2.style.display = 'flex';
+gc2.classList.add('active');
+initCanvas();
+initTicker();
+updateDashboard();
+startPhase(G.phase);
+}
+
+// ===================== MODAL =====================
+function showModal(html) {
+document.getElementById('modal').innerHTML = html;
+document.getElementById('modal-overlay').classList.add('active');
+}
+function closeModal() {
+document.getElementById('modal-overlay').classList.remove('active');
+}
+
+// ===================== TICKER =====================
+function initTicker() {
+let tc = document.getElementById('ticker-content');
+let headlines = [...TICKER_HEADLINES].sort(() => Math.random() - 0.5);
+tc.textContent = headlines.map(h => '★ ' + h + ' ').join('    ');
+}
+
+// ===================== GAME START =====================
+function showTitleScreen() {
+G = null;
+if (animFrame) cancelAnimationFrame(animFrame);
+animFrame = null;
+document.getElementById('game-container').style.display = 'none';
+document.getElementById('game-container').classList.remove('active');
+document.getElementById('title-screen').style.display = 'flex';
+closeModal();
+let hs = localStorage.getItem('itam_highscore');
+let hsd = document.getElementById('highscore-display');
+if (hs && hsd) hsd.textContent = 'High Score: ' + JSON.parse(hs) + '%';
+}
+function startNewGame(numQuarters) {
+G = newGameState(numQuarters);
+G.started = true;
+document.getElementById('title-screen').style.display = 'none';
+let gc = document.getElementById('game-container');
+gc.style.display = 'flex';
+gc.classList.add('active');
+initCanvas();
+initTicker();
+updateDashboard();
+startPhase('briefing');
+}
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+initTicker();
+});
+</script>
+</body>
+</html>
