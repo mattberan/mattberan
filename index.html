@@ -176,6 +176,53 @@
   .theme-switch input:checked + .slider { background: var(--accent); }
   .theme-switch input:checked + .slider::before { transform: translateX(18px); }
 
+  /* ========== STICKY NAV ========== */
+  .sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .sticky-nav::-webkit-scrollbar { display: none; }
+  .sticky-nav { scrollbar-width: none; }
+
+  .sticky-nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    list-style: none;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 10px 16px;
+    white-space: nowrap;
+  }
+
+  .sticky-nav a {
+    display: block;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .sticky-nav a:hover {
+    color: var(--accent);
+    background: var(--accent-subtle);
+  }
+
+  .sticky-nav a.active {
+    color: var(--accent);
+    background: var(--accent-subtle);
+  }
+
   /* ========== HEADER ========== */
   header {
     max-width: 760px;
@@ -307,7 +354,7 @@
     padding: 0 24px 80px;
   }
 
-  section { margin-bottom: 56px; }
+  section { margin-bottom: 56px; scroll-margin-top: 52px; }
 
   .section-header {
     display: flex;
@@ -622,6 +669,8 @@
     .community-grid { grid-template-columns: repeat(2, 1fr); }
     .cta { padding: 10px 20px; font-size: 0.9rem; }
     .social-row { flex-wrap: wrap; gap: 12px; }
+    .sticky-nav ul { justify-content: flex-start; gap: 2px; }
+    .sticky-nav a { padding: 6px 8px; font-size: 0.72rem; }
   }
 </style>
 </head>
@@ -671,10 +720,23 @@
   </div>
 </header>
 
+<nav class="sticky-nav">
+  <ul>
+    <li><a href="#communities">Communities</a></li>
+    <li><a href="#company">Company</a></li>
+    <li><a href="#presentations">Speaking</a></li>
+    <li><a href="#videos">Videos</a></li>
+    <li><a href="#podcast">Podcast</a></li>
+    <li><a href="#resources">Resources</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#links">Links</a></li>
+  </ul>
+</nav>
+
 <main>
 
   <!-- COMMUNITIES -->
-  <section class="fade-in">
+  <section id="communities" class="fade-in">
     <div class="section-header">
       <h2>Communities</h2>
       <div class="line"></div>
@@ -704,7 +766,7 @@
   </section>
 
   <!-- COMPANY -->
-  <section class="fade-in">
+  <section id="company" class="fade-in">
     <div class="section-header">
       <h2>Company</h2>
       <div class="line"></div>
@@ -718,7 +780,7 @@
   </section>
 
   <!-- PRESENTATIONS -->
-  <section class="fade-in">
+  <section id="presentations" class="fade-in">
     <div class="section-header">
       <h2>Presentations &amp; Speaking</h2>
       <div class="line"></div>
@@ -839,7 +901,7 @@
   </section>
 
   <!-- YOUTUBE / VIDEOS -->
-  <section class="fade-in">
+  <section id="videos" class="fade-in">
     <div class="section-header">
       <h2>Videos</h2>
       <div class="line"></div>
@@ -859,7 +921,7 @@
   </section>
 
   <!-- PODCAST ARCHIVE -->
-  <section class="fade-in">
+  <section id="podcast" class="fade-in">
     <div class="section-header">
       <h2>Podcast Archive</h2>
       <div class="line"></div>
@@ -872,7 +934,7 @@
   </section>
 
   <!-- RESOURCES -->
-  <section class="fade-in">
+  <section id="resources" class="fade-in">
     <div class="section-header">
       <h2>Resources</h2>
       <div class="line"></div>
@@ -902,7 +964,7 @@
   </section>
 
   <!-- PROJECTS -->
-  <section class="fade-in">
+  <section id="projects" class="fade-in">
     <div class="section-header">
       <h2>Projects</h2>
       <div class="line"></div>
@@ -917,7 +979,7 @@
   </section>
 
   <!-- QUICK LINKS -->
-  <section class="fade-in">
+  <section id="links" class="fade-in">
     <div class="section-header">
       <h2>Quick Links</h2>
       <div class="line"></div>
@@ -988,6 +1050,22 @@
       card.style.background = '';
     });
   });
+
+  // ===== ACTIVE NAV HIGHLIGHT =====
+  const navLinks = document.querySelectorAll('.sticky-nav a');
+  const sections = document.querySelectorAll('main section[id]');
+
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        const active = document.querySelector(`.sticky-nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.2, rootMargin: '-52px 0px -60% 0px' });
+
+  sections.forEach(section => navObserver.observe(section));
 
   // ===== OLDER PRESENTATIONS TOGGLE =====
   function toggleOlderPresentations() {
