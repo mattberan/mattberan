@@ -59,6 +59,11 @@ body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 .choice-btn:hover{background:#2a2a55;border-color:#5566aa;transform:translateX(4px)}
 .choice-btn.primary{background:#1a3a6a;border-color:#2255aa}
 .choice-btn.primary:hover{background:#1a4a8a}
+.begin-quarter-btn{animation:pulseGlow 2s ease-in-out infinite;position:relative}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 8px rgba(34,85,170,0.4)}50%{box-shadow:0 0 20px rgba(34,85,170,0.8),0 0 40px rgba(34,85,170,0.3)}}
+.quarter-nudge{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#1a3a6a;border:1px solid #2255aa;color:#dde;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;white-space:nowrap;z-index:10;animation:nudgeFade 0.4s ease-out;box-shadow:0 4px 20px rgba(0,0,0,0.4)}
+.quarter-nudge::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#2255aa}
+@keyframes nudgeFade{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 .choice-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important}
 .character-quote{background:#0f0f20;border-left:3px solid #4477cc;padding:8px 12px;margin:8px 0;border-radius:0 6px 6px 0;font-size:12px;font-style:italic;color:#99aabb}
 .character-quote .speaker{font-style:normal;font-weight:bold;color:#ddd}
@@ -358,6 +363,7 @@ currentEventIdx:0,
 cmdbErrors:20,cmdbDuplicates:15,cmdbUnknown:10,cmdbTotal:150,
 processConnections:0,
 prevMetrics:null,
+nudgeShown:false,
 };
 }
 
@@ -1008,11 +1014,15 @@ function updateActionButtons() {
 let ab = document.getElementById('action-buttons');
 ab.innerHTML = '';
 if (G.phase === 'review') {
-ab.innerHTML += `<button class="choice-btn primary" onclick="startPhase('briefing')" style="flex:1;text-align:center;padding:10px;font-size:14px;font-weight:bold">▶ Begin Quarter ${G.quarter} →</button>`;
+let nudge = (G.quarter === 2 && !G.nudgeShown) ? `<div class="quarter-nudge" id="quarterNudge">👆 Click here to start the next quarter!</div>` : '';
+ab.innerHTML += `<div style="position:relative;flex:1"><button class="choice-btn primary begin-quarter-btn" onclick="dismissNudge();startPhase('briefing')" style="width:100%;text-align:center;padding:10px;font-size:14px;font-weight:bold">▶ Begin Quarter ${G.quarter} →</button>${nudge}</div>`;
+if (G.quarter === 2 && !G.nudgeShown) { G.nudgeShown = true; setTimeout(function(){ let n = document.getElementById('quarterNudge'); if(n) n.style.display='none'; }, 8000); }
 }
 ab.innerHTML += `<button class="choice-btn" onclick="openCMDB()" style="flex:1;text-align:center;padding:8px;font-size:12px">📊 CMDB View</button>`;
 ab.innerHTML += `<button class="choice-btn" onclick="saveGame()" style="flex:1;text-align:center;padding:8px;font-size:12px">💾 Save Game</button>`;
 }
+
+function dismissNudge() { let n = document.getElementById('quarterNudge'); if(n) n.style.display='none'; }
 
 // ===================== PHASE SYSTEM =====================
 function startPhase(phase) {
