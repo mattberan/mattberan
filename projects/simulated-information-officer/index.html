@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulated Information Officer — IT Business Tycoon</title>
+<style>
+:root {
+  --bg-dark: #0a0e1a;
+  --bg-mid: #141b2d;
+  --bg-light: #1e2a42;
+  --accent: #4fc3f7;
+  --accent-glow: #29b6f6;
+  --gold: #ffd54f;
+  --gold-dark: #ffb300;
+  --green: #66bb6a;
+  --red: #ef5350;
+  --orange: #ffa726;
+  --purple: #ab47bc;
+  --text: #e0e0e0;
+  --text-dim: #90a4ae;
+  --card-bg: #1a2540;
+  --card-border: #2a3a5c;
+  --floor-lobby: linear-gradient(135deg, #2a2a3a, #3a3a4a);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg-dark); color:var(--text); min-height:100vh; overflow-x:hidden; }
+#app { max-width:1100px; margin:0 auto; min-height:100vh; position:relative; }
+.skyline { position:fixed; bottom:0; left:0; right:0; height:40vh; pointer-events:none; z-index:0; }
+.skyline-building { position:absolute; bottom:0; background:linear-gradient(180deg,#1a2540,#0d1520); border-radius:2px 2px 0 0; opacity:0.3; }
+.skyline-building::before { content:''; position:absolute; top:8px; left:4px; right:4px; bottom:4px; background:repeating-linear-gradient(0deg,transparent 0px,transparent 6px,rgba(255,200,50,0.15) 6px,rgba(255,200,50,0.15) 8px); }
+
+/* Title */
+.title-screen { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; text-align:center; position:relative; z-index:1; padding:20px; }
+.title-logo { font-size:clamp(2rem,5vw,3.5rem); font-weight:800; background:linear-gradient(135deg,var(--accent),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:8px; line-height:1.2; }
+.title-subtitle { font-size:clamp(0.9rem,2vw,1.2rem); color:var(--text-dim); margin-bottom:40px; }
+.title-building { margin:20px 0 40px; }
+.title-floor { width:180px; height:32px; margin:2px auto; border-radius:3px; display:flex; align-items:center; justify-content:center; font-size:0.75rem; font-weight:600; letter-spacing:0.5px; position:relative; overflow:hidden; }
+.title-floor.lobby { background:var(--floor-lobby); width:200px; border-radius:0 0 6px 6px; }
+.title-floor.helpdesk { background:linear-gradient(135deg,#1a3a5c,#1e4a6e); }
+.title-floor.data { background:linear-gradient(135deg,#1a4a3c,#1e5a4e); }
+.title-floor.security { background:linear-gradient(135deg,#3a1a5c,#4e1e6e); }
+.title-floor.appdev { background:linear-gradient(135deg,#1a3a2c,#1e5a3e); }
+.title-floor.exec { background:linear-gradient(135deg,#5a3a1a,#6e4e1e); }
+@keyframes windowFlicker { 0%,80%{opacity:0.5} 85%{opacity:0.1} 90%{opacity:0.6} 100%{opacity:0.4} }
+
+.btn { padding:14px 36px; border:none; border-radius:8px; font-size:1.1rem; font-weight:700; cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden; letter-spacing:0.5px; }
+.btn:hover { transform:translateY(-2px); }
+.btn:active { transform:translateY(0); }
+.btn-primary { background:linear-gradient(135deg,var(--accent),#2196f3); color:#fff; box-shadow:0 4px 20px rgba(79,195,247,0.3); }
+.btn-primary:hover { box-shadow:0 6px 28px rgba(79,195,247,0.5); }
+.btn-secondary { background:var(--bg-light); color:var(--text); border:1px solid var(--card-border); }
+.btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold-dark)); color:#1a1a2e; box-shadow:0 4px 20px rgba(255,213,79,0.3); }
+.btn-small { padding:8px 18px; font-size:0.85rem; }
+.btn-group { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+
+/* Top Bar */
+.top-bar { display:flex; align-items:center; gap:12px; padding:10px 16px; background:rgba(20,27,45,0.95); border-bottom:1px solid var(--card-border); position:sticky; top:0; z-index:100; flex-wrap:wrap; }
+.stat-chip { display:flex; align-items:center; gap:4px; font-size:0.85rem; font-weight:600; white-space:nowrap; }
+.xp-bar-wrap { flex:1; min-width:80px; height:14px; background:var(--bg-dark); border-radius:7px; overflow:hidden; position:relative; }
+.xp-bar-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--gold)); border-radius:7px; transition:width 0.6s ease; position:relative; }
+.xp-bar-fill::after { content:''; position:absolute; top:0; left:0; right:0; bottom:0; background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.3) 50%,transparent 100%); animation:shimmer 2s infinite; }
+@keyframes shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+.xp-text { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:0.65rem; font-weight:700; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.5); }
+.burnout-chip { color:var(--orange); }
+.burnout-chip.high { color:var(--red); animation:pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+/* Game Layout */
+.game-layout { display:grid; grid-template-columns:260px 1fr; gap:0; min-height:calc(100vh - 50px); position:relative; z-index:1; }
+@media(max-width:768px) { .game-layout { grid-template-columns:1fr; } .building-panel { display:none; } }
+
+/* Building */
+.building-panel { padding:16px; background:rgba(10,14,26,0.8); border-right:1px solid var(--card-border); display:flex; flex-direction:column; gap:12px; }
+.building-wrap { flex:1; display:flex; flex-direction:column; justify-content:flex-end; }
+.building { position:relative; width:100%; max-width:220px; margin:0 auto; }
+.floor { width:100%; height:52px; margin-bottom:2px; border-radius:3px; display:flex; align-items:center; padding:0 12px; font-size:0.75rem; font-weight:600; position:relative; overflow:hidden; transition:all 0.5s; box-shadow:0 2px 8px rgba(0,0,0,0.3); }
+.floor.locked { background:#1a1a2a !important; opacity:0.3; }
+.floor.trouble { animation:floorTrouble 1s infinite alternate; }
+@keyframes floorTrouble { 0%{box-shadow:0 2px 8px rgba(0,0,0,0.3)} 100%{box-shadow:0 2px 16px rgba(239,83,80,0.4)} }
+.floor-icon { font-size:1.1rem; margin-right:8px; }
+.floor-name { flex:1; }
+.floor-windows { position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; }
+.floor-window { position:absolute; width:6px; height:6px; background:rgba(255,200,50,0.4); border-radius:1px; }
+.floor-window.lit { background:rgba(255,200,50,0.8); }
+.floor.lobby-floor { background:var(--floor-lobby); height:40px; border-radius:0 0 6px 6px; justify-content:center; font-size:0.8rem; }
+.team-panel { border-top:1px solid var(--card-border); padding-top:12px; }
+.team-panel h3 { font-size:0.75rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px; }
+.team-member-mini { display:flex; align-items:center; gap:6px; padding:4px 8px; margin-bottom:4px; background:var(--bg-light); border-radius:6px; font-size:0.75rem; }
+.team-member-mini .name { flex:1; font-weight:600; }
+.team-member-mini .stats { color:var(--text-dim); font-size:0.7rem; }
+
+/* Main Panel */
+.main-panel { padding:16px; display:flex; flex-direction:column; gap:16px; }
+
+/* Event Card */
+.event-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:20px; position:relative; animation:slideIn 0.4s ease-out; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
+@keyframes slideIn { from{transform:translateX(60px);opacity:0} to{transform:translateX(0);opacity:1} }
+.event-character { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.event-emoji { font-size:2rem; }
+.event-name { font-weight:700; font-size:1rem; }
+.event-role { font-size:0.8rem; color:var(--text-dim); }
+.event-text { font-size:1rem; line-height:1.5; margin-bottom:16px; padding:12px; background:rgba(0,0,0,0.2); border-radius:8px; border-left:3px solid var(--accent); font-style:italic; }
+.event-urgency { font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; }
+.event-urgency.urgent { color:var(--red); }
+.event-urgency.normal { color:var(--orange); }
+.event-urgency.low { color:var(--green); }
+.event-choices { display:flex; flex-direction:column; gap:8px; }
+.choice-btn { display:flex; align-items:center; gap:10px; padding:12px 16px; background:var(--bg-light); border:1px solid var(--card-border); border-radius:8px; cursor:pointer; transition:all 0.2s; text-align:left; color:var(--text); font-size:0.9rem; width:100%; font-family:inherit; }
+.choice-btn:hover { border-color:var(--accent); background:rgba(79,195,247,0.1); transform:translateX(4px); }
+.choice-btn:disabled { opacity:0.4; cursor:not-allowed; transform:none !important; }
+.choice-btn .icon { font-size:1.2rem; }
+.choice-btn .label { flex:1; font-weight:600; }
+.choice-btn .cost { color:var(--gold); font-size:0.8rem; font-weight:700; }
+.choice-btn.delegate-btn { border-color:rgba(102,187,106,0.3); }
+.choice-btn.delegate-btn:hover { border-color:var(--green); background:rgba(102,187,106,0.1); }
+.choice-btn.exhausted-btn { border-color:rgba(239,83,80,0.3); }
+.choice-btn.exhausted-btn:hover { border-color:var(--red); background:rgba(239,83,80,0.1); }
+.event-progress { text-align:right; font-size:0.8rem; color:var(--text-dim); margin-top:12px; }
+.choice-separator { font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; padding:2px 0; margin-top:4px; }
+
+/* Outcome */
+.outcome-card { background:var(--card-bg); border:1px solid var(--card-border); border-radius:12px; padding:20px; text-align:center; animation:fadeInUp 0.3s ease-out; }
+@keyframes fadeInUp { from{transform:translateY(20px);opacity:0} to{transform:translateY(0);opacity:1} }
+.outcome-card.success { border-color:var(--green); }
+.outcome-card.failure { border-color:var(--red); }
+.outcome-icon { font-size:2.5rem; margin-bottom:8px; }
+.outcome-text { font-size:1rem; margin-bottom:12px; line-height:1.5; }
+.outcome-rewards { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; font-weight:700; }
+.outcome-reward { font-size:0.9rem; }
+.outcome-reward.xp { color:var(--gold); }
+.outcome-reward.stat { color:var(--accent); }
+.outcome-reward.negative { color:var(--red); }
+.outcome-warning { margin-top:10px; font-size:0.8rem; color:var(--orange); background:rgba(255,167,38,0.1); border:1px solid rgba(255,167,38,0.2); border-radius:6px; padding:6px 10px; }
+.outcome-delegation { margin-top:8px; font-size:0.8rem; color:var(--green); background:rgba(102,187,106,0.1); border:1px solid rgba(102,187,106,0.2); border-radius:6px; padding:6px 10px; }
+
+/* Metrics */
+.metrics-bar { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; }
+.metric { background:var(--bg-light); border-radius:8px; padding:8px 12px; }
+.metric-label { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-dim); margin-bottom:4px; }
+.metric-bar { height:6px; background:var(--bg-dark); border-radius:3px; overflow:hidden; }
+.metric-fill { height:100%; border-radius:3px; transition:width 0.8s ease; }
+.metric-fill.good { background:linear-gradient(90deg,var(--green),#81c784); }
+.metric-fill.warn { background:linear-gradient(90deg,var(--orange),#ffb74d); }
+.metric-fill.bad { background:linear-gradient(90deg,var(--red),#e57373); }
+.metric-value { font-size:0.75rem; font-weight:700; text-align:right; margin-top:2px; }
+
+/* Quarter End */
+.quarter-end { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 50px); padding:20px; text-align:center; position:relative; z-index:1; }
+.quarter-title { font-size:1.8rem; font-weight:800; margin-bottom:8px; }
+.quarter-stars { font-size:2.5rem; margin:12px 0; animation:popIn 0.5s ease-out; }
+@keyframes popIn { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+.quarter-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:400px; width:100%; margin:16px 0; }
+.quarter-stat { background:var(--bg-light); padding:10px; border-radius:8px; font-size:0.85rem; }
+.quarter-stat .label { color:var(--text-dim); font-size:0.75rem; }
+.quarter-stat .value { font-weight:700; font-size:1.1rem; }
+.auto-resolve-list { max-width:400px; width:100%; margin:12px 0; text-align:left; }
+.auto-resolve-item { padding:6px 10px; background:rgba(102,187,106,0.1); border-radius:6px; margin-bottom:4px; font-size:0.8rem; color:var(--green); animation:fadeInUp 0.3s ease-out; }
+
+/* Level Up */
+.level-up-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:200; animation:fadeIn 0.3s; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.level-up-card { background:var(--card-bg); border:2px solid var(--gold); border-radius:16px; padding:32px; text-align:center; max-width:420px; width:90%; animation:levelUpBounce 0.6s ease-out; box-shadow:0 0 60px rgba(255,213,79,0.3); }
+@keyframes levelUpBounce { 0%{transform:scale(0.5);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+.level-up-icon { font-size:3rem; margin-bottom:8px; }
+.level-up-title { font-size:1.8rem; font-weight:800; color:var(--gold); margin-bottom:4px; }
+.level-up-subtitle { color:var(--text-dim); margin-bottom:16px; }
+.level-up-reward { background:rgba(255,213,79,0.1); border:1px solid rgba(255,213,79,0.3); border-radius:10px; padding:12px; margin-bottom:16px; font-size:0.95rem; }
+.level-up-reward .reward-icon { font-size:1.5rem; }
+
+/* Game Over */
+.game-over { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:20px; text-align:center; position:relative; z-index:1; }
+.game-over-title { font-size:2.2rem; font-weight:800; margin-bottom:4px; }
+.game-over-rank { font-size:1.4rem; font-weight:700; color:var(--gold); margin-bottom:20px; }
+.game-over-stats { display:grid; grid-template-columns:1fr 1fr; gap:8px; max-width:400px; width:100%; margin:16px 0; }
+.game-over-stat { background:var(--bg-light); padding:10px; border-radius:8px; }
+.game-over-stat .label { font-size:0.75rem; color:var(--text-dim); }
+.game-over-stat .value { font-weight:700; }
+.game-over-lesson { max-width:400px; background:rgba(79,195,247,0.1); border:1px solid rgba(79,195,247,0.3); border-radius:10px; padding:16px; margin:16px 0; font-style:italic; line-height:1.5; }
+
+/* Hire */
+.hire-card { background:var(--card-bg); border:1px solid var(--green); border-radius:12px; padding:20px; text-align:center; max-width:360px; margin:0 auto; }
+.hire-card .emoji { font-size:2.5rem; margin-bottom:8px; }
+.hire-card .name { font-weight:800; font-size:1.1rem; }
+.hire-card .role { color:var(--text-dim); font-size:0.9rem; margin-bottom:4px; }
+.hire-card .personality { font-style:italic; font-size:0.85rem; color:var(--accent); margin-bottom:12px; }
+.hire-stats { display:flex; gap:16px; justify-content:center; margin-bottom:12px; }
+.hire-stat { font-size:0.85rem; }
+
+/* Boss */
+.event-card.boss-event { border-color:var(--gold); box-shadow:0 4px 30px rgba(255,213,79,0.2); }
+.event-card.boss-event .event-text { border-left-color:var(--gold); }
+.boss-label { display:inline-block; background:linear-gradient(135deg,var(--gold),var(--gold-dark)); color:#1a1a2e; padding:2px 10px; border-radius:4px; font-size:0.7rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; margin-bottom:8px; }
+
+/* Toast */
+.toast-container { position:fixed; top:60px; right:16px; z-index:300; display:flex; flex-direction:column; gap:8px; pointer-events:none; }
+.toast { background:var(--card-bg); border:1px solid var(--gold); border-radius:10px; padding:12px 16px; font-size:0.85rem; font-weight:600; box-shadow:0 4px 20px rgba(0,0,0,0.4); animation:toastIn 0.4s ease-out,toastOut 0.4s ease-in 2.6s forwards; max-width:300px; }
+.toast.warn { border-color:var(--orange); }
+.toast.bad { border-color:var(--red); }
+@keyframes toastIn { from{transform:translateX(100px);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateY(-20px)} }
+
+/* Confetti */
+.confetti-piece { position:fixed; width:8px; height:8px; z-index:250; animation:confettiFall 2s ease-in forwards; }
+@keyframes confettiFall { 0%{transform:translateY(0) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
+
+/* Responsive */
+@media(max-width:600px) { .top-bar{font-size:0.8rem;gap:8px;padding:8px 10px} .event-card{padding:14px} .choice-btn{padding:10px 12px;font-size:0.85rem} .main-panel{padding:10px} }
+
+@keyframes screenShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 40%{transform:translateX(4px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
+.shake { animation:screenShake 0.4s ease-out; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast-container" id="toasts"></div>
+<div class="skyline" id="skyline"></div>
+
+<script>
+// ==================== CONFIG ====================
+const CONFIG = {
+  energyPerQuarter: 12,
+  eventsPerQuarter: [2,3,3,3,3,4,4,4,5,5,5,5,6,6,7],
+  xpPerLevel: [0,50,80,120,160,220,280,360,450,550,700,850,1050,1300,1600,2000],
+  delegationStreakBonus: 2.0,
+  delegationStreakThreshold: 2,
+  autoResolveSkillMin: 6,
+  autoResolveTrustMin: 5,
+  autoResolveXP: 10,
+  maxLevel: 15,
+  quarterStarXP: [0,25,75,150],
+  burnoutWarnings: {
+    3: "You're looking tired. Maybe let your team help?",
+    5: "Burnout is setting in. Your team feels sidelined.",
+    7: "Your team is demoralized. They feel you don't trust them.",
+    9: "Critical burnout! Team members are updating their resumes...",
+  },
+};
+
+// ==================== TEAM DEFS ====================
+const TEAM_DEFS = [
+  { id:'marcus', name:'Marcus Chen', role:'VP Infrastructure', emoji:'🧑‍💻', unlockLevel:2,
+    personality:'Calm, empathetic. Former teacher who pivoted to IT.', domain:'infra',
+    skill:5, trust:5, morale:8 },
+  { id:'sarah', name:'Sarah Okafor', role:'VP Security', emoji:'👩‍🔬', unlockLevel:5,
+    personality:'Warm, collaborative. Security is about culture, not firewalls.', domain:'security',
+    skill:5, trust:5, morale:8 },
+  { id:'james', name:'James Patel', role:'VP Applications', emoji:'👨‍🎨', unlockLevel:8,
+    personality:'Design-focused, came from architecture. Obsessed with UX.', domain:'apps',
+    skill:6, trust:5, morale:9 },
+  { id:'carmen', name:'Carmen Reeves', role:'Dir. Service Delivery', emoji:'👩‍🚀', unlockLevel:11,
+    personality:'Young, data-driven, ambitious. Transformed her last company.', domain:'service',
+    skill:6, trust:5, morale:9 },
+];
+
+// ==================== CHARACTERS ====================
+const CHARACTERS = {
+  diane:{ name:'Diane Foster', role:'CFO', emoji:'🤔', mood:0 },
+  raj:{ name:'Raj Gupta', role:'Head of Marketing', emoji:'🧑‍💼', mood:0 },
+  kim:{ name:'Kim Nakamura', role:'VP Sales', emoji:'🙂', mood:0 },
+  alex:{ name:'Alex Torres', role:'Head of Compliance', emoji:'😄', mood:0 },
+  pat:{ name:'Pat Morgan', role:'CEO', emoji:'🤝', mood:0 },
+  casey:{ name:'Casey (The Intern)', role:'Rotating Intern', emoji:'🫠', mood:0 },
+  user:{ name:'Employee', role:'End User', emoji:'😕', mood:0 },
+};
+
+// ==================== ACHIEVEMENTS ====================
+const ACHIEVEMENTS = [
+  { id:'first_day', name:'First Day on the Job', icon:'🏆', desc:'Complete your first event', check:s=>s.stats.totalEvents>=1 },
+  { id:'trust_fall', name:'Trust Fall', icon:'🏆', desc:'First successful delegation', check:s=>s.stats.delegateSuccess>=1 },
+  { id:'delegator', name:'The Delegator', icon:'🏆', desc:'5 delegations in a row', check:s=>s.stats.maxDelegateStreak>=5 },
+  { id:'team_builder', name:'Team Builder', icon:'🏆', desc:'All team members at trust 7+', check:s=>s.team.length>=2&&s.team.every(t=>t.trust>=7) },
+  { id:'crisis_mgr', name:'Crisis Manager', icon:'🏆', desc:'Survive a crisis event', check:s=>s.stats.crisesSurvived>=1 },
+  { id:'strategist', name:'The Strategist', icon:'🏆', desc:'Complete 5 strategic events', check:s=>s.stats.strategicEvents>=5 },
+  { id:'autopilot', name:'Auto-Pilot', icon:'🏆', desc:'Team auto-resolves 3+ in one quarter', check:s=>s.stats.maxAutoResolvesInQuarter>=3 },
+  { id:'budget_wiz', name:'Budget Wizard', icon:'🏆', desc:'End a quarter under budget', check:s=>s.stats.underBudgetQuarters>=1 },
+  { id:'full_house', name:'Full House', icon:'🏆', desc:'Unlock all building floors', check:s=>s.floorsUnlocked>=6 },
+  { id:'it_legend', name:'IT Legend', icon:'🏆', desc:'Complete the game with S rank', check:s=>s.stats.finalGrade==='S' },
+];
+
+// ==================== FLOORS ====================
+const FLOOR_DEFS = [
+  { id:'lobby', name:'Lobby', icon:'🚪', level:0, color:'var(--floor-lobby)' },
+  { id:'helpdesk', name:'Helpdesk / Infra', icon:'🖥️', level:0, color:'linear-gradient(135deg,#1a3a5c,#1e4a6e)' },
+  { id:'data', name:'Data / BI', icon:'📊', level:4, color:'linear-gradient(135deg,#1a4a3c,#1e5a4e)' },
+  { id:'security', name:'Security', icon:'🔒', level:6, color:'linear-gradient(135deg,#3a1a5c,#4e1e6e)' },
+  { id:'appdev', name:'App Development', icon:'💻', level:9, color:'linear-gradient(135deg,#1a3a2c,#1e5a3e)' },
+  { id:'executive', name:'Executive', icon:'🏢', level:13, color:'linear-gradient(135deg,#5a3a1a,#6e4e1e)' },
+];
+
+// ==================== EVENT POOL ====================
+// Structure: choice[0] = "handle yourself" (tempting top option)
+//            choice[1] = "smart/delegate" (best long-term, delegatable when team exists)
+//            choice[2] = "ignore/cheap" (0 cost escape hatch, bad outcomes)
+const EVENT_POOL = [
+  // === ERA 1: Startup (Levels 1-5) ===
+  { id:'e1', era:1, type:'operational', domain:'infra', urgency:'normal',
+    char:'casey', text:"The printer is jammed again and there's a paper presentation in 20 minutes!",
+    choices:[
+      { label:'Fix it yourself', icon:'🔧', cost:2, selfHandle:true, outcome:{ success:true, text:'You cleared the jam just in time! Hero moment.', xp:15, metrics:{it:3} } },
+      { label:'Show Casey how', icon:'📚', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Casey learned to fix it! They beam with pride. Investment in people pays off.', xp:25, metrics:{it:2,morale:3} } },
+      { label:'Ignore it', icon:'🙈', cost:0, outcome:{ success:false, text:'Presentation used handwritten notes. The client noticed.', xp:3, metrics:{biz:-5,morale:-2} } },
+    ]},
+  { id:'e2', era:1, type:'operational', domain:'infra', urgency:'low',
+    char:'user', text:"I forgot my password again. This is the third time this week...",
+    choices:[
+      { label:'Reset it now', icon:'🔑', cost:2, selfHandle:true, outcome:{ success:true, text:'Password reset. They promise to remember this time. (They won\'t.)', xp:12, metrics:{it:2} } },
+      { label:'Set up self-service portal', icon:'⚙️', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Self-service portal deployed! This saves 5 hours per week forever.', xp:30, metrics:{it:5,biz:3} } },
+      { label:'Tell them to wait', icon:'⏳', cost:0, outcome:{ success:false, text:'They couldn\'t work for 2 hours. Their manager is annoyed.', xp:3, metrics:{biz:-3,morale:-3} } },
+    ]},
+  { id:'e3', era:1, type:'operational', domain:'infra', urgency:'normal',
+    char:'casey', text:"The WiFi keeps dropping in the conference room during client calls!",
+    choices:[
+      { label:'Install access point', icon:'📡', cost:2, selfHandle:true, outcome:{ success:true, text:'New access point installed. Crystal clear calls now!', xp:15, metrics:{it:5,biz:3} } },
+      { label:'Research & plan upgrade', icon:'📋', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Full wireless audit and upgrade plan. No more dead zones anywhere!', xp:25, metrics:{it:5,biz:5} } },
+      { label:'Blame the ISP', icon:'📞', cost:0, outcome:{ success:false, text:'ISP says it\'s internal. You look bad in front of the CEO.', xp:3, metrics:{it:-3,biz:-3} } },
+    ]},
+  { id:'e4', era:1, type:'operational', domain:'infra', urgency:'low',
+    char:'pat', text:"We hired 5 new people starting Monday. They all need laptops and accounts.",
+    choices:[
+      { label:'Weekend setup sprint', icon:'💪', cost:3, selfHandle:true, outcome:{ success:true, text:'Everyone ready day one! But you worked all weekend...', xp:20, metrics:{it:5,biz:5} } },
+      { label:'Create onboarding process', icon:'📋', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Automated onboarding process created! Future hires set up in minutes.', xp:30, metrics:{it:5,biz:5,morale:3} } },
+      { label:'Order when they arrive', icon:'🤷', cost:0, outcome:{ success:false, text:'New hires sat idle for days. Terrible first impression.', xp:3, metrics:{biz:-5,morale:-5} } },
+    ]},
+  { id:'e5', era:1, type:'strategic', domain:'infra', urgency:'normal',
+    char:'pat', text:"Google Workspace or Microsoft 365? We need to decide this week.",
+    choices:[
+      { label:'Pick one and go', icon:'⚡', cost:2, selfHandle:true, outcome:{ success:true, text:'Quick decision. Platform works fine, but some features don\'t fit.', xp:20, metrics:{it:3,biz:2} } },
+      { label:'Research & recommend', icon:'🎯', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Thorough analysis impressed the CEO. Perfect platform choice!', xp:40, metrics:{it:5,biz:5,board:5} } },
+      { label:'Let everyone pick their own', icon:'🗳️', cost:0, outcome:{ success:false, text:'Chaos. Half on Google, half on Microsoft. Nothing integrates.', xp:3, metrics:{it:-5,biz:-5} } },
+    ]},
+  { id:'e6', era:1, type:'operational', domain:'infra', urgency:'urgent',
+    char:'user', text:"Help! I accidentally deleted the shared folder with all our client proposals!",
+    choices:[
+      { label:'Restore from backup', icon:'💾', cost:2, selfHandle:true, outcome:{ success:true, text:'Backup restored! Crisis averted. You set up good backups!', xp:18, metrics:{it:5,biz:5} } },
+      { label:'Find root cause & prevent', icon:'🔍', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Files restored AND you set up permissions to prevent this forever.', xp:28, metrics:{it:8,biz:5} } },
+      { label:'Panic with them', icon:'😰', cost:0, outcome:{ success:false, text:'Files gone. You both learned a hard lesson about backups.', xp:3, metrics:{it:-5,biz:-8} } },
+    ]},
+  { id:'e7', era:1, type:'strategic', domain:'infra', urgency:'normal',
+    char:'diane', text:"IT costs are growing faster than revenue. Can you justify your budget?",
+    choices:[
+      { label:'Cut costs immediately', icon:'✂️', cost:2, selfHandle:true, outcome:{ success:true, text:'Cut some fat. CFO happy but you lost tools the team liked.', xp:18, metrics:{biz:5,morale:-3} } },
+      { label:'Present ROI data', icon:'📊', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Your data showed IT saves 3x what it costs. CFO becomes your biggest ally!', xp:45, metrics:{biz:8,board:8} } },
+      { label:'Deflect', icon:'🔀', cost:0, outcome:{ success:false, text:'CFO sees you as untrustworthy. Budget frozen for the quarter.', xp:3, metrics:{biz:-5,board:-5} } },
+    ]},
+  { id:'e8', era:1, type:'operational', domain:'infra', urgency:'low',
+    char:'user', text:"My laptop is running really slow. Too many browser tabs? Or a virus?",
+    choices:[
+      { label:'Quick reboot', icon:'🔄', cost:2, selfHandle:true, outcome:{ success:true, text:'Reboot fixed it temporarily. Classic IT move.', xp:10, metrics:{it:1} } },
+      { label:'Diagnose & optimize', icon:'🔍', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'247 browser tabs! You helped them organize and it flies now. They\'re grateful.', xp:18, metrics:{it:3,morale:3} } },
+      { label:'Tell them to deal with it', icon:'🤷', cost:0, outcome:{ success:false, text:'They complained to the CEO. Not a good look.', xp:3, metrics:{morale:-3,biz:-2} } },
+    ]},
+  { id:'e9', era:1, type:'strategic', domain:'infra', urgency:'normal',
+    char:'diane', text:"We need a website. Build custom or use a template platform?",
+    choices:[
+      { label:'Custom build it', icon:'💻', cost:3, selfHandle:true, outcome:{ success:true, text:'Beautiful site but it took 2 months of your time.', xp:18, metrics:{it:5,biz:2} } },
+      { label:'Template + customize', icon:'🌐', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Site up in a week! Looks great, clients impressed.', xp:28, metrics:{biz:5,it:3} } },
+      { label:'Free website builder', icon:'🆓', cost:0, outcome:{ success:false, text:'Looks unprofessional. Clients noticed. Sales dropped.', xp:3, metrics:{biz:-5} } },
+    ]},
+  // Boss Level 5
+  { id:'boss1', era:1, type:'boss', domain:'infra', urgency:'urgent',
+    char:'pat', text:"We just landed MegaCorp as a client! They need a full demo environment by next week. This is make-or-break!",
+    choices:[
+      { label:'Do it all yourself', icon:'💪', cost:6, selfHandle:true, outcome:{ success:true, text:'You pulled it off but you\'re completely burned out. There has to be a better way...', xp:35, metrics:{it:5,biz:8,morale:-8} } },
+      { label:'Rally the team', icon:'🤝', cost:2, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Marcus crushed it! Your team proved they can handle the big stuff. THIS is leadership.', xp:65, metrics:{it:10,biz:12,morale:8} } },
+      { label:'Ask for more time', icon:'⏰', cost:0, outcome:{ success:false, text:'MegaCorp went with a competitor. The CEO is disappointed.', xp:5, metrics:{biz:-12,board:-8} } },
+    ]},
+
+  // === ERA 2: Growth (Levels 6-10) ===
+  { id:'e10', era:2, type:'operational', domain:'apps', urgency:'normal',
+    char:'raj', text:"Marketing bought a SaaS tool without telling IT. Now they need it integrated with everything.",
+    choices:[
+      { label:'Integrate it yourself', icon:'🔗', cost:3, selfHandle:true, outcome:{ success:true, text:'You integrated it. Raj is happy but you spent a week on this.', xp:20, metrics:{it:3,biz:3} } },
+      { label:'Evaluate & delegate', icon:'🤝', cost:1, delegatable:true, delegateDomain:'apps', outcome:{ success:true, text:'Team handled integration AND set up a procurement policy. Raj actually apologized!', xp:35, metrics:{it:5,biz:5,morale:3} } },
+      { label:'Block it', icon:'🚫', cost:0, outcome:{ success:false, text:'Marketing is furious. They have a point — IT was too slow to help.', xp:3, metrics:{biz:-8,morale:-3} } },
+    ]},
+  { id:'e11', era:2, type:'strategic', domain:'security', urgency:'urgent',
+    char:'alex', text:"New data privacy regulation drops in 90 days. We need a compliance plan yesterday.",
+    choices:[
+      { label:'Lead it personally', icon:'📋', cost:4, selfHandle:true, outcome:{ success:true, text:'Solid plan, but you couldn\'t focus on anything else for weeks.', xp:25, metrics:{it:3,board:5} } },
+      { label:'Delegate to security', icon:'🤝', cost:1, delegatable:true, delegateDomain:'security', outcome:{ success:true, text:'Sarah\'s collaborative approach got EVERY department on board. Board is thrilled!', xp:50, metrics:{it:5,biz:8,board:10} } },
+      { label:'Hire consultants', icon:'💼', cost:0, outcome:{ success:true, text:'Consultants delivered but cost $50K. You\'ll do it in-house next time.', xp:10, metrics:{board:3}, budgetCost:50000 } },
+    ]},
+  { id:'e12', era:2, type:'operational', domain:'security', urgency:'urgent',
+    char:'casey', text:"I clicked a link in an email and now my screen looks weird... is that bad?",
+    choices:[
+      { label:'Isolate & clean yourself', icon:'🛡️', cost:3, selfHandle:true, outcome:{ success:true, text:'Caught it early! But you scared Casey by rushing over.', xp:18, metrics:{it:5} } },
+      { label:'Delegate containment', icon:'🤝', cost:1, delegatable:true, delegateDomain:'security', outcome:{ success:true, text:'Sarah handled it calmly and ran a training session. Casey\'s now the most cautious clicker!', xp:30, metrics:{it:5,morale:5} } },
+      { label:'Scold Casey', icon:'😠', cost:0, outcome:{ success:false, text:'Casey\'s afraid to report issues now. That\'s MORE dangerous than the phishing.', xp:3, metrics:{morale:-8,it:-3} } },
+    ]},
+  { id:'e13', era:2, type:'strategic', domain:'apps', urgency:'normal',
+    char:'kim', text:"We need a CRM system. Sales is drowning in spreadsheets. I've researched options.",
+    choices:[
+      { label:'Pick one and implement', icon:'⚡', cost:3, selfHandle:true, outcome:{ success:true, text:'CRM deployed. Works OK but Kim\'s research would have found a better fit.', xp:20, metrics:{it:3,biz:3} } },
+      { label:'Partner with Kim\'s research', icon:'🤝', cost:1, delegatable:true, delegateDomain:'apps', outcome:{ success:true, text:'Kim\'s research was gold! Perfect CRM, full buy-in. Sales productivity up 40%!', xp:45, metrics:{it:5,biz:10,board:5} } },
+      { label:'Build custom CRM', icon:'💻', cost:0, outcome:{ success:false, text:'6 months later, it\'s half-done and nobody uses it. Should have bought one.', xp:3, metrics:{it:-5,biz:-8} } },
+    ]},
+  { id:'e14', era:2, type:'operational', domain:'infra', urgency:'urgent',
+    char:'user', text:"The entire network is down! Nobody can work!",
+    choices:[
+      { label:'Diagnose & fix', icon:'🔧', cost:3, selfHandle:true, outcome:{ success:true, text:'Found the rogue DHCP server. Network restored in 30 minutes!', xp:20, metrics:{it:8} } },
+      { label:'Delegate to infra', icon:'🤝', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Marcus\'s calm approach found the issue in 15 minutes. Faster than you could have!', xp:30, metrics:{it:8,morale:3} } },
+      { label:'Call the ISP', icon:'📞', cost:0, outcome:{ success:false, text:'It wasn\'t the ISP. You wasted an hour while everyone waited. Angry emails incoming.', xp:3, metrics:{it:-5,biz:-5,morale:-3} } },
+    ]},
+  { id:'e15', era:2, type:'strategic', domain:'infra', urgency:'normal',
+    char:'diane', text:"The board is asking about disaster recovery. What happens if our server room floods?",
+    choices:[
+      { label:'Write a DR plan', icon:'📝', cost:3, selfHandle:true, outcome:{ success:true, text:'Decent plan but you missed some details being so rushed.', xp:22, metrics:{board:5} } },
+      { label:'Delegate research', icon:'🤝', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Marcus researched cloud DR and presented a bulletproof plan. Board loved it!', xp:45, metrics:{board:10,biz:5,it:5} } },
+      { label:'Wing it at the board', icon:'😰', cost:0, outcome:{ success:false, text:'The board noticed you were improvising. Confidence in IT plummeted.', xp:3, metrics:{board:-10,biz:-5} } },
+    ]},
+  { id:'e16', era:2, type:'operational', domain:'service', urgency:'normal',
+    char:'user', text:"I've submitted 3 tickets this week and nobody responded. Does IT even care?",
+    choices:[
+      { label:'Fix it yourself', icon:'🔧', cost:2, selfHandle:true, outcome:{ success:true, text:'You personally resolved their tickets. But what about the other 20?', xp:15, metrics:{it:3} } },
+      { label:'Fix the process', icon:'🤝', cost:1, delegatable:true, delegateDomain:'service', outcome:{ success:true, text:'Team cleared the backlog AND set up SLAs. Response time dropped to 2 hours!', xp:28, metrics:{it:5,morale:5} } },
+      { label:'Explain you\'re busy', icon:'🗣️', cost:0, outcome:{ success:false, text:'They don\'t care WHY — they care that it\'s not fixed. Morale tanks.', xp:3, metrics:{morale:-5,biz:-3} } },
+    ]},
+  { id:'e17', era:2, type:'operational', domain:'infra', urgency:'normal',
+    char:'casey', text:"The office is expanding to a new floor! Who's going to set up all the networking?",
+    choices:[
+      { label:'Do it this weekend', icon:'💪', cost:3, selfHandle:true, outcome:{ success:true, text:'Floor wired up. Your back hurts and you missed your kid\'s game.', xp:18, metrics:{it:5,biz:3} } },
+      { label:'Delegate to infra', icon:'🤝', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Marcus trained the facilities team too. They can do the next floor themselves!', xp:30, metrics:{it:5,biz:5,morale:3} } },
+      { label:'Outsource it', icon:'📞', cost:0, outcome:{ success:true, text:'Done, but messy cabling. Will cause issues later.', xp:8, metrics:{it:-2}, budgetCost:15000 } },
+    ]},
+  { id:'e18', era:2, type:'strategic', domain:'apps', urgency:'normal',
+    char:'kim', text:"Our competitors have mobile apps for their sales teams. We're falling behind.",
+    choices:[
+      { label:'Start building it', icon:'📱', cost:3, selfHandle:true, outcome:{ success:true, text:'App is... functional. Not pretty, but it works.', xp:20, metrics:{biz:5,it:3} } },
+      { label:'Delegate development', icon:'🤝', cost:1, delegatable:true, delegateDomain:'apps', outcome:{ success:true, text:'James\'s UX obsession made the app gorgeous. Sales team LOVES it. 30% more productive!', xp:40, metrics:{biz:8,it:5,board:5} } },
+      { label:'Make website responsive', icon:'🌐', cost:0, outcome:{ success:true, text:'Cheaper but clunky on phones. Sales team is unimpressed.', xp:8, metrics:{biz:2} } },
+    ]},
+  // Boss Level 10
+  { id:'boss2', era:2, type:'boss', domain:'security', urgency:'urgent', crisis:true,
+    char:'alex', text:"MAJOR security breach! Customer data may be exposed. The board is meeting in 1 hour!",
+    choices:[
+      { label:'Lead incident response', icon:'🛡️', cost:5, selfHandle:true, outcome:{ success:true, text:'You contained it but were too overwhelmed to communicate well. Board is uneasy.', xp:35, metrics:{it:5,board:3,morale:-5} } },
+      { label:'Coordinate team response', icon:'🤝', cost:2, delegatable:true, delegateDomain:'security', outcome:{ success:true, text:'Sarah led containment, Marcus secured infra. You briefed the board. TEXTBOOK teamwork!', xp:80, metrics:{it:10,board:12,biz:8,morale:8} } },
+      { label:'Cover it up', icon:'🙈', cost:0, outcome:{ success:false, text:'The cover-up was worse than the breach. Regulatory fines and public trust destroyed.', xp:3, metrics:{it:-10,board:-15,biz:-15,morale:-10} } },
+    ]},
+
+  // === ERA 3: Enterprise (Levels 11-15) ===
+  { id:'e20', era:3, type:'strategic', domain:'infra', urgency:'normal',
+    char:'diane', text:"Cloud migration time. Our data center costs are unsustainable.",
+    choices:[
+      { label:'Plan it yourself', icon:'☁️', cost:3, selfHandle:true, outcome:{ success:true, text:'Migration plan works but missed optimization opportunities.', xp:25, metrics:{it:5,biz:5} } },
+      { label:'Delegate planning', icon:'🤝', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Marcus designed an elegant phased migration. Costs dropped 40%! Board standing ovation.', xp:50, metrics:{it:8,biz:10,board:8} } },
+      { label:'Lift and shift rush', icon:'🏗️', cost:0, outcome:{ success:false, text:'Rushed migration caused 3 days of downtime. Revenue lost. Board furious.', xp:3, metrics:{it:-8,biz:-10,board:-8} } },
+    ]},
+  { id:'e21', era:3, type:'strategic', domain:'apps', urgency:'normal',
+    char:'pat', text:"The board wants an AI strategy. What's our position?",
+    choices:[
+      { label:'Write the strategy', icon:'🧠', cost:4, selfHandle:true, outcome:{ success:true, text:'Decent strategy but it lacks the technical depth the board wanted.', xp:25, metrics:{board:5,biz:3} } },
+      { label:'Team-built strategy', icon:'🤝', cost:1, delegatable:true, delegateDomain:'apps', outcome:{ success:true, text:'James\'s UX-first AI approach was brilliant. Board approved full funding!', xp:55, metrics:{board:10,biz:8,it:5} } },
+      { label:'Jump on AI hype', icon:'🚂', cost:0, outcome:{ success:false, text:'Bought every AI tool. None implemented properly. $80K wasted.', xp:3, metrics:{biz:-5,board:-5}, budgetCost:80000 } },
+    ]},
+  { id:'e22', era:3, type:'strategic', domain:'apps', urgency:'normal',
+    char:'pat', text:"We're acquiring a competitor. Their IT is a mess. Integration plan?",
+    choices:[
+      { label:'Handle integration', icon:'📋', cost:4, selfHandle:true, outcome:{ success:true, text:'Integration done but you missed the people side. Acquired team feels conquered.', xp:25, metrics:{it:5,biz:5,morale:-3} } },
+      { label:'Delegate integration', icon:'🤝', cost:2, delegatable:true, delegateDomain:'apps', outcome:{ success:true, text:'Team handled tech while you managed politics. Acquired team felt welcomed, not conquered!', xp:55, metrics:{it:8,biz:10,morale:8,board:8} } },
+      { label:'Force our systems on them', icon:'⚡', cost:0, outcome:{ success:false, text:'Half their best people quit. Saved tech costs but lost critical talent.', xp:3, metrics:{morale:-10,biz:-5} } },
+    ]},
+  { id:'e23', era:3, type:'operational', domain:'security', urgency:'urgent', crisis:true,
+    char:'alex', text:"Ransomware hit 3 departments! Systems are encrypting as we speak!",
+    choices:[
+      { label:'Run response yourself', icon:'🛡️', cost:4, selfHandle:true, outcome:{ success:true, text:'Systems restored from backup but it took 12 hours. You alone can\'t scale.', xp:25, metrics:{it:5,board:3} } },
+      { label:'Coordinate team', icon:'🤝', cost:1, delegatable:true, delegateDomain:'security', outcome:{ success:true, text:'Sarah isolated the threat, Marcus restored backups. 4 hours! Board sends champagne.', xp:50, metrics:{it:10,board:8,morale:5} } },
+      { label:'Pay the ransom', icon:'💰', cost:0, outcome:{ success:false, text:'Paid $200K. Data restored but you\'re now a known target. Board furious.', xp:3, metrics:{it:-5,board:-10,biz:-5}, budgetCost:200000 } },
+    ]},
+  { id:'e24', era:3, type:'strategic', domain:'service', urgency:'normal',
+    char:'diane', text:"Board wants our digital transformation roadmap for the next 3 years.",
+    choices:[
+      { label:'Write it solo', icon:'📝', cost:4, selfHandle:true, outcome:{ success:true, text:'Solid document but it\'s YOUR vision, not the team\'s. Execution will suffer.', xp:25, metrics:{board:5,biz:5,morale:-5} } },
+      { label:'Team-built strategy', icon:'🤝', cost:1, delegatable:true, delegateDomain:'service', outcome:{ success:true, text:'Each team lead presented their pillar. Board saw a united, deep IT org. 3-year budget approved!', xp:55, metrics:{board:12,biz:10,morale:8} } },
+      { label:'Recycle last year\'s plan', icon:'♻️', cost:0, outcome:{ success:false, text:'Board noticed. They\'re questioning whether IT leadership needs a change.', xp:3, metrics:{board:-10,biz:-5} } },
+    ]},
+  { id:'e25', era:3, type:'operational', domain:'infra', urgency:'normal',
+    char:'raj', text:"Marketing wants real-time analytics dashboards. Current systems are way too slow.",
+    choices:[
+      { label:'Build it yourself', icon:'📊', cost:3, selfHandle:true, outcome:{ success:true, text:'Dashboard works but it\'s ugly and hard to maintain.', xp:18, metrics:{it:3,biz:5} } },
+      { label:'Delegate to team', icon:'🤝', cost:1, delegatable:true, delegateDomain:'infra', outcome:{ success:true, text:'Marcus and James collaborated on a beautiful, blazing-fast dashboard. Marketing ecstatic!', xp:35, metrics:{it:5,biz:8,morale:3} } },
+      { label:'Buy off-the-shelf', icon:'🛒', cost:0, outcome:{ success:true, text:'Quick win but limited. $30K spent for mediocre results.', xp:8, metrics:{biz:3}, budgetCost:30000 } },
+    ]},
+  { id:'e26', era:3, type:'strategic', domain:'security', urgency:'normal',
+    char:'alex', text:"We need zero-trust security. The old perimeter approach is failing us.",
+    choices:[
+      { label:'Lead the initiative', icon:'🔒', cost:4, selfHandle:true, outcome:{ success:true, text:'Implemented, but the rollout was rough. Users are frustrated.', xp:25, metrics:{it:5,board:5,morale:-3} } },
+      { label:'Delegate to Sarah', icon:'🤝', cost:1, delegatable:true, delegateDomain:'security', outcome:{ success:true, text:'Sarah\'s culture-first approach made adoption painless. Zero friction, zero trust!', xp:50, metrics:{it:10,board:8,morale:5} } },
+      { label:'Incremental patches', icon:'🩹', cost:0, outcome:{ success:false, text:'Band-aids on a leaking dam. Another breach is a matter of time.', xp:3, metrics:{it:-5,board:-5} } },
+    ]},
+  { id:'e27', era:3, type:'operational', domain:'service', urgency:'normal',
+    char:'user', text:"Support tickets tripled since the acquisition. Wait times are brutal.",
+    choices:[
+      { label:'Jump in and help', icon:'🔧', cost:3, selfHandle:true, outcome:{ success:true, text:'You cleared tickets but the CIO shouldn\'t be in the ticket queue...', xp:15, metrics:{it:3,morale:2} } },
+      { label:'Delegate redesign', icon:'🤝', cost:1, delegatable:true, delegateDomain:'service', outcome:{ success:true, text:'Carmen\'s data-driven approach cut wait times 70%. She identified root causes, not just symptoms!', xp:35, metrics:{it:8,morale:8,biz:3} } },
+      { label:'Hire more bodies', icon:'👥', cost:0, outcome:{ success:true, text:'More hands helped but the process is still broken. $40K spent.', xp:8, metrics:{it:2}, budgetCost:40000 } },
+    ]},
+  // Boss Level 15
+  { id:'boss3', era:3, type:'boss', domain:'service', urgency:'urgent',
+    char:'pat', text:"The board wants a 5-year IT vision. This defines your legacy as CIO. What's your move?",
+    choices:[
+      { label:'Solo masterpiece', icon:'🎯', cost:6, selfHandle:true, outcome:{ success:true, text:'Brilliant vision, but your team feels excluded. Will they execute something they didn\'t help build?', xp:40, metrics:{board:8,biz:5,morale:-8} } },
+      { label:'Team-built vision', icon:'🤝', cost:2, delegatable:true, delegateDomain:'service', outcome:{ success:true, text:'Each team member owned a pillar. The board saw unity, depth, and a team that BELIEVES. Standing ovation. THIS is what IT leadership looks like.', xp:90, metrics:{board:15,biz:12,morale:10,it:10} } },
+      { label:'Play it safe', icon:'🛡️', cost:0, outcome:{ success:false, text:'Safe and forgettable. The board thanks you politely and starts looking for a new CIO.', xp:5, metrics:{board:-12,biz:-8} } },
+    ]},
+];
+
+// ==================== STATE ====================
+function initState() {
+  return {
+    screen:'title',
+    level:1, xp:0, energy:CONFIG.energyPerQuarter,
+    budget:200000, quarter:1, year:1,
+    floorsUnlocked:2,
+    team:[], metrics:{it:50,biz:50,morale:65,board:50},
+    characters:JSON.parse(JSON.stringify(CHARACTERS)),
+    achievements:[], events:[], currentEventIndex:0,
+    currentOutcome:null, pendingLevelUp:false,
+    pendingHire:null, autoResolves:[],
+    delegationStreak:0, burnout:0,
+    quarterXP:0, quarterEvents:0, quarterDelegated:0, quarterBudgetStart:0,
+    quarterStars:0,
+    stats:{
+      totalEvents:0, delegateSuccess:0, delegateFail:0,
+      delegateStreak:0, maxDelegateStreak:0, strategicEvents:0,
+      crisesSurvived:0, autoResolves:0, maxAutoResolvesInQuarter:0,
+      underBudgetQuarters:0, totalDelegated:0, totalHandled:0,
+      selfHandledWithTeam:0, peakBurnout:0, finalGrade:null,
+    },
+  };
+}
+let state = initState();
+
+// ==================== GAME LOGIC ====================
+function startGame() {
+  state = initState();
+  state.screen = 'game';
+  startQuarter();
+  render();
+}
+
+function startQuarter() {
+  // Burnout reduces max energy
+  const burnoutPenalty = state.burnout >= 9 ? 4 : state.burnout >= 7 ? 3 : state.burnout >= 5 ? 2 : state.burnout >= 3 ? 1 : 0;
+  state.energy = CONFIG.energyPerQuarter - burnoutPenalty;
+  state.quarterXP = 0;
+  state.quarterEvents = 0;
+  state.quarterDelegated = 0;
+  state.quarterBudgetStart = state.budget;
+  state.autoResolves = [];
+  // Burnout drains morale each quarter
+  if (state.burnout >= 5) {
+    const drain = state.burnout >= 9 ? 6 : state.burnout >= 7 ? 4 : 2;
+    state.metrics.morale = Math.max(5, state.metrics.morale - drain);
+    if (state.burnout >= 7) state.metrics.it = Math.max(10, state.metrics.it - 2);
+  }
+  processAutoResolves();
+  generateEvents();
+  state.currentEventIndex = 0;
+  state.currentOutcome = null;
+}
+
+function getEra() {
+  if (state.level <= 5) return 1;
+  if (state.level <= 10) return 2;
+  return 3;
+}
+
+function generateEvents() {
+  const era = getEra();
+  const count = CONFIG.eventsPerQuarter[state.level - 1] || 4;
+  const bossLevels = [5,10,15];
+  let pool = EVENT_POOL.filter(e => e.era <= era && e.type !== 'boss');
+  const weighted = [];
+  pool.forEach(e => {
+    const w = e.era === era ? 3 : 1;
+    for (let i = 0; i < w; i++) weighted.push(e);
+  });
+  const shuffled = weighted.sort(() => Math.random() - 0.5);
+  const seen = new Set();
+  const picked = [];
+  const needed = count - (bossLevels.includes(state.level) ? 1 : 0);
+  for (const e of shuffled) {
+    if (!seen.has(e.id) && picked.length < needed) {
+      seen.add(e.id);
+      picked.push(JSON.parse(JSON.stringify(e)));
+    }
+  }
+  if (bossLevels.includes(state.level)) {
+    const boss = EVENT_POOL.find(e => e.type === 'boss' && e.era === era);
+    if (boss) picked.push(JSON.parse(JSON.stringify(boss)));
+  }
+  state.events = picked;
+}
+
+function processAutoResolves() {
+  state.autoResolves = [];
+  const era = getEra();
+  const easyEvents = EVENT_POOL.filter(e => e.era < era && e.type === 'operational');
+  state.team.forEach(member => {
+    if (member.skill >= CONFIG.autoResolveSkillMin && member.trust >= CONFIG.autoResolveTrustMin) {
+      const domainEvents = easyEvents.filter(e => e.domain === member.domain);
+      if (domainEvents.length > 0) {
+        const evt = domainEvents[Math.floor(Math.random() * domainEvents.length)];
+        state.autoResolves.push({
+          memberName: member.name,
+          eventText: evt.text.substring(0, 50) + '...',
+          xp: CONFIG.autoResolveXP,
+        });
+        state.xp += CONFIG.autoResolveXP;
+        state.quarterXP += CONFIG.autoResolveXP;
+        state.stats.autoResolves++;
+      }
+    }
+  });
+  if (state.autoResolves.length > state.stats.maxAutoResolvesInQuarter) {
+    state.stats.maxAutoResolvesInQuarter = state.autoResolves.length;
+  }
+}
+
+function handleChoice(choiceIndex, memberId) {
+  const event = state.events[state.currentEventIndex];
+  const choice = event.choices[choiceIndex];
+  let success = choice.outcome.success;
+  let outcomeText = choice.outcome.text;
+  let xpGained = choice.outcome.xp;
+  let metricChanges = { ...(choice.outcome.metrics || {}) };
+  let delegated = false;
+  let burnoutChange = 0;
+  let warningText = '';
+
+  // Energy check
+  if (choice.cost > state.energy) {
+    state.currentOutcome = {
+      success:false, text:"You don't have enough energy! You're spread too thin.",
+      xp:0, metrics:{}, delegated:false, warningText:'', burnoutChange:0
+    };
+    state.screen = 'outcome';
+    render();
+    return;
+  }
+  state.energy -= choice.cost;
+
+  // Handle delegation
+  if (memberId && choice.delegatable) {
+    delegated = true;
+    const member = state.team.find(t => t.id === memberId);
+    if (member) {
+      const roll = rollDelegation(member, event);
+      if (roll.success) {
+        success = true;
+        member.skill = Math.min(10, member.skill + 0.6);
+        member.trust = Math.min(10, member.trust + 1.0);
+        member.morale = Math.min(10, member.morale + 0.5);
+        state.stats.delegateSuccess++;
+        state.delegationStreak++;
+        if (state.delegationStreak > state.stats.maxDelegateStreak)
+          state.stats.maxDelegateStreak = state.delegationStreak;
+        // Streak bonus
+        if (state.delegationStreak >= CONFIG.delegationStreakThreshold) {
+          xpGained = Math.floor(xpGained * CONFIG.delegationStreakBonus);
+          outcomeText += ` 🔥 Delegation streak x${CONFIG.delegationStreakBonus}!`;
+        }
+        // Burnout heals from delegation
+        burnoutChange = -1;
+      } else {
+        success = false;
+        outcomeText = `${member.name} tried but couldn't handle it. ${roll.reason} They still learned from the attempt.`;
+        xpGained = Math.floor(xpGained * 0.3);
+        metricChanges = {};
+        member.skill = Math.min(10, member.skill + 0.3);
+        member.trust = Math.max(1, member.trust - 0.3);
+        state.stats.delegateFail++;
+        state.delegationStreak = 0;
+      }
+      state.stats.totalDelegated++;
+      state.quarterDelegated++;
+    }
+  } else {
+    // Self-handled
+    state.stats.totalHandled++;
+    state.delegationStreak = 0;
+    // Check if this was a micromanage (selfHandle with team available)
+    if (choice.selfHandle && state.team.length > 0) {
+      const domainMembers = state.team.filter(m => m.domain === event.domain);
+      if (domainMembers.length > 0) {
+        burnoutChange = 2;
+        state.stats.selfHandledWithTeam++;
+        // Hidden morale/trust penalty
+        domainMembers.forEach(t => {
+          t.trust = Math.max(1, t.trust - 0.5);
+          t.morale = Math.max(1, t.morale - 0.4);
+        });
+        // Show warning at certain thresholds
+        if (state.burnout + burnoutChange >= 3 && state.burnout < 3) {
+          warningText = '⚠️ Your team wonders why you didn\'t let them help...';
+        } else if (state.burnout + burnoutChange >= 5 && state.burnout < 5) {
+          warningText = '⚠️ Your team feels you don\'t trust them. Morale is dropping.';
+        } else if (state.burnout + burnoutChange >= 7 && state.burnout < 7) {
+          warningText = '🔥 BURNOUT WARNING: Team is demoralized. Your energy is suffering.';
+        } else if (state.burnout >= 5) {
+          warningText = '⚠️ You\'re burning out. Your team could help if you\'d let them.';
+        }
+      }
+    }
+  }
+
+  // Apply burnout
+  state.burnout = Math.max(0, state.burnout + burnoutChange);
+  if (state.burnout > state.stats.peakBurnout) state.stats.peakBurnout = state.burnout;
+
+  // Budget cost
+  if (choice.outcome.budgetCost || choice.budgetCost) {
+    state.budget -= (choice.outcome.budgetCost || choice.budgetCost);
+  }
+
+  // Apply metrics
+  Object.keys(metricChanges).forEach(key => {
+    if (state.metrics[key] !== undefined) {
+      state.metrics[key] = Math.max(0, Math.min(100, state.metrics[key] + (metricChanges[key] || 0)));
+    }
+  });
+
+  // XP
+  state.xp += xpGained;
+  state.quarterXP += xpGained;
+
+  // Stats
+  state.stats.totalEvents++;
+  state.quarterEvents++;
+  if (event.type === 'strategic' || event.type === 'boss') state.stats.strategicEvents++;
+  if (event.crisis && success) state.stats.crisesSurvived++;
+
+  // Character mood
+  if (event.char && state.characters[event.char]) {
+    state.characters[event.char].mood += success ? 1 : -1;
+  }
+
+  state.currentOutcome = {
+    success, text:outcomeText, xp:xpGained, metrics:metricChanges,
+    delegated, warningText, burnoutChange,
+  };
+  state.screen = 'outcome';
+  checkAchievements();
+  render();
+}
+
+function handleExhausted() {
+  const event = state.events[state.currentEventIndex];
+  state.stats.totalEvents++;
+  state.quarterEvents++;
+  state.currentOutcome = {
+    success: false,
+    text: "You're completely exhausted and can barely focus. You muddle through but nothing goes well. Maybe it's time to delegate more?",
+    xp: 2, metrics: {it:-2, morale:-2}, delegated:false,
+    warningText: state.team.length > 0 ? '💡 Delegating costs less energy and your team GROWS from it!' : '',
+    burnoutChange: 0,
+  };
+  state.xp += 2;
+  state.quarterXP += 2;
+  state.metrics.it = Math.max(0, state.metrics.it - 2);
+  state.metrics.morale = Math.max(0, state.metrics.morale - 2);
+  state.screen = 'outcome';
+  render();
+}
+
+function rollDelegation(member, event) {
+  const score = (member.skill * 9) + (member.trust * 3) + (member.morale * 2);
+  const chance = Math.min(95, score);
+  const roll = Math.random() * 100;
+  if (roll < chance) return { success:true };
+  const reasons = [
+    'Close, but they needed a bit more experience.',
+    'Almost had it — learning experience!',
+    'They\'ll nail it next time, guaranteed.',
+  ];
+  return { success:false, reason:reasons[Math.floor(Math.random()*reasons.length)] };
+}
+
+function nextEvent() {
+  state.currentEventIndex++;
+  state.currentOutcome = null;
+  if (state.currentEventIndex >= state.events.length) {
+    endQuarter();
+  } else {
+    state.screen = 'game';
+  }
+  render();
+}
+
+function endQuarter() {
+  const avgMetric = (state.metrics.it + state.metrics.biz + state.metrics.morale + state.metrics.board) / 4;
+  let stars = 0;
+  if (avgMetric >= 40) stars = 1;
+  if (avgMetric >= 60) stars = 2;
+  if (avgMetric >= 75) stars = 3;
+  const starXP = CONFIG.quarterStarXP[stars];
+  state.xp += starXP;
+  state.quarterXP += starXP;
+  if (state.budget >= state.quarterBudgetStart) state.stats.underBudgetQuarters++;
+
+  // Level up check
+  state.pendingLevelUp = false;
+  state.pendingHire = null;
+  if (state.level < CONFIG.maxLevel && state.xp >= CONFIG.xpPerLevel[state.level]) {
+    state.xp -= CONFIG.xpPerLevel[state.level];
+    state.level++;
+    state.pendingLevelUp = true;
+    state.budget += 50000 + (state.level * 10000);
+    state.floorsUnlocked = FLOOR_DEFS.filter(f => f.level <= state.level).length;
+    const newHire = TEAM_DEFS.find(t => t.unlockLevel === state.level && !state.team.find(m => m.id === t.id));
+    if (newHire) state.pendingHire = { ...newHire };
+  }
+
+  state.quarterStars = stars;
+
+  // Check game over
+  if (state.metrics.it <= 5 || state.metrics.biz <= 5 || state.metrics.morale <= 5 || state.metrics.board <= 5) {
+    state.stats.finalGrade = 'F';
+    state.screen = 'gameOver';
+    checkAchievements();
+    render();
+    return;
+  }
+  if (state.level >= CONFIG.maxLevel && !state.pendingLevelUp) {
+    state.stats.finalGrade = calculateGrade();
+    state.screen = 'gameOver';
+    checkAchievements();
+    render();
+    return;
+  }
+
+  state.completedQuarter = state.quarter;
+  state.completedYear = state.year;
+  state.screen = 'quarterEnd';
+  checkAchievements();
+  state.quarter++;
+  if (state.quarter > 4) { state.quarter = 1; state.year++; }
+  render();
+}
+
+function proceedFromQuarter() {
+  if (state.pendingLevelUp) { confetti(); state.screen = 'levelUp'; state.pendingLevelUp = false; render(); return; }
+  if (state.pendingHire) { state.screen = 'hire'; render(); return; }
+  startQuarter(); state.screen = 'game'; render();
+}
+
+function proceedFromLevelUp() {
+  if (state.pendingHire) { state.screen = 'hire'; render(); return; }
+  if (state.level >= CONFIG.maxLevel) { state.stats.finalGrade = calculateGrade(); state.screen = 'gameOver'; render(); return; }
+  startQuarter(); state.screen = 'game'; render();
+}
+
+function hireTeamMember() {
+  if (state.pendingHire) {
+    state.team.push({
+      id:state.pendingHire.id, name:state.pendingHire.name, role:state.pendingHire.role,
+      emoji:state.pendingHire.emoji, domain:state.pendingHire.domain,
+      personality:state.pendingHire.personality,
+      skill:state.pendingHire.skill, trust:state.pendingHire.trust, morale:state.pendingHire.morale,
+    });
+    showToast(`🎉 ${state.pendingHire.name} joined your team!`);
+    state.pendingHire = null;
+  }
+  if (state.level >= CONFIG.maxLevel) { state.stats.finalGrade = calculateGrade(); state.screen = 'gameOver'; render(); return; }
+  startQuarter(); state.screen = 'game'; render();
+}
+
+function calculateGrade() {
+  const avg = (state.metrics.it + state.metrics.biz + state.metrics.morale + state.metrics.board) / 4;
+  const total = state.stats.totalDelegated + state.stats.totalHandled;
+  const delRate = total > 0 ? state.stats.totalDelegated / total : 0;
+  if (avg > 85 && delRate > 0.8 && state.achievements.length >= 9) return 'S';
+  if (avg > 75 && delRate > 0.7) return 'A';
+  if (avg > 60) return 'B';
+  if (avg > 40) return 'C';
+  if (avg > 20) return 'D';
+  return 'F';
+}
+
+function getGradeInfo(g) {
+  const m = {
+    S:{ title:'IT Legend', color:'var(--gold)', lesson:"You mastered delegation, built an incredible team, and proved that a CIO's power comes from trust and vision. Your team can run without you — and that's the highest compliment." },
+    A:{ title:'IT Visionary', color:'var(--gold)', lesson:"You trusted your team and they rose to the challenge. That's the real secret to IT leadership — not technical skill, but building people." },
+    B:{ title:'Solid Leader', color:'var(--accent)', lesson:"You found a good balance: strategic when needed, hands-off when possible. Your team respects you and the business trusts IT." },
+    C:{ title:'Surviving', color:'var(--orange)', lesson:"You made it, but barely. IT leadership isn't about doing everything — it's about empowering others to do their best work." },
+    D:{ title:'Micromanager', color:'var(--red)', lesson:"You tried to do everything yourself. In IT, that's a one-way ticket to burnout — for you AND your team. Trust is the multiplier you missed." },
+    F:{ title:'Fired', color:'var(--red)', lesson:"When metrics crash, everyone loses. IT leadership requires balancing technical excellence with business partnership and team trust." },
+  };
+  return m[g] || m.F;
+}
+
+function checkAchievements() {
+  ACHIEVEMENTS.forEach(a => {
+    if (!state.achievements.includes(a.id) && a.check(state)) {
+      state.achievements.push(a.id);
+      showToast(`${a.icon} ${a.name} — ${a.desc}`);
+    }
+  });
+}
+
+// ==================== UI RENDERING ====================
+function render() {
+  const app = document.getElementById('app');
+  switch (state.screen) {
+    case 'title': app.innerHTML = renderTitle(); break;
+    case 'game': app.innerHTML = renderTopBar() + renderGame(); break;
+    case 'outcome': app.innerHTML = renderTopBar() + renderOutcome(); break;
+    case 'quarterEnd': app.innerHTML = renderTopBar() + renderQuarterEnd(); break;
+    case 'levelUp': app.innerHTML = renderTopBar() + renderLevelUp(); break;
+    case 'hire': app.innerHTML = renderTopBar() + renderHire(); break;
+    case 'gameOver': app.innerHTML = renderGameOver(); break;
+  }
+  renderSkyline();
+  attachHandlers();
+}
+
+function renderSkyline() {
+  const el = document.getElementById('skyline');
+  if (!el) return;
+  let h = '';
+  for (let i = 0; i < 8 + state.level; i++) {
+    const ht = 30 + Math.random() * (20 + state.level * 8);
+    const w = 20 + Math.random() * 40;
+    h += `<div class="skyline-building" style="left:${(i/(8+state.level))*100}%;width:${w}px;height:${ht}px;"></div>`;
+  }
+  el.innerHTML = h;
+}
+
+function renderTitle() {
+  return `<div class="title-screen">
+    <div class="title-logo">Simulated Information Officer</div>
+    <div class="title-subtitle">IT Business Tycoon</div>
+    <div class="title-building">
+      <div class="title-floor exec" style="opacity:0.3">🏢 Executive</div>
+      <div class="title-floor appdev" style="opacity:0.3">💻 App Dev</div>
+      <div class="title-floor security" style="opacity:0.3">🔒 Security</div>
+      <div class="title-floor data" style="opacity:0.3">📊 Data/BI</div>
+      <div class="title-floor helpdesk">🖥️ Helpdesk</div>
+      <div class="title-floor lobby">🚪 Lobby</div>
+    </div>
+    <p style="max-width:500px;color:var(--text-dim);margin-bottom:30px;line-height:1.6;font-size:0.95rem;">
+      You're the IT leader of a growing company. Make fast decisions, build your team,
+      and discover why delegation is a superpower — not a shortcut.
+    </p>
+    <div class="btn-group"><button class="btn btn-primary" onclick="startGame()">Start Game</button></div>
+    <p style="color:var(--text-dim);margin-top:24px;font-size:0.75rem;">A game about what IT leadership is really like.</p>
+  </div>`;
+}
+
+function renderTopBar() {
+  const xpN = CONFIG.xpPerLevel[state.level] || 999;
+  const xpP = Math.min(100, (state.xp / xpN) * 100);
+  const burnoutPenalty = state.burnout >= 9 ? 4 : state.burnout >= 7 ? 3 : state.burnout >= 5 ? 2 : state.burnout >= 3 ? 1 : 0;
+  const maxE = CONFIG.energyPerQuarter - burnoutPenalty;
+  let burnoutHtml = '';
+  if (state.burnout >= 3) {
+    const cls = state.burnout >= 7 ? 'high' : '';
+    burnoutHtml = `<span class="stat-chip burnout-chip ${cls}">🔥 ${state.burnout}</span>`;
+  }
+  return `<div class="top-bar">
+    <span class="stat-chip">⭐ Lvl ${state.level}</span>
+    <div class="xp-bar-wrap"><div class="xp-bar-fill" style="width:${xpP}%"></div><span class="xp-text">${state.xp}/${xpN} XP</span></div>
+    <span class="stat-chip">⚡ ${state.energy}/${maxE}</span>
+    <span class="stat-chip">💰 $${formatMoney(state.budget)}</span>
+    ${burnoutHtml}
+    <span class="stat-chip">Y${state.year} Q${state.quarter}</span>
+  </div>`;
+}
+
+function renderGame() {
+  const event = state.events[state.currentEventIndex];
+  if (!event) return '<div class="main-panel"><p>Loading events...</p></div>';
+  const char = state.characters[event.char] || { name:'Unknown', emoji:'❓', role:'' };
+  const moodEmoji = getMoodEmoji(char);
+
+  // Build choice buttons
+  let choiceHtml = '';
+  let hasAffordableOption = false;
+  event.choices.forEach((c, i) => {
+    const canAfford = c.cost <= state.energy;
+    if (canAfford) hasAffordableOption = true;
+
+    if (c.delegatable && state.team.length > 0) {
+      // Show delegation buttons for matching team members
+      const members = state.team.filter(m => m.domain === (c.delegateDomain || event.domain));
+      if (members.length > 0) {
+        if (i > 0) choiceHtml += '<div class="choice-separator">— or delegate —</div>';
+        members.forEach(m => {
+          choiceHtml += `<button class="choice-btn delegate-btn" data-choice="${i}" data-member="${m.id}" ${canAfford ? '' : 'disabled'}>
+            <span class="icon">🤝</span>
+            <span class="label">Delegate to ${m.name.split(' ')[0]}</span>
+            <span class="cost">${c.cost > 0 ? '-'+c.cost+'⚡' : 'Free'}</span>
+          </button>`;
+        });
+      } else {
+        // No matching members — show as regular button
+        choiceHtml += `<button class="choice-btn" data-choice="${i}" ${canAfford ? '' : 'disabled'}>
+          <span class="icon">${c.icon}</span><span class="label">${c.label}</span>
+          <span class="cost">${c.cost > 0 ? '-'+c.cost+'⚡' : 'Free'}</span>
+        </button>`;
+      }
+    } else {
+      choiceHtml += `<button class="choice-btn" data-choice="${i}" ${canAfford ? '' : 'disabled'}>
+        <span class="icon">${c.icon}</span><span class="label">${c.label}</span>
+        <span class="cost">${c.cost > 0 ? '-'+c.cost+'⚡' : 'Free'}</span>
+      </button>`;
+    }
+  });
+
+  // Exhausted fallback
+  if (!hasAffordableOption) {
+    choiceHtml += `<button class="choice-btn exhausted-btn" data-exhausted="true">
+      <span class="icon">😵</span><span class="label">Muddle through (exhausted)</span>
+      <span class="cost">0⚡</span>
+    </button>`;
+  }
+
+  return `<div class="game-layout">
+    <div class="building-panel">
+      ${renderBuilding()}
+      <div class="team-panel">
+        <h3>Your Team</h3>
+        ${state.team.length === 0 ? '<div style="font-size:0.8rem;color:var(--text-dim);">Just you for now!</div>' : ''}
+        ${state.team.map(m => `<div class="team-member-mini">
+          <span>${m.emoji}</span><span class="name">${m.name.split(' ')[0]}</span>
+          <span class="stats">⭐${m.skill.toFixed(1)} 🤝${m.trust.toFixed(1)} 😊${m.morale.toFixed(1)}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="main-panel">
+      <div class="event-card ${event.type==='boss'?'boss-event':''}">
+        ${event.type==='boss'?'<div class="boss-label">Boss Event</div>':''}
+        <div class="event-character">
+          <span class="event-emoji">${moodEmoji}</span>
+          <div><div class="event-name">${char.name}</div><div class="event-role">${char.role}</div></div>
+        </div>
+        <div class="event-text">"${event.text}"</div>
+        <div class="event-urgency ${event.urgency}">⏱️ ${event.urgency}</div>
+        <div class="event-choices">${choiceHtml}</div>
+        <div class="event-progress">Event ${state.currentEventIndex+1} of ${state.events.length}</div>
+      </div>
+      ${renderMetrics()}
+    </div>
+  </div>`;
+}
+
+function renderBuilding() {
+  const floors = FLOOR_DEFS.slice().reverse();
+  return `<div class="building-wrap"><div class="building">
+    ${floors.map(f => {
+      if (f.id === 'lobby') return `<div class="floor lobby-floor">${f.icon} ${f.name}</div>`;
+      const unlocked = f.level <= state.level;
+      const trouble = unlocked && state.metrics.it < 30;
+      return `<div class="floor ${unlocked?'':'locked'} ${trouble?'trouble':''}" style="${unlocked?'background:'+f.color:''}">
+        <span class="floor-icon">${f.icon}</span><span class="floor-name">${f.name}</span>
+        ${unlocked?'<div class="floor-windows">'+genWin()+'</div>':''}
+      </div>`;
+    }).join('')}
+  </div></div>`;
+}
+function genWin() {
+  let h=''; for(let i=0;i<6;i++){const t=8+Math.random()*28,l=60+Math.random()*140,lit=Math.random()>0.4?'lit':'';h+=`<div class="floor-window ${lit}" style="top:${t}px;left:${l}px;"></div>`;}return h;
+}
+
+function renderMetrics() {
+  const ms = [
+    {key:'it',label:'IT Performance',icon:'🖥️'},{key:'biz',label:'Business Trust',icon:'📈'},
+    {key:'morale',label:'Team Morale',icon:'😊'},{key:'board',label:'Board Confidence',icon:'📊'},
+  ];
+  return `<div class="metrics-bar">${ms.map(m=>{
+    const v=state.metrics[m.key],c=v>=60?'good':v>=35?'warn':'bad';
+    return `<div class="metric"><div class="metric-label">${m.icon} ${m.label}</div><div class="metric-bar"><div class="metric-fill ${c}" style="width:${v}%"></div></div><div class="metric-value">${v}</div></div>`;
+  }).join('')}</div>`;
+}
+
+function renderOutcome() {
+  const o = state.currentOutcome;
+  if (!o) return '';
+  const cls = o.success ? 'success' : 'failure';
+  const icon = o.success ? '✅' : '❌';
+  const ms = Object.entries(o.metrics||{}).map(([k,v])=>{
+    if(!v)return'';const l={it:'IT',biz:'Biz',morale:'Morale',board:'Board'}[k]||k;
+    return `<span class="outcome-reward ${v>0?'stat':'negative'}">${l} ${v>0?'+':''}${v}</span>`;
+  }).filter(Boolean).join('');
+
+  return `<div class="game-layout">
+    <div class="building-panel">
+      ${renderBuilding()}
+      <div class="team-panel"><h3>Your Team</h3>
+        ${state.team.map(m=>`<div class="team-member-mini"><span>${m.emoji}</span><span class="name">${m.name.split(' ')[0]}</span><span class="stats">⭐${m.skill.toFixed(1)} 🤝${m.trust.toFixed(1)} 😊${m.morale.toFixed(1)}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="main-panel">
+      <div class="outcome-card ${cls}">
+        <div class="outcome-icon">${icon}</div>
+        <div class="outcome-text">${o.text}</div>
+        <div class="outcome-rewards"><span class="outcome-reward xp">+${o.xp} XP</span>${ms}</div>
+        ${o.delegated?'<div class="outcome-delegation">✨ Delegation builds your team! Stats grew. Keep it up for streak bonuses!</div>':''}
+        ${o.warningText?`<div class="outcome-warning">${o.warningText}</div>`:''}
+        <button class="btn btn-primary btn-small" style="margin-top:16px;" onclick="nextEvent()">Continue</button>
+      </div>
+      ${renderMetrics()}
+    </div>
+  </div>`;
+}
+
+function renderQuarterEnd() {
+  const stars = state.quarterStars || 0;
+  const starStr = '⭐'.repeat(stars) + '☆'.repeat(3-stars);
+  const avg = Math.round((state.metrics.it+state.metrics.biz+state.metrics.morale+state.metrics.board)/4);
+  return `<div class="quarter-end">
+    <div class="quarter-title">Quarter Complete!</div>
+    <div style="color:var(--text-dim);">Year ${state.completedYear||state.year}, Quarter ${state.completedQuarter||state.quarter}</div>
+    <div class="quarter-stars">${starStr}</div>
+    <div class="quarter-stats">
+      <div class="quarter-stat"><div class="label">XP Earned</div><div class="value" style="color:var(--gold);">+${state.quarterXP}</div></div>
+      <div class="quarter-stat"><div class="label">Events</div><div class="value">${state.quarterEvents}</div></div>
+      <div class="quarter-stat"><div class="label">Delegated</div><div class="value" style="color:var(--green);">${state.quarterDelegated}</div></div>
+      <div class="quarter-stat"><div class="label">Avg Metrics</div><div class="value">${avg}</div></div>
+    </div>
+    ${state.autoResolves.length>0?`<div class="auto-resolve-list">
+      <h3 style="font-size:0.85rem;margin-bottom:8px;color:var(--green);">✅ Auto-Resolved by Your Team</h3>
+      ${state.autoResolves.map(a=>`<div class="auto-resolve-item">✅ ${a.memberName} auto-resolved: ${a.eventText} (+${a.xp} XP)</div>`).join('')}
+    </div>`:''}
+    ${state.burnout>=5?`<div style="max-width:400px;margin:8px 0;padding:10px;background:rgba(239,83,80,0.1);border:1px solid rgba(239,83,80,0.2);border-radius:8px;font-size:0.85rem;color:var(--red);">
+      🔥 Burnout level: ${state.burnout}. ${CONFIG.burnoutWarnings[Object.keys(CONFIG.burnoutWarnings).reverse().find(k=>state.burnout>=k)]||''}
+    </div>`:''}
+    <button class="btn btn-primary" onclick="proceedFromQuarter()">
+      ${state.pendingLevelUp?'🎉 Level Up!':'Next Quarter'}
+    </button>
+  </div>`;
+}
+
+function renderLevelUp() {
+  const era = getEra();
+  const names = {1:'Startup',2:'Growth',3:'Enterprise'};
+  const nf = FLOOR_DEFS.find(f=>f.level===state.level);
+  const reward = nf
+    ? `<div class="level-up-reward"><div class="reward-icon">${nf.icon}</div> New floor unlocked: <strong>${nf.name}</strong></div>`
+    : `<div class="level-up-reward"><div class="reward-icon">💰</div> Budget increased! +$${formatMoney(50000+state.level*10000)}</div>`;
+  return `<div class="level-up-overlay" onclick="event.target===this&&proceedFromLevelUp()">
+    <div class="level-up-card">
+      <div class="level-up-icon">🎉</div>
+      <div class="level-up-title">Level ${state.level}!</div>
+      <div class="level-up-subtitle">${names[era]} Era</div>
+      ${reward}
+      ${state.pendingHire?`<div class="level-up-reward"><div class="reward-icon">${state.pendingHire.emoji}</div> New hire available: <strong>${state.pendingHire.name}</strong></div>`:''}
+      <button class="btn btn-gold" onclick="proceedFromLevelUp()">${state.pendingHire?'Meet Your New Hire':'Continue'}</button>
+    </div>
+  </div>`;
+}
+
+function renderHire() {
+  const h = state.pendingHire;
+  if (!h) return '';
+  return `<div class="quarter-end">
+    <div class="quarter-title">New Team Member!</div>
+    <div class="hire-card">
+      <div class="emoji">${h.emoji}</div><div class="name">${h.name}</div>
+      <div class="role">${h.role}</div>
+      <div class="personality">"${h.personality}"</div>
+      <div class="hire-stats">
+        <div class="hire-stat">⭐ Skill: ${h.skill}</div>
+        <div class="hire-stat">🤝 Trust: ${h.trust}</div>
+        <div class="hire-stat">😊 Morale: ${h.morale}</div>
+      </div>
+      <p style="font-size:0.8rem;color:var(--text-dim);margin-bottom:12px;">Delegate to them to build trust and grow their skills!</p>
+      <button class="btn btn-primary" onclick="hireTeamMember()">Welcome Aboard!</button>
+    </div>
+  </div>`;
+}
+
+function renderGameOver() {
+  const g = state.stats.finalGrade || 'F';
+  const info = getGradeInfo(g);
+  const total = state.stats.totalDelegated + state.stats.totalHandled;
+  const delRate = total > 0 ? Math.round((state.stats.totalDelegated/total)*100) : 0;
+  const tsg = state.team.reduce((s,m)=>s+m.skill+m.trust+m.morale,0);
+  const floors = FLOOR_DEFS.slice().reverse();
+  const buildingHtml = `<div class="building" style="margin:0 auto;max-width:180px;">${floors.map(f=>{
+    if(f.id==='lobby')return`<div class="floor lobby-floor" style="height:28px;font-size:0.65rem;">${f.icon} ${f.name}</div>`;
+    const u=f.level<=state.level;
+    return`<div class="floor ${u?'':'locked'}" style="height:32px;font-size:0.65rem;${u?'background:'+f.color:''}"><span class="floor-icon">${f.icon}</span><span class="floor-name">${f.name}</span></div>`;
+  }).join('')}</div>`;
+
+  return `<div class="game-over">
+    <div class="game-over-title">🏆 Game Complete! 🏆</div>
+    <div class="game-over-rank" style="color:${info.color}">${g==='S'?'⭐':''} ${g} — "${info.title}"</div>
+    <div style="margin:12px 0;transform:scale(0.75);">${buildingHtml}</div>
+    <div class="game-over-stats">
+      <div class="game-over-stat"><div class="label">Delegation Rate</div><div class="value">${delRate}%</div></div>
+      <div class="game-over-stat"><div class="label">Team Growth</div><div class="value">+${Math.round(tsg)} pts</div></div>
+      <div class="game-over-stat"><div class="label">Strategic Decisions</div><div class="value">${state.stats.strategicEvents}</div></div>
+      <div class="game-over-stat"><div class="label">Auto-Resolves</div><div class="value">${state.stats.autoResolves}</div></div>
+      <div class="game-over-stat"><div class="label">Achievements</div><div class="value">${state.achievements.length}/${ACHIEVEMENTS.length}</div></div>
+      <div class="game-over-stat"><div class="label">Peak Burnout</div><div class="value">${state.stats.peakBurnout}</div></div>
+    </div>
+    <div class="game-over-lesson">💡 <strong>Key Lesson:</strong><br>${info.lesson}</div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="startGame()">🔄 Play Again</button>
+      <button class="btn btn-secondary" onclick="state.screen='title';render();">🏠 Menu</button>
+    </div>
+  </div>`;
+}
+
+// ==================== HELPERS ====================
+function formatMoney(n) { return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?(n/1000).toFixed(0)+'K':n.toString(); }
+function getMoodEmoji(c) { if(c.mood>=3)return'😊';if(c.mood>=1)return'🙂';if(c.mood<=-3)return'😠';if(c.mood<=-1)return'😤';return c.emoji; }
+
+function showToast(msg, type) {
+  const c = document.getElementById('toasts');
+  if(!c) return;
+  const t = document.createElement('div');
+  t.className = 'toast' + (type ? ' ' + type : '');
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(), 3200);
+}
+
+function confetti() {
+  const colors=['#ffd54f','#4fc3f7','#66bb6a','#ef5350','#ab47bc','#ff7043'];
+  for(let i=0;i<30;i++){
+    const p=document.createElement('div');p.className='confetti-piece';
+    p.style.left=Math.random()*100+'vw';p.style.top='-10px';
+    p.style.background=colors[Math.floor(Math.random()*colors.length)];
+    p.style.animationDelay=Math.random()*0.5+'s';
+    p.style.borderRadius=Math.random()>0.5?'50%':'2px';
+    p.style.width=(4+Math.random()*8)+'px';p.style.height=(4+Math.random()*8)+'px';
+    document.body.appendChild(p);setTimeout(()=>p.remove(),2500);
+  }
+}
+
+// ==================== EVENT HANDLERS ====================
+function attachHandlers() {
+  document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      if (this.disabled) return;
+      if (this.dataset.exhausted) { handleExhausted(); return; }
+      const ci = parseInt(this.dataset.choice);
+      const mid = this.dataset.member || null;
+      handleChoice(ci, mid);
+    });
+  });
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', render);
+</script>
+</body>
+</html>
