@@ -121,6 +121,38 @@ body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 ::-webkit-scrollbar-track{background:#0a0a15}
 ::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:#3a3a6a}
+
+/* ========== SWIVEL CHAIR MODAL ========== */
+#swivel-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:2000;justify-content:center;align-items:center}
+#swivel-overlay.active{display:flex}
+#swivel-modal{background:#1e1e35;border:2px solid #3a3a6a;border-radius:12px;width:92%;max-width:920px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+#swivel-header{padding:16px 20px 12px;border-bottom:1px solid #2a2a4a}
+#swivel-header h2{color:#fff;font-size:18px;margin-bottom:4px}
+#swivel-header p{color:#6677aa;font-size:13px;line-height:1.5}
+#swivel-body{display:flex;flex:1;overflow:hidden;min-height:0}
+#swivel-left{width:46%;background:#0a120a;border-right:2px solid #1a3a1a;overflow-y:auto;padding:12px;font-family:'Courier New',monospace;user-select:none;-webkit-user-select:none}
+.legacy-header{background:#1a3a1a;color:#44ff44;padding:6px 10px;font-size:11px;margin-bottom:12px;border-radius:3px;letter-spacing:.05em}
+.legacy-record{border:1px solid #1a3a1a;border-radius:4px;padding:10px;margin-bottom:10px;background:#080f08}
+.legacy-record-header{color:#33cc33;font-size:10px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #1a3a1a}
+.legacy-field{display:flex;gap:8px;margin-bottom:3px;font-size:11px}
+.legacy-key{color:#228822;flex:0 0 110px}
+.legacy-val{color:#88ff88}
+#swivel-right{width:54%;overflow-y:auto;padding:12px 16px;background:#12121f}
+.new-system-header{background:#1a2a4a;color:#88aaff;padding:6px 10px;font-size:11px;margin-bottom:12px;border-radius:3px;letter-spacing:.05em}
+.swivel-record-form{border:1px solid #2a2a4a;border-radius:6px;padding:10px 12px;margin-bottom:10px;background:#1a1a30}
+.swivel-record-num{font-size:11px;color:#6677aa;margin-bottom:8px;font-family:'Courier New',monospace}
+.swivel-field-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.swivel-field-label{font-size:11px;color:#8899bb;flex:0 0 100px}
+.swivel-field-input{flex:1;background:#0f0f20;border:1px solid #2a2a4a;border-radius:4px;color:#dde;padding:5px 8px;font-size:12px;font-family:'Courier New',monospace;outline:none;transition:border-color .2s,background .2s}
+.swivel-field-input:focus{border-color:#4466aa}
+.swivel-field-input.correct{border-color:#44cc88;background:#0a1f12}
+.swivel-field-input.wrong{border-color:#cc4444;background:#1f0a0a}
+#swivel-footer{padding:12px 20px;border-top:1px solid #2a2a4a;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+#swivel-progress{font-size:12px;color:#6677aa;font-family:'Courier New',monospace}
+#swivel-submit{background:#1a3a6a;border:1px solid #2255aa;color:#dde;padding:9px 22px;border-radius:6px;font-size:13px;cursor:pointer;transition:all .2s}
+#swivel-submit:hover{background:#1a4a8a;border-color:#3366cc}
+#swivel-skip{background:transparent;border:1px solid #2a2a3a;color:#445;padding:9px 16px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .2s}
+#swivel-skip:hover{border-color:#555;color:#888}
 </style>
 </head>
 <body>
@@ -1759,6 +1791,106 @@ let hs = localStorage.getItem('itam_highscore');
 let hsd = document.getElementById('highscore-display');
 if (hs && hsd) hsd.textContent = 'High Score: ' + JSON.parse(hs) + '%';
 }
+// ===================== SWIVEL CHAIR INTRO =====================
+const SWIVEL_RECORDS = [
+  { legacy: {'RECORD ID':'REC-2019-0042','ASSET TAG':'LAP-00421','SERIAL NO':'XK7-29A-441B','ASSIGNED TO':'S. Mitchell','DEPT':'Marketing','LOCATION':'Floor 2','STATUS':'ACTIVE','LAST UPDATED':'03/14/2019'},
+    fields:[{label:'Asset Tag',key:'tag',answer:'LAP-00421'},{label:'Serial No.',key:'serial',answer:'XK7-29A-441B'},{label:'Assigned To',key:'user',answer:'S. Mitchell'},{label:'Location',key:'loc',answer:'Floor 2'}]},
+  { legacy: {'RECORD ID':'REC-2020-0117','ASSET TAG':'MON-01178','SERIAL NO':'MON-88F-221C','ASSIGNED TO':'B. Hernandez','DEPT':'Finance','LOCATION':'Floor 1','STATUS':'ACTIVE','LAST UPDATED':'07/02/2020'},
+    fields:[{label:'Asset Tag',key:'tag',answer:'MON-01178'},{label:'Serial No.',key:'serial',answer:'MON-88F-221C'},{label:'Assigned To',key:'user',answer:'B. Hernandez'},{label:'Location',key:'loc',answer:'Floor 1'}]},
+  { legacy: {'RECORD ID':'REC-2018-0009','ASSET TAG':'SRV-00091','SERIAL NO':'SVR-14D-009A','ASSIGNED TO':'(Unassigned)','DEPT':'IT','LOCATION':'Server Room','STATUS':'ACTIVE','LAST UPDATED':'11/30/2018'},
+    fields:[{label:'Asset Tag',key:'tag',answer:'SRV-00091'},{label:'Serial No.',key:'serial',answer:'SVR-14D-009A'},{label:'Assigned To',key:'user',answer:'(Unassigned)'},{label:'Location',key:'loc',answer:'Server Room'}]},
+];
+
+function showSwivelChairIntro() {
+  let leftHtml = `<div class="legacy-header">&#9658; ASSETTRACKPRO v2.3.1 &mdash; LEGACY SYSTEM &nbsp;[READ ONLY]</div>`;
+  SWIVEL_RECORDS.forEach((rec, i) => {
+    leftHtml += `<div class="legacy-record"><div class="legacy-record-header">&#9472;&#9472;&#9472; RECORD ${i+1} OF ${SWIVEL_RECORDS.length} &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>`;
+    Object.entries(rec.legacy).forEach(([k,v]) => {
+      leftHtml += `<div class="legacy-field"><span class="legacy-key">${k}:</span><span class="legacy-val">${v}</span></div>`;
+    });
+    leftHtml += `</div>`;
+  });
+
+  let rightHtml = `<div class="new-system-header">&#9679; CMDB PORTAL &mdash; NEW RECORD ENTRY &nbsp;[Type values from legacy system]</div>`;
+  SWIVEL_RECORDS.forEach((rec, i) => {
+    rightHtml += `<div class="swivel-record-form"><div class="swivel-record-num">ENTRY ${i+1} / ${SWIVEL_RECORDS.length}</div>`;
+    rec.fields.forEach(f => {
+      rightHtml += `<div class="swivel-field-row"><span class="swivel-field-label">${f.label}</span><input class="swivel-field-input" type="text" data-rec="${i}" data-key="${f.key}" placeholder="enter value..." autocomplete="off" spellcheck="false"></div>`;
+    });
+    rightHtml += `</div>`;
+  });
+
+  let overlay = document.createElement('div');
+  overlay.id = 'swivel-overlay';
+  overlay.className = 'active';
+  overlay.innerHTML = `<div id="swivel-modal">
+    <div id="swivel-header">
+      <h2>&#128197; Day 1 &mdash; First Task: Data Migration</h2>
+      <p>Welcome to MegaCorp IT. Before you can access the new CMDB, you need to migrate 3 records from the legacy system. Manually. There is no export button &mdash; the old system "doesn't integrate" with the new one. Nobody knows why. Nobody has ever asked. Please type the values exactly as shown on the left.</p>
+    </div>
+    <div id="swivel-body">
+      <div id="swivel-left">${leftHtml}</div>
+      <div id="swivel-right">${rightHtml}</div>
+    </div>
+    <div id="swivel-footer">
+      <div id="swivel-progress">Correct fields: <span id="swivel-count">0</span> / ${SWIVEL_RECORDS.length * 4}</div>
+      <div style="display:flex;gap:8px">
+        <button id="swivel-skip" onclick="completeSwivelChair(false)">Skip &mdash; I'll do it later</button>
+        <button id="swivel-submit" onclick="completeSwivelChair(true)">Submit Records &rarr;</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  overlay.querySelectorAll('.swivel-field-input').forEach(inp => inp.addEventListener('input', updateSwivelProgress));
+}
+
+function updateSwivelProgress() {
+  let correct = 0;
+  SWIVEL_RECORDS.forEach((rec, ri) => {
+    rec.fields.forEach(f => {
+      let inp = document.querySelector(`.swivel-field-input[data-rec="${ri}"][data-key="${f.key}"]`);
+      if (!inp) return;
+      let v = inp.value.trim();
+      if (v === '') { inp.classList.remove('correct','wrong'); return; }
+      let ok = v.toLowerCase() === f.answer.toLowerCase();
+      inp.classList.toggle('correct', ok);
+      inp.classList.toggle('wrong', !ok);
+      if (ok) correct++;
+    });
+  });
+  document.getElementById('swivel-count').textContent = correct;
+}
+
+function completeSwivelChair(submitted) {
+  let correct = 0, total = SWIVEL_RECORDS.length * 4;
+  if (submitted) {
+    SWIVEL_RECORDS.forEach((rec, ri) => {
+      rec.fields.forEach(f => {
+        let inp = document.querySelector(`.swivel-field-input[data-rec="${ri}"][data-key="${f.key}"]`);
+        if (inp && inp.value.trim().toLowerCase() === f.answer.toLowerCase()) correct++;
+      });
+    });
+  }
+  let overlay = document.getElementById('swivel-overlay');
+  if (overlay) overlay.remove();
+  if (!submitted) {
+    G.metrics.cmdbAccuracy = Math.max(0, G.metrics.cmdbAccuracy - 3);
+    G.eventLog.push('⚠ Skipped Day 1 data migration. Already behind.');
+  } else if (correct === total) {
+    G.metrics.cmdbAccuracy = Math.min(100, G.metrics.cmdbAccuracy + 5);
+    G.eventLog.push('✓ Perfect data migration — all 12 fields correct. Diane is impressed (slightly).');
+  } else if (correct >= 8) {
+    G.eventLog.push(`Data migration complete — ${correct}/${total} fields correct. Close enough.`);
+  } else if (correct >= 4) {
+    G.metrics.cmdbAccuracy = Math.max(0, G.metrics.cmdbAccuracy - 2);
+    G.eventLog.push(`⚠ Data migration: ${correct}/${total} correct. Errors imported into CMDB.`);
+  } else {
+    G.metrics.cmdbAccuracy = Math.max(0, G.metrics.cmdbAccuracy - 5);
+    G.eventLog.push('✗ Day 1 data entry was a disaster. You are already the previous person.');
+  }
+  startPhase('briefing');
+}
+
 function startNewGame(numQuarters) {
 G = newGameState(numQuarters);
 G.started = true;
@@ -1769,7 +1901,7 @@ gc.classList.add('active');
 initCanvas();
 initTicker();
 updateDashboard();
-startPhase('briefing');
+showSwivelChairIntro();
 }
 // Init
 document.addEventListener('DOMContentLoaded', () => {
