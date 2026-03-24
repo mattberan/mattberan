@@ -1794,11 +1794,11 @@ if (hs && hsd) hsd.textContent = 'High Score: ' + JSON.parse(hs) + '%';
 // ===================== SWIVEL CHAIR INTRO =====================
 const SWIVEL_RECORDS = [
   { legacy: {'RECORD ID':'REC-2019-0042','ASSET TAG':'LAP-00421','SERIAL NO':'XK7-29A-441B','ASSIGNED TO':'S. Mitchell','DEPT':'Marketing','LOCATION':'Floor 2','STATUS':'ACTIVE','LAST UPDATED':'03/14/2019'},
-    fields:[{label:'Asset Tag',key:'tag',answer:'LAP-00421'},{label:'Serial No.',key:'serial',answer:'XK7-29A-441B'},{label:'Assigned To',key:'user',answer:'S. Mitchell'},{label:'Location',key:'loc',answer:'Floor 2'}]},
+    fields:[{label:'Serial No.',key:'serial',answer:'XK7-29A-441B'}]},
   { legacy: {'RECORD ID':'REC-2020-0117','ASSET TAG':'MON-01178','SERIAL NO':'MON-88F-221C','ASSIGNED TO':'B. Hernandez','DEPT':'Finance','LOCATION':'Floor 1','STATUS':'ACTIVE','LAST UPDATED':'07/02/2020'},
-    fields:[{label:'Asset Tag',key:'tag',answer:'MON-01178'},{label:'Serial No.',key:'serial',answer:'MON-88F-221C'},{label:'Assigned To',key:'user',answer:'B. Hernandez'},{label:'Location',key:'loc',answer:'Floor 1'}]},
+    fields:[{label:'Serial No.',key:'serial',answer:'MON-88F-221C'}]},
   { legacy: {'RECORD ID':'REC-2018-0009','ASSET TAG':'SRV-00091','SERIAL NO':'SVR-14D-009A','ASSIGNED TO':'(Unassigned)','DEPT':'IT','LOCATION':'Server Room','STATUS':'ACTIVE','LAST UPDATED':'11/30/2018'},
-    fields:[{label:'Asset Tag',key:'tag',answer:'SRV-00091'},{label:'Serial No.',key:'serial',answer:'SVR-14D-009A'},{label:'Assigned To',key:'user',answer:'(Unassigned)'},{label:'Location',key:'loc',answer:'Server Room'}]},
+    fields:[{label:'Serial No.',key:'serial',answer:'SVR-14D-009A'}]},
 ];
 
 function showSwivelChairIntro() {
@@ -1833,7 +1833,7 @@ function showSwivelChairIntro() {
       <div id="swivel-right">${rightHtml}</div>
     </div>
     <div id="swivel-footer">
-      <div id="swivel-progress">Correct fields: <span id="swivel-count">0</span> / ${SWIVEL_RECORDS.length * 4}</div>
+      <div id="swivel-progress">Correct fields: <span id="swivel-count">0</span> / ${SWIVEL_RECORDS.length}</div>
       <div style="display:flex;gap:8px">
         <button id="swivel-skip" onclick="completeSwivelChair(false)">Skip &mdash; I'll do it later</button>
         <button id="swivel-submit" onclick="completeSwivelChair(true)">Submit Records &rarr;</button>
@@ -1862,7 +1862,7 @@ function updateSwivelProgress() {
 }
 
 function completeSwivelChair(submitted) {
-  let correct = 0, total = SWIVEL_RECORDS.length * 4;
+  let correct = 0, total = SWIVEL_RECORDS.length;
   if (submitted) {
     SWIVEL_RECORDS.forEach((rec, ri) => {
       rec.fields.forEach(f => {
@@ -1878,12 +1878,12 @@ function completeSwivelChair(submitted) {
     G.eventLog.push('⚠ Skipped Day 1 data migration. Already behind.');
   } else if (correct === total) {
     G.metrics.cmdbAccuracy = Math.min(100, G.metrics.cmdbAccuracy + 5);
-    G.eventLog.push('✓ Perfect data migration — all 12 fields correct. Diane is impressed (slightly).');
-  } else if (correct >= 8) {
-    G.eventLog.push(`Data migration complete — ${correct}/${total} fields correct. Close enough.`);
-  } else if (correct >= 4) {
+    G.eventLog.push('✓ Perfect data migration — all 3 serials correct. Diane is impressed (slightly).');
+  } else if (correct >= 2) {
+    G.eventLog.push(`Data migration: ${correct}/${total} serials correct. Close enough.`);
+  } else if (correct === 1) {
     G.metrics.cmdbAccuracy = Math.max(0, G.metrics.cmdbAccuracy - 2);
-    G.eventLog.push(`⚠ Data migration: ${correct}/${total} correct. Errors imported into CMDB.`);
+    G.eventLog.push('⚠ Data migration: 1/3 serials correct. Two bad records imported.');
   } else {
     G.metrics.cmdbAccuracy = Math.max(0, G.metrics.cmdbAccuracy - 5);
     G.eventLog.push('✗ Day 1 data entry was a disaster. You are already the previous person.');
