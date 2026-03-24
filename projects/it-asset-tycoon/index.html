@@ -1794,11 +1794,11 @@ if (hs && hsd) hsd.textContent = 'High Score: ' + JSON.parse(hs) + '%';
 // ===================== SWIVEL CHAIR INTRO =====================
 const SWIVEL_RECORDS = [
   { legacy: {'RECORD ID':'REC-2019-0042','ASSET TAG':'LAP-00421','SERIAL NO':'XK7-29A-441B','ASSIGNED TO':'S. Mitchell','DEPT':'Marketing','LOCATION':'Floor 2','STATUS':'ACTIVE','LAST UPDATED':'03/14/2019'},
-    fields:[{label:'Serial No.',key:'serial',answer:'XK7-29A-441B'}]},
+    fields:[{label:'Assigned To',key:'user',answer:'S. Mitchell'}]},
   { legacy: {'RECORD ID':'REC-2020-0117','ASSET TAG':'MON-01178','SERIAL NO':'MON-88F-221C','ASSIGNED TO':'B. Hernandez','DEPT':'Finance','LOCATION':'Floor 1','STATUS':'ACTIVE','LAST UPDATED':'07/02/2020'},
-    fields:[{label:'Serial No.',key:'serial',answer:'MON-88F-221C'}]},
+    fields:[{label:'Dept',key:'dept',answer:'Finance'}]},
   { legacy: {'RECORD ID':'REC-2018-0009','ASSET TAG':'SRV-00091','SERIAL NO':'SVR-14D-009A','ASSIGNED TO':'(Unassigned)','DEPT':'IT','LOCATION':'Server Room','STATUS':'ACTIVE','LAST UPDATED':'11/30/2018'},
-    fields:[{label:'Serial No.',key:'serial',answer:'SVR-14D-009A'}]},
+    fields:[{label:'Status',key:'status',answer:'ACTIVE'}]},
 ];
 
 function showSwivelChairIntro() {
@@ -1878,7 +1878,7 @@ function completeSwivelChair(submitted) {
     G.eventLog.push('⚠ Skipped Day 1 data migration. Already behind.');
   } else if (correct === total) {
     G.metrics.cmdbAccuracy = Math.min(100, G.metrics.cmdbAccuracy + 5);
-    G.eventLog.push('✓ Perfect data migration — all 3 serials correct. Diane is impressed (slightly).');
+    G.eventLog.push('✓ Perfect data migration — all 3 fields correct. Diane is impressed (slightly).');
   } else if (correct >= 2) {
     G.eventLog.push(`Data migration: ${correct}/${total} serials correct. Close enough.`);
   } else if (correct === 1) {
