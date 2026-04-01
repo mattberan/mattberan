@@ -1044,8 +1044,10 @@
     labelLight.classList.toggle('active', theme === 'light');
   }
 
-  // Check saved preference or default to dark
-  const savedTheme = localStorage.getItem('theme') || 'dark';
+  // Check saved preference; if none, default by time of day (7am–8pm = light)
+  const hour = new Date().getHours();
+  const timeDefault = (hour >= 7 && hour < 20) ? 'light' : 'dark';
+  const savedTheme = localStorage.getItem('theme') || timeDefault;
   html.setAttribute('data-theme', savedTheme);
   toggle.checked = savedTheme === 'light';
   updateLabels(savedTheme);
