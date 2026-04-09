@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beran Brief — Builder</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <h1>THE BERAN BRIEF — BUILDER</h1>
+  <div class="meta">
+    <select id="draft-picker" title="Open existing draft">
+      <option value="">Open draft…</option>
+    </select>
+  </div>
+</div>
+
+<div id="resume-banner" class="resume-banner" style="display:none">
+  <span id="resume-msg"></span>
+  <button id="resume-yes">Resume</button>
+  <button id="resume-no">Start fresh</button>
+</div>
+
+<div class="workspace">
+
+  <!-- LEFT: Editor -->
+  <div class="editor">
+
+    <div class="field-group">
+      <label>Issue date</label>
+      <input type="date" id="issue-date">
+    </div>
+
+    <div class="field-group">
+      <label>Email subject</label>
+      <input type="text" id="issue-subject" placeholder="Write a fresh subject line…">
+    </div>
+
+    <div class="field-group">
+      <label>Inbox preview text <span style="font-weight:400;color:#999">(shows as snippet before opening)</span></label>
+      <input type="text" id="issue-preheader" placeholder="e.g. Three things worth your time this Thursday.">
+    </div>
+
+    <div class="field-group">
+      <label>Opener</label>
+      <input type="text" id="issue-salutation" placeholder="Hi!" style="max-width:200px">
+    </div>
+
+    <div class="field-group">
+      <label>Greeting</label>
+      <textarea id="issue-greeting" rows="2" placeholder="Happy Thursday — hope your week is going well. Here's this week's newsletter!"></textarea>
+    </div>
+
+    <div id="items-container">
+      <!-- Item blocks rendered by JS -->
+    </div>
+
+  </div>
+
+  <!-- RIGHT: Preview -->
+  <div class="preview">
+    <div class="preview-toolbar">
+      <button id="preview-email-btn" class="active" onclick="setPreviewMode('email')">Email</button>
+      <button id="preview-web-btn" onclick="setPreviewMode('web')">Web page</button>
+    </div>
+    <div class="preview-frame" id="preview-frame"></div>
+
+    <div class="social-posts" id="social-panel" style="display:none">
+      <h3>Social posts</h3>
+      <div id="social-output"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom action bar -->
+<div class="action-bar">
+  <button class="btn" onclick="saveDraft()">Save draft</button>
+  <button class="btn" onclick="generateSocial()">Generate social posts</button>
+  <span class="spacer"></span>
+  <span class="save-status" id="save-status"></span>
+  <button class="btn" onclick="sendTest()">Send test email</button>
+  <button class="btn btn-primary" onclick="publish()">Publish</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

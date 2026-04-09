@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Beran Brief — Archive</title>
+<meta name="description" content="Everything you need to know. Nothing you don't. Three sentences, once a week.">
+<meta property="og:title" content="The Beran Brief">
+<meta property="og:description" content="Everything you need to know. Nothing you don't. Three sentences, once a week.">
+<meta property="og:url" content="{{base_url}}/newsletter/">
+<link rel="canonical" href="{{base_url}}/newsletter/">
+<link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+<header>
+  <a href="/" class="home-link">Matt Beran</a>
+</header>
+
+<main class="newsletter-index">
+  <h1>The Beran Brief</h1>
+  <p class="tagline">Everything you need to know. Nothing you don't.</p>
+  <p class="description">I've spent over 25 years in IT watching people drown in tools, jargon, and vendor promises. The Beran Brief is my antidote — three sentences worth reading, once a week; that's it.</p>
+
+  <div class="subscribe-form" id="subscribe">
+    <h2>Subscribe</h2>
+    <form action="https://formspree.io/f/xqegopqp" method="POST">
+      <input type="email" name="email" placeholder="your@email.com" required>
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+
+  <section class="issue-list">
+    <h2>All issues</h2>
+    {{issues}}
+  </section>
+</main>
+
+<footer>
+  <p>&copy; Matt Beran</p>
+</footer>
+</body>
+</html>

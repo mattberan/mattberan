@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{date}} — The Beran Brief</title>
+<meta name="description" content="{{description}}">
+<meta property="og:title" content="The Beran Brief — {{date}}">
+<meta property="og:description" content="{{description}}">
+<meta property="og:url" content="{{issue_url}}">
+<meta property="og:type" content="article">
+<link rel="canonical" href="{{issue_url}}">
+<link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+<header>
+  <a href="/" class="home-link">Matt Beran</a>
+  <nav><a href="/newsletter/">The Beran Brief</a></nav>
+</header>
+
+<main class="issue">
+  <time datetime="{{date}}">{{date}}</time>
+  <p class="greeting">{{greeting}}</p>
+
+  <div class="items">
+    {{items}}
+  </div>
+</main>
+
+<footer>
+  <div class="subscribe-cta">
+    <p>Everything you need to know. Nothing you don't.</p>
+    <a href="/newsletter/#subscribe" class="subscribe-btn">Subscribe to The Beran Brief</a>
+  </div>
+  <nav class="issue-nav">
+    <a href="/newsletter/">← All issues</a>
+  </nav>
+</footer>
+</body>
+</html>

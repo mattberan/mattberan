@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matt Beran - The IT Community Connector</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #333;
+    background: #f5f5f5;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- BENTO GRID CONTAINER ---------- */
+  .bento-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .bento-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  /* ---------- BENTO CARD BASE ---------- */
+  .bento-card {
+    border-radius: 20px;
+    padding: 28px;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .bento-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+  }
+
+  /* ---------- CARD SIZES ---------- */
+  .span-2x1 { grid-column: span 2; }
+  .span-1x2 { grid-row: span 2; }
+  .span-2x2 { grid-column: span 2; grid-row: span 2; }
+
+  /* ---------- CARD COLORS ---------- */
+  .bg-white { background: #ffffff; }
+  .bg-blue { background: #e8f4fd; }
+  .bg-green { background: #e8fdf5; }
+  .bg-purple { background: #f0e8fd; }
+  .bg-yellow { background: #fdf8e8; }
+  .bg-pink { background: #fde8f0; }
+
+  /* ---------- HERO CARD ---------- */
+  .hero-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 28px;
+  }
+
+  .hero-card .headshot {
+    width: 110px;
+    height: 110px;
+    border-radius: 28px;
+    object-fit: cover;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .hero-card h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 4px;
+  }
+
+  .hero-card .tagline {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 24px;
+  }
+
+  .hero-card .cta-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 11px 22px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .cta svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .cta-primary {
+    background: #333;
+    color: #fff;
+  }
+
+  .cta-primary:hover {
+    background: #111;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .cta-secondary {
+    background: rgba(0,0,0,0.06);
+    color: #333;
+  }
+
+  .cta-secondary:hover {
+    background: rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+  }
+
+  /* ---------- SECTION CARDS ---------- */
+  .bento-card h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .bento-card h3 {
+    font-size: 0.92rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .bento-card p {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.6;
+  }
+
+  .bento-card a.card-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 0.82rem;
+    color: #555;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+
+  .bento-card a.card-link:hover { color: #111; }
+
+  /* ---------- COMMUNITY ITEMS ---------- */
+  .community-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .community-item {
+    background: rgba(255,255,255,0.5);
+    border-radius: 14px;
+    padding: 16px 14px;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.25s ease;
+  }
+
+  .community-item:hover {
+    background: rgba(255,255,255,0.9);
+    transform: scale(1.03);
+  }
+
+  .community-logo {
+    width: 40px;
+    height: 40px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 10px;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    color: #aaa;
+  }
+
+  .community-item span {
+    display: block;
+    font-weight: 700;
+    font-size: 0.82rem;
+  }
+
+  .community-item small {
+    font-size: 0.7rem;
+    color: #888;
+  }
+
+  /* ---------- MINI LIST ---------- */
+  .mini-list {
+    list-style: none;
+  }
+
+  .mini-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .mini-list li:last-child { border-bottom: none; }
+
+  .mini-list a {
+    color: #333;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: color 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mini-list a:hover { color: #666; }
+
+  .mini-list a::after {
+    content: '\2192';
+    color: #ccc;
+    font-size: 0.8rem;
+  }
+
+  /* ---------- VIDEO THUMB ---------- */
+  .video-thumb {
+    background: rgba(0,0,0,0.04);
+    border-radius: 12px;
+    aspect-ratio: 16/9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    font-size: 0.75rem;
+    color: #bbb;
+  }
+
+  /* ---------- PRESENTATION MINI ---------- */
+  .presentation-item {
+    background: rgba(255,255,255,0.5);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 8px;
+    transition: background 0.2s ease;
+  }
+
+  .presentation-item:last-child { margin-bottom: 0; }
+  .presentation-item:hover { background: rgba(255,255,255,0.9); }
+
+  .presentation-item h3 { font-size: 0.85rem; margin-bottom: 2px; }
+  .presentation-item p { font-size: 0.78rem; }
+
+  /* ---------- PODCAST LINKS ---------- */
+  .podcast-links {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+
+  .podcast-links a {
+    padding: 6px 14px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: #555;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .podcast-links a:hover {
+    background: #333;
+    color: #fff;
+  }
+
+  /* ---------- RESOURCE ITEM ---------- */
+  .resource-item {
+    display: block;
+    background: rgba(255,255,255,0.5);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.25s ease;
+  }
+
+  .resource-item:last-child { margin-bottom: 0; }
+
+  .resource-item:hover {
+    background: rgba(255,255,255,0.9);
+    transform: translateX(4px);
+  }
+
+  .resource-item h3 { font-size: 0.85rem; margin-bottom: 2px; }
+  .resource-item p { font-size: 0.78rem; color: #888; }
+
+  /* ---------- FOOTER ---------- */
+  footer {
+    text-align: center;
+    padding: 32px 24px;
+    font-size: 0.78rem;
+    color: #aaa;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 900px) {
+    .bento-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .span-2x2 { grid-column: span 2; }
+  }
+
+  @media (max-width: 600px) {
+    .bento-container { padding: 12px; }
+    .bento-grid {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .span-2x1, .span-1x2, .span-2x2 {
+      grid-column: span 1;
+      grid-row: span 1;
+    }
+    .hero-card h1 { font-size: 1.5rem; }
+    .bento-card { padding: 22px; }
+    .community-list { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bento-container">
+  <div class="bento-grid">
+
+    <!-- HERO (2x2) -->
+    <div class="bento-card bg-white span-2x2 hero-card">
+      <img src="../images/headshot.jpg" alt="Matt Beran" class="headshot">
+      <h1>Matt Beran</h1>
+      <p class="tagline">The IT Community Connector</p>
+      <div class="cta-group">
+        <a href="https://linkedin.com/in/mattberan" class="cta cta-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Connect with Matt
+        </a>
+        <a href="mailto:mattberan@gmail.com" class="cta cta-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          Send an email to Matt
+        </a>
+      </div>
+    </div>
+
+    <!-- COMMUNITIES (2x1) -->
+    <div class="bento-card bg-blue span-2x1">
+      <h2>Communities</h2>
+      <div class="community-list">
+        <a href="#" class="community-item">
+          <div class="community-logo">Logo</div>
+          <span>OSC</span>
+          <small>Open Source Community</small>
+        </a>
+        <a href="#" class="community-item">
+          <div class="community-logo">Logo</div>
+          <span>HDI</span>
+          <small>Help Desk Institute</small>
+        </a>
+        <a href="#" class="community-item">
+          <div class="community-logo">Logo</div>
+          <span>SDI</span>
+          <small>Service Desk Institute</small>
+        </a>
+        <a href="#" class="community-item">
+          <div class="community-logo">Logo</div>
+          <span>SIAM</span>
+          <small>SIAM Foundation</small>
+        </a>
+      </div>
+    </div>
+
+    <!-- PRESENTATIONS (2x1) -->
+    <div class="bento-card bg-purple span-2x1">
+      <h2>Past Presentations</h2>
+      <div class="presentation-item">
+        <h3>ITSM Best Practices 2024</h3>
+        <p>Modern IT service management strategies for growing organizations.</p>
+      </div>
+      <div class="presentation-item">
+        <h3>Building Community in Tech</h3>
+        <p>Fostering meaningful connections in the technology space.</p>
+      </div>
+      <div class="presentation-item">
+        <h3>Service Management Trends</h3>
+        <p>Emerging trends shaping the future of service management.</p>
+      </div>
+      <div class="presentation-item">
+        <h3>The Future of IT Support</h3>
+        <p>What the next decade holds for IT support teams.</p>
+      </div>
+      <div class="presentation-item">
+        <h3>Open Source in Enterprise</h3>
+        <p>Adopting and contributing to open source at scale.</p>
+      </div>
+    </div>
+
+    <!-- VIDEO 1 (1x1) -->
+    <div class="bento-card bg-white">
+      <div class="video-thumb">Video Thumbnail</div>
+      <h3>Community Building 101</h3>
+      <a href="#" class="card-link">Watch &rarr;</a>
+    </div>
+
+    <!-- VIDEO 2 (1x1) -->
+    <div class="bento-card bg-white">
+      <div class="video-thumb">Video Thumbnail</div>
+      <h3>ITSM Quick Tips</h3>
+      <a href="#" class="card-link">Watch &rarr;</a>
+    </div>
+
+    <!-- VIDEO 3 (1x1) -->
+    <div class="bento-card bg-white">
+      <div class="video-thumb">Video Thumbnail</div>
+      <h3>Open Source Roundtable</h3>
+      <a href="#" class="card-link">Watch &rarr;</a>
+    </div>
+
+    <!-- VIDEO 4 (1x1) -->
+    <div class="bento-card bg-white">
+      <div class="video-thumb">Video Thumbnail</div>
+      <h3>Service Desk Live Q&amp;A</h3>
+      <a href="#" class="card-link">Watch &rarr;</a>
+    </div>
+
+    <!-- PODCAST (2x1) -->
+    <div class="bento-card bg-green span-2x1">
+      <h2>Podcast</h2>
+      <h3>The IT Community Podcast</h3>
+      <p>Weekly conversations with IT leaders, community builders, and service management professionals. Tune in for insights, stories, and practical advice.</p>
+      <div class="podcast-links">
+        <a href="#">Apple Podcasts</a>
+        <a href="#">Spotify</a>
+        <a href="#">Google Podcasts</a>
+        <a href="#">RSS Feed</a>
+      </div>
+    </div>
+
+    <!-- COMPANY (2x1) -->
+    <div class="bento-card bg-yellow span-2x1">
+      <h2>Company</h2>
+      <h3>InvGate</h3>
+      <p>InvGate provides modern IT service management and asset management software that helps organizations streamline their operations, improve service delivery, and empower their teams with intuitive tools built for today's IT challenges.</p>
+      <a href="#" class="card-link">Visit InvGate &rarr;</a>
+    </div>
+
+    <!-- RESOURCES (2x1) -->
+    <div class="bento-card bg-pink span-2x1">
+      <h2>Resources</h2>
+      <a href="#" class="resource-item">
+        <h3>ITSM Starter Guide</h3>
+        <p>A comprehensive guide for teams beginning their service management journey.</p>
+      </a>
+      <a href="#" class="resource-item">
+        <h3>Community Building Playbook</h3>
+        <p>Step-by-step strategies for creating and nurturing tech communities.</p>
+      </a>
+      <a href="#" class="resource-item">
+        <h3>Service Desk Metrics Cheat Sheet</h3>
+        <p>Key metrics and KPIs every service desk should be tracking.</p>
+      </a>
+      <a href="#" class="resource-item">
+        <h3>Open Source Adoption Toolkit</h3>
+        <p>Resources for evaluating and implementing open source solutions.</p>
+      </a>
+    </div>
+
+    <!-- QUICK LINKS (2x1) -->
+    <div class="bento-card bg-white span-2x1">
+      <h2>Quick Links</h2>
+      <ul class="mini-list">
+        <li><a href="#">HDI Conference 2024 Resources</a></li>
+        <li><a href="#">Service Management World Recap</a></li>
+        <li><a href="#">My Favorite ITSM Tools</a></li>
+        <li><a href="#">Community Events Calendar</a></li>
+        <li><a href="#">Recommended Reading List</a></li>
+        <li><a href="#">Speaking Inquiry Form</a></li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <p>&copy; 2024 Matt Beran. All rights reserved.</p>
+</footer>
+
+<script>
+  // Staggered reveal on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('.bento-card');
+    cards.forEach((card, i) => {
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.95) translateY(16px)';
+      card.style.transition = `opacity 0.5s ease ${i * 0.06}s, transform 0.5s ease ${i * 0.06}s`;
+    });
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        cards.forEach(card => {
+          card.style.opacity = '1';
+          card.style.transform = 'scale(1) translateY(0)';
+        });
+      });
+    });
+
+    // Scroll reveal for cards off-screen
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'scale(1) translateY(0)';
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    cards.forEach(card => observer.observe(card));
+  });
+</script>
+</body>
+</html>

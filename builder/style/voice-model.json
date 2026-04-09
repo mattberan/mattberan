@@ -1,0 +1,15 @@
+{
+  "last_updated": "2026-04-08",
+  "rules": [
+    "Use active voice — Matt speaks directly",
+    "Short > long. If it can be cut, cut it.",
+    "Lead with the implication, not the feature",
+    "Sound like a practitioner, not a vendor",
+    "Use 'just shipped' not 'released' — feels like news"
+  ],
+  "vocabulary": {
+    "prefer": ["shipped", "broke", "actually", "here's the thing", "just"],
+    "avoid": ["leverage", "utilize", "exciting", "robust", "innovative", "synergy"]
+  },
+  "tone_notes": "Practitioner voice. Never vendor-speak. 20 years of ITSM frustration, zero patience for fluff."
+}

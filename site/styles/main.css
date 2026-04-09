@@ -1,0 +1,227 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --text: #1a1a1a;
+  --muted: #666;
+  --border: #e0e0e0;
+  --bg: #fff;
+  --accent: #1a1a1a;
+}
+
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header */
+header {
+  padding: 24px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.home-link {
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+header nav a {
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+}
+header nav a:hover { color: var(--text); }
+
+/* Newsletter index */
+.newsletter-index h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.tagline {
+  font-style: italic;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+.description {
+  margin-bottom: 40px;
+  color: #333;
+}
+
+/* Subscribe form */
+.subscribe-form {
+  border: 1px solid var(--border);
+  padding: 24px;
+  border-radius: 4px;
+  margin-bottom: 48px;
+  background: #fafafa;
+}
+.subscribe-form h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  font-family: -apple-system, system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.subscribe-form form {
+  display: flex;
+  gap: 8px;
+}
+.subscribe-form input[type="email"] {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 15px;
+  font-family: inherit;
+}
+.subscribe-form button, .subscribe-btn {
+  padding: 8px 20px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: -apple-system, system-ui, sans-serif;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Issue list */
+.issue-list h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-family: -apple-system, system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+.issue-item {
+  display: flex;
+  gap: 16px;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.issue-item time {
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.issue-item a {
+  color: var(--text);
+  text-decoration: none;
+  font-size: 15px;
+}
+.issue-item a:hover { text-decoration: underline; }
+.empty-state { color: var(--muted); font-style: italic; font-size: 15px; }
+
+/* Issue page */
+.issue time {
+  display: block;
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.issue .greeting {
+  margin-bottom: 40px;
+  color: #333;
+}
+.items { }
+.item {
+  margin-bottom: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.item:last-child { border-bottom: none; }
+.category {
+  display: block;
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.sentence {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+.item a {
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1px;
+}
+.item a:hover { color: var(--text); border-color: var(--text); }
+
+/* Deep page */
+.deep-page .breadcrumb {
+  margin-bottom: 32px;
+}
+.deep-page .breadcrumb a {
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.deep-page .breadcrumb a:hover { color: var(--text); }
+.deep-page h1 {
+  font-size: 1.6rem;
+  line-height: 1.3;
+  margin: 12px 0 32px;
+}
+.deep-page .content p {
+  margin-bottom: 1.2em;
+}
+
+/* Footer */
+footer {
+  margin-top: 64px;
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--muted);
+}
+.subscribe-cta {
+  margin-bottom: 16px;
+}
+.subscribe-cta p {
+  font-style: italic;
+  margin-bottom: 8px;
+}
+.issue-nav { margin-top: 8px; }
+.issue-nav a {
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.issue-nav a:hover { color: var(--text); }
+
+a { color: inherit; }
