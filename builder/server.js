@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const express = require('express');
 const path = require('path');
 
@@ -12,6 +12,7 @@ app.use('/api/issues', require('./routes/issues'));
 app.use('/api/preview', require('./routes/preview'));
 app.use('/api/publish', require('./routes/publish'));
 app.use('/api/social', require('./routes/social'));
+app.use('/api/subscribers', require('./routes/subscribers'));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui', 'index.html'));

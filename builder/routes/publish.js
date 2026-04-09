@@ -5,6 +5,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 const renderer = require('../lib/renderer');
 const email = require('../lib/email');
+const subscribers = require('../lib/subscribers');
 
 const SITE_DIR = path.join(__dirname, '../../site');
 
@@ -52,7 +53,9 @@ router.post('/', async (req, res) => {
     execSync('git push', { cwd: repoRoot });
 
     // 4. Send to full list
-    await email.sendToList(issue, subject, []);
+    const list = subscribers.load();
+    if (list.length === 0) return res.json({ ok: true, mode: 'publish', warning: 'No subscribers yet — pages published but no email sent.' });
+    await email.sendToList(issue, subject, list);
 
     res.json({ ok: true, mode: 'publish' });
   } catch (err) {

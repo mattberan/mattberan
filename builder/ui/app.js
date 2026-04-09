@@ -28,6 +28,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   await checkForResume();
   scheduleAutosave();
   updatePreview();
+  loadSubscribers();
 
   // Wire change listeners
   document.getElementById('issue-date').addEventListener('change', e => {
@@ -448,4 +449,95 @@ function toast(msg) {
 
 function showStatus(msg) {
   document.getElementById('save-status').textContent = msg;
+}
+
+// ── Tab navigation ─────────────────────────────────────────────────────────
+function showTab(tabName) {
+  document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(`tab-${tabName}`).style.display = '';
+  document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+  document.getElementById('preview-panel').style.display = tabName === 'subscribers' ? 'none' : '';
+  if (tabName === 'subscribers') loadSubscribers();
+}
+
+// ── Subscribers ────────────────────────────────────────────────────────────
+async function loadSubscribers() {
+  const res = await fetch('/api/subscribers');
+  const list = await res.json();
+  // Update count in both places
+  document.getElementById('sub-count').textContent = list.length;
+  document.getElementById('sub-count-big').textContent = list.length;
+  const ul = document.getElementById('sub-list');
+  ul.innerHTML = list.length === 0
+    ? '<li class="empty">No subscribers yet</li>'
+    : list.map(email => `
+        <li>
+          <span>${esc(email)}</span>
+          <button class="remove-btn" onclick="removeSubscriber('${esc(email)}')">Remove</button>
+        </li>`).join('');
+}
+
+async function addSubscriber() {
+  const input = document.getElementById('sub-email-input');
+  const email = input.value.trim();
+  if (!email) return;
+  const res = await fetch('/api/subscribers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  if (res.ok) { input.value = ''; loadSubscribers(); toast('Subscriber added'); }
+  else toast('Invalid email');
+}
+
+async function removeSubscriber(email) {
+  if (!confirm(`Remove ${email} from your subscriber list?\n\nThis won't send them any notification.`)) return;
+  await fetch('/api/subscribers', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  });
+  loadSubscribers();
+  toast('Removed');
+}
+
+async function syncFromFormspree() {
+  toast('Syncing from Formspree…');
+  try {
+    const res = await fetch('/api/subscribers/sync', { method: 'POST' });
+    const data = await res.json();
+    if (res.ok) {
+      loadSubscribers();
+      const msg = `Synced — ${data.added} added${data.removed ? `, ${data.removed} unsubscribed` : ''} (${data.total} total)`;
+      toast(msg);
+    } else {
+      toast('Sync failed: ' + data.error);
+    }
+  } catch (err) {
+    toast('Sync error: ' + err.message);
+  }
+}
+
+async function importCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  try {
+    const csv = await file.text();
+    const res = await fetch('/api/subscribers/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csv }),
+    });
+    const data = await res.json();
+    input.value = ''; // reset so same file can be re-selected
+    if (res.ok) {
+      loadSubscribers();
+      toast(`Imported ${data.added} new subscribers (${data.total} total)`);
+    } else {
+      toast('Import failed: ' + data.error);
+    }
+  } catch (err) {
+    toast('Import error: ' + err.message);
+  }
 }

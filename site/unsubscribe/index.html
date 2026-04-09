@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unsubscribe — The Beran Brief</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="/styles/main.css">
+<style>
+  .unsub-card {
+    max-width: 480px;
+    margin: 80px auto;
+    padding: 40px;
+    border: 1px solid var(--border, #e0e0e0);
+    border-radius: 6px;
+    text-align: center;
+  }
+  .unsub-card h1 { font-size: 1.4rem; margin-bottom: 12px; }
+  .unsub-card p { color: #555; margin-bottom: 24px; font-size: 0.95rem; }
+  .unsub-card .email-display {
+    font-family: monospace;
+    font-size: 0.9rem;
+    background: #f5f5f5;
+    padding: 6px 14px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 28px;
+    color: #333;
+  }
+  .unsub-btn {
+    padding: 10px 28px;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .unsub-btn:hover { background: #333; }
+  .unsub-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .success-msg { display: none; color: #2a7a2a; font-size: 1rem; margin-top: 16px; }
+  .resubscribe { margin-top: 28px; font-size: 0.85rem; color: #888; }
+  .resubscribe a { color: #555; }
+</style>
+</head>
+<body>
+<header>
+  <a href="/" class="home-link">Matt Beran</a>
+</header>
+
+<div class="unsub-card">
+  <h1>Unsubscribe</h1>
+  <p>We'll remove you from The Beran Brief right away.</p>
+  <div class="email-display" id="email-display">loading…</div><br>
+  <button class="unsub-btn" id="unsub-btn" onclick="confirmUnsub()">Confirm unsubscribe</button>
+  <div class="success-msg" id="success-msg">Done — you've been unsubscribed. Sorry to see you go.</div>
+  <div class="resubscribe">Changed your mind? <a href="/newsletter/#subscribe">Subscribe again.</a></div>
+</div>
+
+<script>
+  const UNSUB_FORM = 'mojpzpdk';
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('t');
+  let email = '';
+
+  if (token && token !== 'TEST') {
+    try {
+      email = atob(decodeURIComponent(token));
+      document.getElementById('email-display').textContent = email;
+    } catch (e) {
+      document.getElementById('email-display').textContent = '(invalid link)';
+      document.getElementById('unsub-btn').disabled = true;
+    }
+  } else if (token === 'TEST') {
+    document.getElementById('email-display').textContent = 'test@example.com (test link — not functional)';
+    document.getElementById('unsub-btn').disabled = true;
+  } else {
+    document.getElementById('email-display').textContent = '(no email found)';
+    document.getElementById('unsub-btn').disabled = true;
+  }
+
+  async function confirmUnsub() {
+    if (!email) return;
+    const btn = document.getElementById('unsub-btn');
+    btn.disabled = true;
+    btn.textContent = 'Processing…';
+    try {
+      const res = await fetch(`https://formspree.io/f/${UNSUB_FORM}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email, unsubscribe: true }),
+      });
+      if (res.ok) {
+        btn.style.display = 'none';
+        document.getElementById('success-msg').style.display = 'block';
+      } else {
+        throw new Error();
+      }
+    } catch {
+      btn.disabled = false;
+      btn.textContent = 'Confirm unsubscribe';
+      alert('Something went wrong. Reply to any issue email and I\'ll remove you manually.');
+    }
+  }
+</script>
+</body>
+</html>

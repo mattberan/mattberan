@@ -23,44 +23,77 @@
   <button id="resume-no">Start fresh</button>
 </div>
 
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="details" onclick="showTab('details')">Details</button>
+  <button class="tab-btn" data-tab="items" onclick="showTab('items')">Items</button>
+  <button class="tab-btn" data-tab="subscribers" onclick="showTab('subscribers')">Subscribers (<span id="sub-count">0</span>)</button>
+</div>
+
 <div class="workspace">
 
   <!-- LEFT: Editor -->
-  <div class="editor">
+  <div class="editor" id="editor-panel">
 
-    <div class="field-group">
-      <label>Issue date</label>
-      <input type="date" id="issue-date">
+    <!-- TAB: Details -->
+    <div id="tab-details" class="tab-pane">
+      <div class="field-group">
+        <label>Issue date</label>
+        <input type="date" id="issue-date">
+      </div>
+      <div class="field-group">
+        <label>Email subject</label>
+        <input type="text" id="issue-subject" placeholder="Write a fresh subject line…">
+      </div>
+      <div class="field-group">
+        <label>Inbox preview text <span class="label-note">(shows as snippet before opening)</span></label>
+        <input type="text" id="issue-preheader" placeholder="e.g. Three things worth your time this Thursday.">
+      </div>
+      <div class="field-group">
+        <label>Opener</label>
+        <input type="text" id="issue-salutation" placeholder="Hi!" style="max-width:200px">
+      </div>
+      <div class="field-group">
+        <label>Greeting</label>
+        <textarea id="issue-greeting" rows="3" placeholder="Happy Thursday — hope your week is going well. Here's this week's newsletter!"></textarea>
+      </div>
     </div>
 
-    <div class="field-group">
-      <label>Email subject</label>
-      <input type="text" id="issue-subject" placeholder="Write a fresh subject line…">
+    <!-- TAB: Items -->
+    <div id="tab-items" class="tab-pane" style="display:none">
+      <div id="items-container"></div>
     </div>
 
-    <div class="field-group">
-      <label>Inbox preview text <span style="font-weight:400;color:#999">(shows as snippet before opening)</span></label>
-      <input type="text" id="issue-preheader" placeholder="e.g. Three things worth your time this Thursday.">
-    </div>
+    <!-- TAB: Subscribers -->
+    <div id="tab-subscribers" class="tab-pane" style="display:none">
+      <div class="sub-page">
 
-    <div class="field-group">
-      <label>Opener</label>
-      <input type="text" id="issue-salutation" placeholder="Hi!" style="max-width:200px">
-    </div>
+        <div class="sub-toolbar">
+          <div class="sub-stat">
+            <span class="sub-stat-num" id="sub-count-big">0</span>
+            <span class="sub-stat-label">subscribers</span>
+          </div>
+          <button class="btn btn-primary" onclick="syncFromFormspree()">Sync from Formspree</button>
+        </div>
 
-    <div class="field-group">
-      <label>Greeting</label>
-      <textarea id="issue-greeting" rows="2" placeholder="Happy Thursday — hope your week is going well. Here's this week's newsletter!"></textarea>
-    </div>
+        <div class="sub-list-section">
+          <ul id="sub-list"></ul>
+        </div>
 
-    <div id="items-container">
-      <!-- Item blocks rendered by JS -->
+        <div class="sub-add-section">
+          <label class="field-label">Add manually</label>
+          <div class="sub-add-row">
+            <input type="email" id="sub-email-input" placeholder="email@example.com">
+            <button class="btn" onclick="addSubscriber()">Add</button>
+          </div>
+        </div>
+
+      </div>
     </div>
 
   </div>
 
-  <!-- RIGHT: Preview -->
-  <div class="preview">
+  <!-- RIGHT: Preview (hidden on subscribers tab) -->
+  <div class="preview" id="preview-panel">
     <div class="preview-toolbar">
       <button id="preview-email-btn" class="active" onclick="setPreviewMode('email')">Email</button>
       <button id="preview-web-btn" onclick="setPreviewMode('web')">Web page</button>

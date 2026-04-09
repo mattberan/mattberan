@@ -46,7 +46,7 @@ function renderEmail(issue) {
   lines.push('');
   lines.push('/Matt');
   lines.push('');
-  lines.push('{{{unsubscribe}}}');
+  lines.push('To unsubscribe: {{UNSUBSCRIBE_LINK}}');
 
   return lines.join('\n');
 }

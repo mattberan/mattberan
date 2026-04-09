@@ -15,7 +15,9 @@ function getTransport() {
 
 async function sendTest(issue, subject) {
   const transport = getTransport();
-  const text = renderer.renderEmail(issue);
+  const baseUrl = process.env.SITE_BASE_URL || 'https://mattberan.com';
+  const text = renderer.renderEmail(issue)
+    .replace('{{UNSUBSCRIBE_LINK}}', `${baseUrl}/unsubscribe/?t=TEST`);
   await transport.sendMail({
     from: process.env.FROM_EMAIL,
     to: process.env.FROM_EMAIL,
@@ -26,9 +28,13 @@ async function sendTest(issue, subject) {
 
 async function sendToList(issue, subject, recipients) {
   const transport = getTransport();
-  const text = renderer.renderEmail(issue);
-  // Send individually so each gets a personalized unsubscribe link later
+  const baseText = renderer.renderEmail(issue);
+  const baseUrl = process.env.SITE_BASE_URL || 'https://mattberan.com';
+
   for (const to of recipients) {
+    const token = Buffer.from(to).toString('base64');
+    const unsubscribeLink = `${baseUrl}/unsubscribe/?t=${encodeURIComponent(token)}`;
+    const text = baseText.replace('{{UNSUBSCRIBE_LINK}}', unsubscribeLink);
     await transport.sendMail({
       from: process.env.FROM_EMAIL,
       to,
