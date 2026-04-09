@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matt Beran - Design Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1.15rem;
+            opacity: 0.85;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            opacity: 0.6;
+            margin-top: 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-preview {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 900;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-preview .number {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+        }
+
+        .card-body {
+            padding: 1.25rem 1.5rem 1.5rem;
+        }
+
+        .card-body h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .card-body .style-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.2rem 0.6rem;
+            border-radius: 100px;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-body p {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .card-body .palette {
+            display: flex;
+            gap: 6px;
+            margin-top: 0.75rem;
+        }
+
+        .card-body .palette span {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid rgba(0,0,0,0.08);
+        }
+
+        /* Individual card themes */
+        .card[data-version="1"] .card-preview { background: #ffffff; color: #2563eb; border-bottom: 2px solid #f0f0f0; }
+        .card[data-version="1"] .style-tag { background: #eff6ff; color: #2563eb; }
+
+        .card[data-version="2"] .card-preview { background: #0f0f0f; color: #3b82f6; }
+        .card[data-version="2"] .style-tag { background: #1a1a2e; color: #3b82f6; }
+        .card[data-version="2"] .card-body h2 { color: #1a1a2e; }
+
+        .card[data-version="3"] .card-preview { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .card[data-version="3"] .style-tag { background: #f0e8fd; color: #764ba2; }
+
+        .card[data-version="4"] .card-preview { background: #f5f5f5; color: #6366f1; }
+        .card[data-version="4"] .card-preview { background: linear-gradient(135deg, #e8f4fd, #f0e8fd, #e8fdf5, #fdf8e8); }
+        .card[data-version="4"] .style-tag { background: #e8f4fd; color: #4f46e5; }
+
+        .card[data-version="5"] .card-preview { background: linear-gradient(to right, #1e3a5f 45%, #faf8f5 45%); color: #d4a843; }
+        .card[data-version="5"] .style-tag { background: #1e3a5f; color: #d4a843; }
+
+        .card[data-version="6"] .card-preview { background: #000; color: #ff6b35; }
+        .card[data-version="6"] .style-tag { background: #fff3ed; color: #ff6b35; }
+
+        .card[data-version="7"] .card-preview { background: #f5f0e8; color: #c4704b; }
+        .card[data-version="7"] .style-tag { background: #f5f0e8; color: #7d8c6e; }
+
+        .card[data-version="8"] .card-preview { background: #0a0a0a; color: #00ff41; font-family: 'Courier New', monospace; }
+        .card[data-version="8"] .style-tag { background: #0a1a0a; color: #00ff41; }
+
+        .card[data-version="9"] .card-preview { background: #fff; color: #0d9488; border-bottom: 2px solid #f0f0f0; }
+        .card[data-version="9"] .style-tag { background: #e8faf8; color: #0d9488; }
+
+        .card[data-version="10"] .card-preview { background: linear-gradient(to right, #1a1a2e 30%, #f8f9fa 30%); color: #4f46e5; }
+        .card[data-version="10"] .style-tag { background: #eef2ff; color: #4f46e5; }
+
+        .card[data-version="11"] .card-preview { background: #f7f5f2; color: #8b1a2b; font-family: Georgia, serif; }
+        .card[data-version="11"] .style-tag { background: #fdf0f2; color: #8b1a2b; }
+
+        .card[data-version="12"] .card-preview { background: linear-gradient(135deg, #1a0533, #0a1628, #0a2828); color: rgba(255,255,255,0.9); }
+        .card[data-version="12"] .style-tag { background: #f0e8fd; color: #7c3aed; }
+
+        .card[data-version="13"] .card-preview { background: #f5f0e0; color: #2a6d6d; border: 4px solid #d4a843; border-radius: 16px 16px 0 0; }
+        .card[data-version="13"] .style-tag { background: #f5f0e0; color: #4a3728; }
+
+        .card[data-version="14"] .card-preview { background: #0d0221; color: #ff2d95; text-shadow: 0 0 20px #ff2d95, 0 0 40px #ff2d95; }
+        .card[data-version="14"] .style-tag { background: #1a0a2e; color: #ff2d95; }
+
+        .card[data-version="15"] .card-preview { background: linear-gradient(135deg, #e8f0ed, #d4e6dc, #c0dbd0); color: #3d5a47; }
+        .card[data-version="15"] .style-tag { background: #e8f0ed; color: #3d5a47; }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.8rem; }
+            .header p { font-size: 1rem; }
+            .grid {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Matt Beran - Design Explorer</h1>
+        <p>15 unique design concepts for your personal site. Click any card to view the full design, then pick your favorite.</p>
+        <p class="subtitle">Each design is fully responsive and self-contained</p>
+    </div>
+
+    <div class="grid">
+        <a class="card" data-version="1" href="versions/v01-minimal-white.html">
+            <div class="card-preview"><span class="number">01</span></div>
+            <div class="card-body">
+                <span class="style-tag">Minimal</span>
+                <h2>Minimal & Clean</h2>
+                <p>Centered single-column layout with lots of whitespace. Understated elegance with a blue accent.</p>
+                <div class="palette">
+                    <span style="background:#ffffff; border-color: #ddd;"></span>
+                    <span style="background:#333333"></span>
+                    <span style="background:#f8f8f8"></span>
+                    <span style="background:#2563eb"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="2" href="versions/v02-dark-mode.html">
+            <div class="card-preview"><span class="number">02</span></div>
+            <div class="card-body">
+                <span class="style-tag">Dark</span>
+                <h2>Dark & Modern</h2>
+                <p>Sleek dark UI with electric blue accents. Cards with subtle borders on a near-black background.</p>
+                <div class="palette">
+                    <span style="background:#0f0f0f"></span>
+                    <span style="background:#1a1a2e"></span>
+                    <span style="background:#3b82f6"></span>
+                    <span style="background:#f0f0f0"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="3" href="versions/v03-gradient-hero.html">
+            <div class="card-preview"><span class="number">03</span></div>
+            <div class="card-body">
+                <span class="style-tag">Gradient</span>
+                <h2>Gradient Hero</h2>
+                <p>Bold purple-to-blue gradient hero section with clean white card grid below.</p>
+                <div class="palette">
+                    <span style="background:#667eea"></span>
+                    <span style="background:#764ba2"></span>
+                    <span style="background:#ffffff; border-color: #ddd;"></span>
+                    <span style="background:#333333"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="4" href="versions/v04-bento-grid.html">
+            <div class="card-preview"><span class="number">04</span></div>
+            <div class="card-body">
+                <span class="style-tag">Bento</span>
+                <h2>Bento Box Grid</h2>
+                <p>Modern dashboard-style CSS grid with varied card sizes and soft pastel backgrounds.</p>
+                <div class="palette">
+                    <span style="background:#e8f4fd"></span>
+                    <span style="background:#e8fdf5"></span>
+                    <span style="background:#f0e8fd"></span>
+                    <span style="background:#fdf8e8"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="5" href="versions/v05-split-screen.html">
+            <div class="card-preview"><span class="number">05</span></div>
+            <div class="card-body">
+                <span class="style-tag">Split</span>
+                <h2>Split Screen</h2>
+                <p>Fixed navy left panel with photo and CTAs. Scrollable cream content on the right.</p>
+                <div class="palette">
+                    <span style="background:#1e3a5f"></span>
+                    <span style="background:#faf8f5"></span>
+                    <span style="background:#d4a843"></span>
+                    <span style="background:#333333"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="6" href="versions/v06-bold-type.html">
+            <div class="card-preview"><span class="number">06</span></div>
+            <div class="card-body">
+                <span class="style-tag">Typography</span>
+                <h2>Bold Typography</h2>
+                <p>Oversized headings dominate. Black and white with a single orange accent. Dramatic contrast.</p>
+                <div class="palette">
+                    <span style="background:#000000"></span>
+                    <span style="background:#ffffff; border-color: #ddd;"></span>
+                    <span style="background:#ff6b35"></span>
+                    <span style="background:#333333"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="7" href="versions/v07-warm-earth.html">
+            <div class="card-preview"><span class="number">07</span></div>
+            <div class="card-body">
+                <span class="style-tag">Warm</span>
+                <h2>Warm & Friendly</h2>
+                <p>Approachable terracotta and sage tones. Rounded cards, soft shadows, wave-shaped dividers.</p>
+                <div class="palette">
+                    <span style="background:#c4704b"></span>
+                    <span style="background:#7d8c6e"></span>
+                    <span style="background:#f5f0e8"></span>
+                    <span style="background:#5c4033"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="8" href="versions/v08-terminal.html">
+            <div class="card-preview"><span class="number">&gt;_08</span></div>
+            <div class="card-body">
+                <span class="style-tag">Terminal</span>
+                <h2>Terminal / Hacker</h2>
+                <p>Monospace command-line aesthetic. Green on black with typing animations and scanlines.</p>
+                <div class="palette">
+                    <span style="background:#0a0a0a"></span>
+                    <span style="background:#00ff41"></span>
+                    <span style="background:#00aa2a"></span>
+                    <span style="background:#ffffff; border-color: #ddd;"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="9" href="versions/v09-card-deck.html">
+            <div class="card-preview"><span class="number">09</span></div>
+            <div class="card-body">
+                <span class="style-tag">Mosaic</span>
+                <h2>Card Mosaic</h2>
+                <p>Masonry-style card layout with varying heights. Clean white with teal accents and subtle shadows.</p>
+                <div class="palette">
+                    <span style="background:#ffffff; border-color: #ddd;"></span>
+                    <span style="background:#0d9488"></span>
+                    <span style="background:#f0f0f0"></span>
+                    <span style="background:#333333"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="10" href="versions/v10-sidebar-nav.html">
+            <div class="card-preview"><span class="number">10</span></div>
+            <div class="card-body">
+                <span class="style-tag">Sidebar</span>
+                <h2>Sidebar Navigation</h2>
+                <p>Fixed dark sidebar with navigation. Clean dashboard-style content area with indigo accent.</p>
+                <div class="palette">
+                    <span style="background:#1a1a2e"></span>
+                    <span style="background:#f8f9fa"></span>
+                    <span style="background:#4f46e5"></span>
+                    <span style="background:#ffffff; border-color: #ddd;"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="11" href="versions/v11-magazine.html">
+            <div class="card-preview"><span class="number">11</span></div>
+            <div class="card-body">
+                <span class="style-tag">Editorial</span>
+                <h2>Magazine / Editorial</h2>
+                <p>Sophisticated editorial layout with serif headings, varied columns, and burgundy accents.</p>
+                <div class="palette">
+                    <span style="background:#f7f5f2"></span>
+                    <span style="background:#2d2d2d"></span>
+                    <span style="background:#8b1a2b"></span>
+                    <span style="background:#fffdf7"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="12" href="versions/v12-glassmorphism.html">
+            <div class="card-preview"><span class="number">12</span></div>
+            <div class="card-body">
+                <span class="style-tag">Glass</span>
+                <h2>Frosted Glass</h2>
+                <p>Translucent glass cards floating over a deep gradient. Modern, premium, futuristic.</p>
+                <div class="palette">
+                    <span style="background:#1a0533"></span>
+                    <span style="background:#0a1628"></span>
+                    <span style="background:#0a2828"></span>
+                    <span style="background:rgba(255,255,255,0.3); border-color: #ddd;"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="13" href="versions/v13-retro.html">
+            <div class="card-preview"><span class="number">13</span></div>
+            <div class="card-body">
+                <span class="style-tag">Retro</span>
+                <h2>Retro / Vintage</h2>
+                <p>1960s-70s poster aesthetic. Thick borders, mustard and teal, decorative badge elements.</p>
+                <div class="palette">
+                    <span style="background:#d4a843"></span>
+                    <span style="background:#2a6d6d"></span>
+                    <span style="background:#f5f0e0"></span>
+                    <span style="background:#4a3728"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="14" href="versions/v14-neon-nights.html">
+            <div class="card-preview"><span class="number">14</span></div>
+            <div class="card-body">
+                <span class="style-tag">Neon</span>
+                <h2>Neon Nights</h2>
+                <p>Cyberpunk dark theme with neon pink and cyan glows. Electric energy and synthwave vibes.</p>
+                <div class="palette">
+                    <span style="background:#0d0221"></span>
+                    <span style="background:#ff2d95"></span>
+                    <span style="background:#00f0ff"></span>
+                    <span style="background:#1a0a2e"></span>
+                </div>
+            </div>
+        </a>
+
+        <a class="card" data-version="15" href="versions/v15-nature-calm.html">
+            <div class="card-preview"><span class="number">15</span></div>
+            <div class="card-body">
+                <span class="style-tag">Nature</span>
+                <h2>Nature / Calm</h2>
+                <p>Zen and peaceful with organic shapes. Soft blues and greens with flowing section dividers.</p>
+                <div class="palette">
+                    <span style="background:#6b9bc0"></span>
+                    <span style="background:#87a878"></span>
+                    <span style="background:#f9f7f4"></span>
+                    <span style="background:#3d5a47"></span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="footer">
+        <p>Matt Beran Design Explorer &mdash; Pick your favorite and we'll refine it</p>
+    </div>
+
+    <script>
+        // Add staggered fade-in animation to cards
+        const cards = document.querySelectorAll('.card');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = `opacity 0.5s ease ${index * 0.06}s, transform 0.5s ease ${index * 0.06}s`;
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

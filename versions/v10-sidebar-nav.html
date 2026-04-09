@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matt Beran — The IT Community Connector</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --sidebar-bg: #1a1a2e;
+    --sidebar-text: #a0a3bd;
+    --sidebar-active: #ffffff;
+    --content-bg: #f8f9fa;
+    --card-bg: #ffffff;
+    --indigo: #4f46e5;
+    --indigo-light: #6366f1;
+    --indigo-bg: rgba(79, 70, 229, 0.06);
+    --text: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-hover: 0 8px 24px rgba(0,0,0,0.1);
+    --radius: 12px;
+    --sidebar-width: 260px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--content-bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--indigo); color: #fff; }
+
+  /* ---- SIDEBAR ---- */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0;
+    width: var(--sidebar-width);
+    background: var(--sidebar-bg);
+    padding: 2rem 1.5rem;
+    display: flex; flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+  }
+  .sidebar-profile {
+    text-align: center;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 1.5rem;
+  }
+  .sidebar-photo {
+    width: 80px; height: 80px; border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(79,70,229,0.4);
+    margin-bottom: 0.75rem;
+  }
+  .sidebar-name {
+    font-size: 1.1rem; font-weight: 700; color: #fff;
+  }
+  .sidebar-tagline {
+    font-size: 0.8rem; color: var(--indigo-light);
+    font-weight: 500;
+  }
+
+  /* Sidebar CTAs */
+  .sidebar-ctas {
+    display: flex; flex-direction: column; gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .sidebar-cta {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    text-decoration: none; font-size: 0.8rem; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .sidebar-cta svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .sidebar-cta-primary {
+    background: var(--indigo); color: #fff;
+  }
+  .sidebar-cta-primary:hover { background: var(--indigo-light); }
+  .sidebar-cta-secondary {
+    background: rgba(255,255,255,0.06); color: var(--sidebar-text);
+  }
+  .sidebar-cta-secondary:hover {
+    background: rgba(255,255,255,0.1); color: #fff;
+  }
+
+  /* Sidebar nav */
+  .sidebar-nav { list-style: none; flex: 1; }
+  .sidebar-nav li { margin-bottom: 0.25rem; }
+  .sidebar-nav a {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.9rem; font-weight: 500;
+    color: var(--sidebar-text);
+    transition: all 0.2s;
+  }
+  .sidebar-nav a .nav-num {
+    font-size: 0.7rem; font-weight: 700;
+    color: rgba(255,255,255,0.2);
+    min-width: 20px;
+  }
+  .sidebar-nav a:hover {
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+  }
+  .sidebar-nav a.active {
+    background: var(--indigo-bg);
+    background: rgba(79,70,229,0.15);
+    color: var(--sidebar-active);
+  }
+  .sidebar-nav a.active .nav-num { color: var(--indigo-light); }
+
+  .sidebar-footer {
+    font-size: 0.75rem; color: rgba(255,255,255,0.25);
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+  }
+
+  /* ---- MOBILE HEADER ---- */
+  .mobile-header {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0;
+    background: var(--sidebar-bg);
+    padding: 0.75rem 1.25rem;
+    z-index: 200;
+    align-items: center; justify-content: space-between;
+  }
+  .mobile-header .logo { color: #fff; font-weight: 700; font-size: 1rem; }
+  .hamburger {
+    background: none; border: none; color: #fff;
+    font-size: 1.5rem; cursor: pointer;
+  }
+  .sidebar-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 90;
+  }
+
+  /* ---- MAIN CONTENT ---- */
+  .main {
+    margin-left: var(--sidebar-width);
+    padding: 2.5rem;
+    min-height: 100vh;
+  }
+
+  /* ---- SECTIONS ---- */
+  .content-section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 2rem;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section-header .icon-box {
+    width: 40px; height: 40px;
+    background: var(--indigo-bg);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--indigo); font-size: 1.1rem;
+  }
+  .section-header h2 {
+    font-size: 1.35rem; font-weight: 700;
+  }
+  .section-header .badge {
+    font-size: 0.7rem; font-weight: 700;
+    background: var(--indigo-bg); color: var(--indigo);
+    padding: 0.2rem 0.6rem; border-radius: 6px;
+    margin-left: auto;
+  }
+
+  /* ---- CARDS ---- */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    transition: box-shadow 0.25s, transform 0.25s;
+  }
+  .card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  /* ---- GRIDS ---- */
+  .grid-2 {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+  .grid-3 {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .grid-4 {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  /* Reveal animation */
+  .reveal {
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ---- COMMUNITIES ---- */
+  .community-card .logo-area {
+    width: 44px; height: 44px;
+    background: var(--indigo);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .community-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; }
+  .community-card p { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.75rem; }
+  .community-card a {
+    font-size: 0.85rem; color: var(--indigo); text-decoration: none; font-weight: 600;
+  }
+  .community-card a:hover { text-decoration: underline; }
+
+  /* ---- PRESENTATIONS ---- */
+  .pres-list { list-style: none; }
+  .pres-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    transition: box-shadow 0.25s, transform 0.25s;
+    cursor: pointer;
+  }
+  .pres-item:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateX(4px);
+  }
+  .pres-item .title { font-weight: 600; }
+  .pres-item .meta {
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .pres-item .year {
+    font-size: 0.8rem; color: var(--text-secondary);
+  }
+  .pres-item .status {
+    font-size: 0.7rem; font-weight: 700;
+    background: #dcfce7; color: #16a34a;
+    padding: 0.15rem 0.5rem; border-radius: 6px;
+  }
+
+  /* ---- VIDEOS ---- */
+  .video-card a { text-decoration: none; color: inherit; display: block; }
+  .video-card .thumb {
+    width: 100%; aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; color: var(--indigo);
+    margin-bottom: 0.75rem;
+  }
+  .video-card h3 { font-size: 0.95rem; font-weight: 600; }
+
+  /* ---- PODCAST ---- */
+  .podcast-row {
+    display: flex; gap: 1.5rem; align-items: center;
+    flex-wrap: wrap;
+  }
+  .podcast-art {
+    width: 180px; height: 180px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--indigo), #7c3aed);
+    border-radius: var(--radius);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: #fff; text-align: center; padding: 1.25rem;
+    font-weight: 700; font-size: 0.9rem; line-height: 1.3;
+  }
+  .podcast-art .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+  .podcast-info { flex: 1; min-width: 250px; }
+  .podcast-info h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .podcast-info p { color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem; }
+  .podcast-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .podcast-links a {
+    padding: 0.45rem 1rem;
+    border-radius: 8px;
+    background: var(--indigo-bg); color: var(--indigo);
+    font-weight: 600; font-size: 0.8rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .podcast-links a:hover { background: var(--indigo); color: #fff; }
+
+  /* ---- COMPANY ---- */
+  .company-card {
+    max-width: 600px;
+  }
+  .company-card .logo-badge {
+    width: 48px; height: 48px;
+    background: var(--indigo);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  .company-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .company-card p { color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem; }
+  .company-card .btn-inline {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    color: var(--indigo); text-decoration: none; font-weight: 600; font-size: 0.9rem;
+  }
+  .company-card .btn-inline:hover { text-decoration: underline; }
+
+  /* ---- RESOURCES ---- */
+  .resource-card {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 1.25rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+    transition: all 0.25s;
+  }
+  .resource-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateX(4px);
+  }
+  .resource-card a {
+    font-weight: 600; color: var(--text); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .resource-card a:hover { color: var(--indigo); }
+  .resource-card .type {
+    font-size: 0.7rem; font-weight: 700;
+    background: var(--indigo-bg); color: var(--indigo);
+    padding: 0.2rem 0.6rem; border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  /* ---- QUICK LINKS ---- */
+  .quick-links-flex {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+  }
+  .quick-links-flex a {
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text); font-weight: 600; font-size: 0.85rem;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+  .quick-links-flex a:hover {
+    background: var(--indigo); color: #fff; border-color: var(--indigo);
+  }
+
+  /* ---- FOOTER (in main content) ---- */
+  .content-footer {
+    padding: 2rem 0;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem;
+    border-top: 1px solid var(--border);
+    color: var(--text-secondary); font-size: 0.85rem;
+  }
+  .content-footer .icons { display: flex; gap: 0.75rem; }
+  .content-footer .icons a { color: var(--text-secondary); transition: color 0.2s; }
+  .content-footer .icons a:hover { color: var(--indigo); }
+
+  /* ---- MOBILE ---- */
+  @media (max-width: 860px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    .mobile-header { display: flex; }
+    .main {
+      margin-left: 0;
+      padding: 4.5rem 1.5rem 2rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- MOBILE HEADER -->
+<div class="mobile-header">
+  <div class="logo">Matt Beran</div>
+  <button class="hamburger" aria-label="Toggle sidebar" id="menuBtn">&#9776;</button>
+</div>
+<div class="sidebar-overlay" id="overlay"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-profile">
+    <img src="../images/headshot.jpg" alt="Matt Beran" class="sidebar-photo">
+    <div class="sidebar-name">Matt Beran</div>
+    <div class="sidebar-tagline">The IT Community Connector</div>
+  </div>
+
+  <div class="sidebar-ctas">
+    <a href="https://linkedin.com/in/mattberan" class="sidebar-cta sidebar-cta-primary" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      Connect with Matt
+    </a>
+    <a href="mailto:mattberan@gmail.com" class="sidebar-cta sidebar-cta-secondary">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      Send an email to Matt
+    </a>
+  </div>
+
+  <ul class="sidebar-nav" id="sidebarNav">
+    <li><a href="#communities" data-section="communities"><span class="nav-num">01</span> Communities</a></li>
+    <li><a href="#presentations" data-section="presentations"><span class="nav-num">02</span> Presentations</a></li>
+    <li><a href="#videos" data-section="videos"><span class="nav-num">03</span> Videos</a></li>
+    <li><a href="#podcast" data-section="podcast"><span class="nav-num">04</span> Podcast</a></li>
+    <li><a href="#company" data-section="company"><span class="nav-num">05</span> Company</a></li>
+    <li><a href="#resources" data-section="resources"><span class="nav-num">06</span> Resources</a></li>
+    <li><a href="#quicklinks" data-section="quicklinks"><span class="nav-num">07</span> Quick Links</a></li>
+  </ul>
+
+  <div class="sidebar-footer">
+    &copy; 2024 Matt Beran
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- COMMUNITIES -->
+  <div class="content-section reveal" id="communities">
+    <div class="section-header">
+      <div class="icon-box">&#127760;</div>
+      <h2>Communities</h2>
+      <span class="badge">4 orgs</span>
+    </div>
+    <div class="grid-4">
+      <div class="card community-card">
+        <div class="logo-area">OSC</div>
+        <h3>Open Source Community</h3>
+        <p>Fostering collaboration in open source IT service management.</p>
+        <a href="#">Learn more &rarr;</a>
+      </div>
+      <div class="card community-card">
+        <div class="logo-area">HDI</div>
+        <h3>Help Desk Institute</h3>
+        <p>Advancing the IT service and technical support industry.</p>
+        <a href="#">Learn more &rarr;</a>
+      </div>
+      <div class="card community-card">
+        <div class="logo-area">SDI</div>
+        <h3>Service Desk Institute</h3>
+        <p>Leading the global service desk community forward.</p>
+        <a href="#">Learn more &rarr;</a>
+      </div>
+      <div class="card community-card">
+        <div class="logo-area">SIAM</div>
+        <h3>SIAM Foundation</h3>
+        <p>Service integration and management best practices.</p>
+        <a href="#">Learn more &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRESENTATIONS -->
+  <div class="content-section reveal" id="presentations">
+    <div class="section-header">
+      <div class="icon-box">&#127908;</div>
+      <h2>Past Presentations</h2>
+      <span class="badge">5 talks</span>
+    </div>
+    <ul class="pres-list">
+      <li class="pres-item">
+        <span class="title">ITSM Best Practices 2024</span>
+        <div class="meta">
+          <span class="year">2024</span>
+          <span class="status">Delivered</span>
+        </div>
+      </li>
+      <li class="pres-item">
+        <span class="title">Building Community in Tech</span>
+        <div class="meta">
+          <span class="year">2024</span>
+          <span class="status">Delivered</span>
+        </div>
+      </li>
+      <li class="pres-item">
+        <span class="title">Service Management Trends</span>
+        <div class="meta">
+          <span class="year">2023</span>
+          <span class="status">Delivered</span>
+        </div>
+      </li>
+      <li class="pres-item">
+        <span class="title">The Future of IT Support</span>
+        <div class="meta">
+          <span class="year">2023</span>
+          <span class="status">Delivered</span>
+        </div>
+      </li>
+      <li class="pres-item">
+        <span class="title">Open Source in Enterprise</span>
+        <div class="meta">
+          <span class="year">2022</span>
+          <span class="status">Delivered</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- VIDEOS -->
+  <div class="content-section reveal" id="videos">
+    <div class="section-header">
+      <div class="icon-box">&#9654;</div>
+      <h2>YouTube Videos</h2>
+      <span class="badge">4 videos</span>
+    </div>
+    <div class="grid-4">
+      <div class="card video-card">
+        <a href="#">
+          <div class="thumb">&#9654;</div>
+          <h3>Community Building 101</h3>
+        </a>
+      </div>
+      <div class="card video-card">
+        <a href="#">
+          <div class="thumb">&#9654;</div>
+          <h3>ITSM Tools Roundup</h3>
+        </a>
+      </div>
+      <div class="card video-card">
+        <a href="#">
+          <div class="thumb">&#9654;</div>
+          <h3>Future of Service Desks</h3>
+        </a>
+      </div>
+      <div class="card video-card">
+        <a href="#">
+          <div class="thumb">&#9654;</div>
+          <h3>Open Source ITSM Deep Dive</h3>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PODCAST -->
+  <div class="content-section reveal" id="podcast">
+    <div class="section-header">
+      <div class="icon-box">&#127911;</div>
+      <h2>Podcast</h2>
+    </div>
+    <div class="card">
+      <div class="podcast-row">
+        <div class="podcast-art">
+          <div class="icon">&#127908;</div>
+          The IT Community<br>Podcast
+        </div>
+        <div class="podcast-info">
+          <h3>The IT Community Podcast</h3>
+          <p>Conversations with the people shaping IT service management, support communities, and open source. Honest talks about what works, what doesn't, and where the industry is headed.</p>
+          <div class="podcast-links">
+            <a href="#">Apple Podcasts</a>
+            <a href="#">Spotify</a>
+            <a href="#">Google Podcasts</a>
+            <a href="#">RSS Feed</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPANY -->
+  <div class="content-section reveal" id="company">
+    <div class="section-header">
+      <div class="icon-box">&#127970;</div>
+      <h2>Company</h2>
+    </div>
+    <div class="card company-card">
+      <div class="logo-badge">IG</div>
+      <h3>InvGate</h3>
+      <p>InvGate delivers modern IT service management software that helps organizations streamline operations, improve service delivery, and manage IT assets effectively. Built for teams that want powerful tools without the complexity.</p>
+      <a href="#" class="btn-inline">Visit InvGate &rarr;</a>
+    </div>
+  </div>
+
+  <!-- RESOURCES -->
+  <div class="content-section reveal" id="resources">
+    <div class="section-header">
+      <div class="icon-box">&#128230;</div>
+      <h2>Resources</h2>
+      <span class="badge">4 items</span>
+    </div>
+    <div class="resource-card">
+      <a href="#">ITSM Implementation Guide</a>
+      <span class="type">PDF</span>
+    </div>
+    <div class="resource-card">
+      <a href="#">Community Building Playbook</a>
+      <span class="type">PDF</span>
+    </div>
+    <div class="resource-card">
+      <a href="#">Service Desk Metrics Cheat Sheet</a>
+      <span class="type">PDF</span>
+    </div>
+    <div class="resource-card">
+      <a href="#">Open Source Tools Directory</a>
+      <span class="type">Web</span>
+    </div>
+  </div>
+
+  <!-- QUICK LINKS -->
+  <div class="content-section reveal" id="quicklinks">
+    <div class="section-header">
+      <div class="icon-box">&#128279;</div>
+      <h2>Quick Links</h2>
+    </div>
+    <div class="quick-links-flex">
+      <a href="#">Blog</a>
+      <a href="#">Newsletter</a>
+      <a href="#">Speaking Inquiries</a>
+      <a href="#">GitHub</a>
+      <a href="#">Twitter / X</a>
+      <a href="#">Mastodon</a>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="content-footer">
+    <p>&copy; 2024 Matt Beran. All rights reserved.</p>
+    <div class="icons">
+      <a href="https://linkedin.com/in/mattberan" target="_blank" rel="noopener" aria-label="LinkedIn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      </a>
+      <a href="mailto:mattberan@gmail.com" aria-label="Email">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  // ---- Mobile sidebar toggle ----
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const menuBtn = document.getElementById('menuBtn');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('open');
+  }
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('open');
+  }
+  menuBtn.addEventListener('click', openSidebar);
+  overlay.addEventListener('click', closeSidebar);
+
+  // Close sidebar on nav link click (mobile)
+  document.querySelectorAll('.sidebar-nav a').forEach(link => {
+    link.addEventListener('click', closeSidebar);
+  });
+
+  // ---- Scroll spy ----
+  const sections = document.querySelectorAll('.content-section');
+  const navLinks = document.querySelectorAll('.sidebar-nav a');
+
+  function updateActiveNav() {
+    let current = '';
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= 120) {
+        current = section.getAttribute('id');
+      }
+    });
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('data-section') === current) {
+        link.classList.add('active');
+      }
+    });
+  }
+
+  window.addEventListener('scroll', updateActiveNav);
+  updateActiveNav();
+
+  // ---- Reveal on scroll ----
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  revealEls.forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>

@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matt Beran — The IT Community Connector</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: #f7f5f2;
+    color: #2d2d2d;
+    line-height: 1.7;
+    font-size: 17px;
+  }
+
+  /* --- Typography --- */
+  h1, h2, h3, h4 { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; line-height: 1.15; }
+  h1 { font-size: clamp(2.8rem, 6vw, 5rem); letter-spacing: -0.03em; }
+  h2 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); letter-spacing: -0.02em; margin-bottom: 0.6em; }
+  h3 { font-size: 1.3rem; margin-bottom: 0.4em; }
+  p { max-width: 640px; }
+
+  a { color: #8b1a2b; text-decoration: none; transition: color 0.3s; }
+  a:hover { color: #5e1019; }
+
+  /* --- Utility --- */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+  .section-divider {
+    border: none; border-top: 1px solid #c8c2b8; margin: 4rem auto;
+    max-width: 1200px; width: calc(100% - 4rem);
+  }
+
+  /* --- Header / Nav --- */
+  header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(247, 245, 242, 0.92); backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e0dbd4;
+  }
+  nav {
+    max-width: 1200px; margin: 0 auto; padding: 1rem 2rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  nav .logo { font-family: Georgia, 'Times New Roman', serif; font-size: 1.15rem; font-weight: 700; color: #2d2d2d; }
+  nav .nav-links { display: flex; gap: 1.8rem; list-style: none; }
+  nav .nav-links a {
+    font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: #666; transition: color 0.3s;
+  }
+  nav .nav-links a:hover { color: #8b1a2b; }
+  .menu-toggle { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+  .menu-toggle span { display: block; width: 22px; height: 2px; background: #2d2d2d; margin: 5px 0; transition: 0.3s; }
+
+  /* --- Hero --- */
+  .hero {
+    padding: 10rem 0 5rem; display: grid;
+    grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .hero-text .overline {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.2em;
+    color: #8b1a2b; margin-bottom: 1rem; display: block;
+  }
+  .hero-text h1 { margin-bottom: 1.2rem; }
+  .hero-text .tagline {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.35rem; font-style: italic; color: #666; margin-bottom: 2rem;
+  }
+  .hero-photo {
+    position: relative; display: flex; justify-content: flex-end;
+  }
+  .hero-photo img {
+    width: 100%; max-width: 420px; aspect-ratio: 3/4; object-fit: cover;
+    filter: grayscale(20%); transition: filter 0.6s;
+  }
+  .hero-photo img:hover { filter: grayscale(0%); }
+  .hero-photo::after {
+    content: ''; position: absolute; top: 1rem; right: -1rem; bottom: -1rem; left: 1rem;
+    border: 1px solid #8b1a2b; z-index: -1;
+  }
+  .cta-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .cta-primary, .cta-secondary {
+    display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.85rem 1.8rem;
+    font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.1em;
+    transition: all 0.3s; border: 1px solid transparent;
+  }
+  .cta-primary {
+    background: #8b1a2b; color: #fff; border-color: #8b1a2b;
+  }
+  .cta-primary:hover { background: #6e1422; color: #fff; }
+  .cta-secondary { border-color: #2d2d2d; color: #2d2d2d; }
+  .cta-secondary:hover { background: #2d2d2d; color: #fff; }
+  .cta-primary svg, .cta-secondary svg { width: 18px; height: 18px; }
+
+  /* --- Drop cap --- */
+  .drop-cap::first-letter {
+    float: left; font-family: Georgia, 'Times New Roman', serif;
+    font-size: 4.2rem; line-height: 0.8; padding-right: 0.15em;
+    padding-top: 0.08em; color: #8b1a2b; font-weight: 700;
+  }
+
+  /* --- Section styling --- */
+  section { padding: 3rem 0; }
+  .section-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.25em;
+    color: #8b1a2b; margin-bottom: 0.8rem; display: block;
+  }
+
+  /* --- Editorial Grid --- */
+  .editorial-grid { display: grid; gap: 2rem; margin-top: 2rem; }
+  .editorial-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+  .editorial-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .editorial-grid.cols-asymm { grid-template-columns: 2fr 1fr; }
+
+  /* --- Cards --- */
+  .card {
+    background: #fffdf7; padding: 2rem; border: 1px solid #e8e3da;
+    transition: all 0.4s ease;
+  }
+  .card:hover { border-color: #8b1a2b; transform: translateY(-2px); }
+  .card .card-label {
+    font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em;
+    color: #999; margin-bottom: 0.6rem;
+  }
+  .card h3 a { color: #2d2d2d; }
+  .card h3 a:hover { color: #8b1a2b; }
+  .card p { font-size: 0.95rem; color: #666; margin-top: 0.5rem; }
+
+  .logo-placeholder {
+    width: 100%; height: 60px; background: #f0ece4; display: flex;
+    align-items: center; justify-content: center; margin-bottom: 1rem;
+    font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .thumb-placeholder {
+    width: 100%; aspect-ratio: 16/9; background: #e8e3da; display: flex;
+    align-items: center; justify-content: center; margin-bottom: 1rem;
+    font-size: 0.8rem; color: #999;
+  }
+
+  /* --- Pull Quote --- */
+  .pull-quote {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-style: italic; color: #8b1a2b; line-height: 1.4;
+    border-left: 3px solid #8b1a2b; padding-left: 1.5rem; margin: 2rem 0;
+  }
+
+  /* --- Podcast --- */
+  .podcast-banner {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+    background: #2d2d2d; color: #fff; padding: 3rem; margin-top: 2rem;
+  }
+  .podcast-banner h3 { font-size: 1.8rem; color: #fff; }
+  .podcast-banner p { color: #bbb; }
+  .podcast-links { display: flex; gap: 1rem; margin-top: 1.2rem; flex-wrap: wrap; }
+  .podcast-links a {
+    display: inline-block; padding: 0.5rem 1.2rem; font-size: 0.8rem;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    border: 1px solid #666; color: #fff; transition: all 0.3s;
+  }
+  .podcast-links a:hover { border-color: #8b1a2b; background: #8b1a2b; color: #fff; }
+
+  /* --- Company --- */
+  .company-section {
+    display: grid; grid-template-columns: 1fr 2fr; gap: 3rem;
+    align-items: start; margin-top: 2rem;
+  }
+  .company-logo-area {
+    background: #fffdf7; border: 1px solid #e8e3da; height: 200px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem; font-family: Georgia, serif; color: #8b1a2b;
+  }
+
+  /* --- Quick Links --- */
+  .quick-links-list { list-style: none; columns: 2; gap: 2rem; margin-top: 1.5rem; }
+  .quick-links-list li { padding: 0.6rem 0; border-bottom: 1px solid #e8e3da; break-inside: avoid; }
+  .quick-links-list a { font-size: 0.95rem; }
+
+  /* --- Footer --- */
+  footer {
+    margin-top: 4rem; padding: 3rem 0; border-top: 1px solid #c8c2b8;
+    text-align: center; font-size: 0.82rem; color: #999;
+  }
+
+  /* --- Responsive --- */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; gap: 2rem; padding-top: 8rem; }
+    .hero-photo { justify-content: center; }
+    .hero-photo::after { display: none; }
+    .editorial-grid.cols-2, .editorial-grid.cols-3, .editorial-grid.cols-asymm { grid-template-columns: 1fr; }
+    .podcast-banner { grid-template-columns: 1fr; }
+    .company-section { grid-template-columns: 1fr; }
+    .quick-links-list { columns: 1; }
+  }
+  @media (max-width: 600px) {
+    nav .nav-links { display: none; }
+    nav .nav-links.active {
+      display: flex; flex-direction: column; position: absolute;
+      top: 100%; left: 0; right: 0; background: #f7f5f2;
+      padding: 1.5rem 2rem; border-bottom: 1px solid #e0dbd4;
+    }
+    .menu-toggle { display: block; }
+    .hero { padding-top: 7rem; }
+    .cta-group { flex-direction: column; }
+    .cta-primary, .cta-secondary { justify-content: center; }
+  }
+
+  /* --- Animations --- */
+  .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="logo">Matt Beran</div>
+    <button class="menu-toggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="#communities">Communities</a></li>
+      <li><a href="#presentations">Presentations</a></li>
+      <li><a href="#videos">Videos</a></li>
+      <li><a href="#podcast">Podcast</a></li>
+      <li><a href="#company">Company</a></li>
+      <li><a href="#resources">Resources</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="container">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-text fade-up">
+      <span class="overline">Welcome</span>
+      <h1>Matt Beran</h1>
+      <p class="tagline">The IT Community Connector</p>
+      <p class="drop-cap">Bringing people together across the global IT community through speaking, writing, podcasting, and open-source advocacy. Passionate about service management and building bridges between practitioners.</p>
+      <br>
+      <div class="cta-group">
+        <a href="https://linkedin.com/in/mattberan" class="cta-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          Connect with Matt
+        </a>
+        <a href="mailto:mattberan@gmail.com" class="cta-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          Send an email to Matt
+        </a>
+      </div>
+    </div>
+    <div class="hero-photo fade-up">
+      <img src="../images/headshot.jpg" alt="Matt Beran">
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Communities -->
+  <section id="communities" class="fade-up">
+    <span class="section-label">01 / Communities</span>
+    <h2>Community Involvement</h2>
+    <div class="editorial-grid cols-2">
+      <div class="card">
+        <div class="logo-placeholder">OSC Logo</div>
+        <h3><a href="#">Open Source Community (OSC)</a></h3>
+        <p>Championing open-source practices and fostering collaboration across the IT landscape.</p>
+      </div>
+      <div class="card">
+        <div class="logo-placeholder">HDI Logo</div>
+        <h3><a href="#">Help Desk Institute (HDI)</a></h3>
+        <p>Advancing technical support and service management professionals worldwide.</p>
+      </div>
+      <div class="card">
+        <div class="logo-placeholder">SDI Logo</div>
+        <h3><a href="#">Service Desk Institute (SDI)</a></h3>
+        <p>Dedicated to inspiring service desks to be brilliant through best-practice sharing.</p>
+      </div>
+      <div class="card">
+        <div class="logo-placeholder">SIAM Logo</div>
+        <h3><a href="#">SIAM Foundation</a></h3>
+        <p>Service Integration and Management, connecting multi-supplier ecosystems effectively.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Presentations -->
+  <section id="presentations" class="fade-up">
+    <span class="section-label">02 / Past Presentations</span>
+    <h2>On Stage</h2>
+    <div class="pull-quote">"The best technology solutions come from communities that listen, share, and grow together."</div>
+    <div class="editorial-grid cols-3">
+      <div class="card">
+        <div class="card-label">Conference Talk</div>
+        <h3><a href="#">ITSM Best Practices 2024</a></h3>
+        <p>A deep dive into modern IT service management methodologies and frameworks.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Keynote</div>
+        <h3><a href="#">Building Community in Tech</a></h3>
+        <p>How genuine connections drive innovation and professional growth.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Panel</div>
+        <h3><a href="#">Service Management Trends</a></h3>
+        <p>Exploring the shifting landscape of service delivery and digital transformation.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Workshop</div>
+        <h3><a href="#">The Future of IT Support</a></h3>
+        <p>AI, automation, and the human element in next-generation support models.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Fireside Chat</div>
+        <h3><a href="#">Open Source in Enterprise</a></h3>
+        <p>Bridging the gap between open-source innovation and enterprise-grade reliability.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Videos -->
+  <section id="videos" class="fade-up">
+    <span class="section-label">03 / YouTube</span>
+    <h2>Watch &amp; Learn</h2>
+    <div class="editorial-grid cols-asymm">
+      <div>
+        <div class="card">
+          <div class="thumb-placeholder">&#9654; Featured Video</div>
+          <h3><a href="#">Community Building Masterclass</a></h3>
+          <p>A comprehensive walkthrough on creating and nurturing professional tech communities.</p>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="margin-bottom:2rem;">
+          <div class="thumb-placeholder">&#9654; Video</div>
+          <h3><a href="#">ITSM Quick Tips</a></h3>
+        </div>
+        <div class="card" style="margin-bottom:2rem;">
+          <div class="thumb-placeholder">&#9654; Video</div>
+          <h3><a href="#">Service Desk Live Q&amp;A</a></h3>
+        </div>
+        <div class="card">
+          <div class="thumb-placeholder">&#9654; Video</div>
+          <h3><a href="#">Open Source Roundtable</a></h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Podcast -->
+  <section id="podcast" class="fade-up">
+    <span class="section-label">04 / Podcast</span>
+    <h2>Listen In</h2>
+    <div class="podcast-banner">
+      <div>
+        <h3>The IT Community Podcast</h3>
+        <p style="margin-top:1rem;">Conversations with leaders, practitioners, and innovators across the IT service management world. New episodes weekly.</p>
+        <div class="podcast-links">
+          <a href="#">Apple Podcasts</a>
+          <a href="#">Spotify</a>
+          <a href="#">Google Podcasts</a>
+          <a href="#">RSS Feed</a>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;">
+        <div style="width:200px;height:200px;background:#3d3d3d;display:flex;align-items:center;justify-content:center;color:#888;font-size:0.8rem;text-transform:uppercase;letter-spacing:0.1em;">Podcast Cover</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Company -->
+  <section id="company" class="fade-up">
+    <span class="section-label">05 / Company</span>
+    <h2>InvGate</h2>
+    <div class="company-section">
+      <div class="company-logo-area">InvGate</div>
+      <div>
+        <p class="drop-cap">InvGate provides modern IT service management and IT asset management software that helps organizations streamline operations, improve service delivery, and gain complete visibility into their technology ecosystem. With an intuitive interface and powerful automation capabilities, InvGate empowers IT teams to do their best work.</p>
+        <br>
+        <a href="#" class="cta-secondary" style="display:inline-flex;">Learn More About InvGate &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Resources -->
+  <section id="resources" class="fade-up">
+    <span class="section-label">06 / Resources</span>
+    <h2>Downloadable Resources</h2>
+    <div class="editorial-grid cols-2">
+      <div class="card">
+        <div class="card-label">PDF Guide</div>
+        <h3><a href="#">The Community Builder's Playbook</a></h3>
+        <p>A step-by-step guide to launching and growing professional communities.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Whitepaper</div>
+        <h3><a href="#">State of ITSM 2024</a></h3>
+        <p>Data-driven insights into current trends shaping IT service management.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">Template</div>
+        <h3><a href="#">Service Desk Maturity Assessment</a></h3>
+        <p>Evaluate where your service desk stands and identify areas for growth.</p>
+      </div>
+      <div class="card">
+        <div class="card-label">eBook</div>
+        <h3><a href="#">Open Source for IT Leaders</a></h3>
+        <p>How open-source tools can transform your IT operations and culture.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="section-divider">
+
+  <!-- Quick Links -->
+  <section class="fade-up" style="padding-bottom:2rem;">
+    <span class="section-label">Quick Links</span>
+    <h2>More from Matt</h2>
+    <ul class="quick-links-list">
+      <li><a href="#">Speaking Inquiry Form</a></li>
+      <li><a href="#">Newsletter Archive</a></li>
+      <li><a href="#">Recommended Reading List</a></li>
+      <li><a href="#">Conference Calendar 2024</a></li>
+      <li><a href="#">Community Slack Channel</a></li>
+      <li><a href="#">Media Kit &amp; Bio</a></li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2024 Matt Beran. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu toggle
+  document.querySelector('.menu-toggle').addEventListener('click', function() {
+    document.querySelector('.nav-links').classList.toggle('active');
+  });
+
+  // Intersection Observer for fade-up animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Close mobile menu on link click
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelector('.nav-links').classList.remove('active');
+    });
+  });
+</script>
+</body>
+</html>
