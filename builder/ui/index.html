@@ -9,113 +9,125 @@
 <body>
 
 <div class="topbar">
-  <h1>THE BERAN BRIEF — BUILDER</h1>
-  <div class="meta">
-    <select id="draft-picker" title="Open existing draft">
-      <option value="">Open draft…</option>
-    </select>
+  <h1>THE BERAN BRIEF</h1>
+</div>
+
+<!-- ═══ DASHBOARD VIEW ═══ -->
+<div id="view-dashboard" class="view">
+  <div class="dashboard">
+    <div class="dash-header">
+      <h2>Issues</h2>
+      <button class="btn btn-primary" onclick="newIssue()">New issue</button>
+    </div>
+    <table class="drafts-table" id="drafts-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Subject</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="drafts-tbody"></tbody>
+    </table>
+    <p class="empty-state" id="no-drafts" style="display:none">No issues yet. Click "New issue" to start.</p>
+
+    <div class="dash-section">
+      <div class="dash-section-header">
+        <h2>Subscribers (<span id="dash-sub-count">0</span>)</h2>
+        <button class="btn" onclick="syncFromFormspree()">Sync from Formspree</button>
+      </div>
+    </div>
   </div>
 </div>
 
-<div id="resume-banner" class="resume-banner" style="display:none">
-  <span id="resume-msg"></span>
-  <button id="resume-yes">Resume</button>
-  <button id="resume-no">Start fresh</button>
-</div>
+<!-- ═══ EDITOR VIEW ═══ -->
+<div id="view-editor" class="view" style="display:none">
 
-<div class="tab-bar">
-  <button class="tab-btn active" data-tab="details" onclick="showTab('details')">Details</button>
-  <button class="tab-btn" data-tab="items" onclick="showTab('items')">Items</button>
-  <button class="tab-btn" data-tab="subscribers" onclick="showTab('subscribers')">Subscribers (<span id="sub-count">0</span>)</button>
-</div>
-
-<div class="workspace">
-
-  <!-- LEFT: Editor -->
-  <div class="editor" id="editor-panel">
-
-    <!-- TAB: Details -->
-    <div id="tab-details" class="tab-pane">
-      <div class="field-group">
-        <label>Issue date</label>
-        <input type="date" id="issue-date">
-      </div>
-      <div class="field-group">
-        <label>Email subject</label>
-        <input type="text" id="issue-subject" placeholder="Write a fresh subject line…">
-      </div>
-      <div class="field-group">
-        <label>Inbox preview text <span class="label-note">(shows as snippet before opening)</span></label>
-        <input type="text" id="issue-preheader" placeholder="e.g. Three things worth your time this Thursday.">
-      </div>
-      <div class="field-group">
-        <label>Opener</label>
-        <input type="text" id="issue-salutation" placeholder="Hi!" style="max-width:200px">
-      </div>
-      <div class="field-group">
-        <label>Greeting</label>
-        <textarea id="issue-greeting" rows="3" placeholder="Happy Thursday — hope your week is going well. Here's this week's newsletter!"></textarea>
-      </div>
+  <div class="tab-bar">
+    <button class="back-btn" onclick="goToDashboard()">&larr; All issues</button>
+    <div class="tab-btns">
+      <button class="tab-btn active" data-tab="details" onclick="showTab('details')">Details</button>
+      <button class="tab-btn" data-tab="items" onclick="showTab('items')">Items</button>
+      <button class="tab-btn" data-tab="subscribers" onclick="showTab('subscribers')">Subscribers (<span id="sub-count">0</span>)</button>
     </div>
+  </div>
 
-    <!-- TAB: Items -->
-    <div id="tab-items" class="tab-pane" style="display:none">
-      <div id="items-container"></div>
-    </div>
+  <div class="workspace">
+    <div class="editor" id="editor-panel">
 
-    <!-- TAB: Subscribers -->
-    <div id="tab-subscribers" class="tab-pane" style="display:none">
-      <div class="sub-page">
+      <!-- TAB: Details -->
+      <div id="tab-details" class="tab-pane">
+        <div class="field-group">
+          <label>Issue date</label>
+          <input type="date" id="issue-date">
+        </div>
+        <div class="field-group">
+          <label>Email subject</label>
+          <input type="text" id="issue-subject" placeholder="Write a fresh subject line…">
+        </div>
+        <div class="field-group">
+          <label>Greeting</label>
+          <textarea id="issue-greeting" rows="4" placeholder="Hi! Happy Thursday — hope your week is going well."></textarea>
+        </div>
+        <div class="delete-draft-row">
+          <button class="btn-delete-draft" onclick="deleteDraft()">Delete this draft</button>
+        </div>
+      </div>
 
-        <div class="sub-toolbar">
-          <div class="sub-stat">
-            <span class="sub-stat-num" id="sub-count-big">0</span>
-            <span class="sub-stat-label">subscribers</span>
+      <!-- TAB: Items -->
+      <div id="tab-items" class="tab-pane" style="display:none">
+        <div id="items-container"></div>
+      </div>
+
+      <!-- TAB: Subscribers -->
+      <div id="tab-subscribers" class="tab-pane" style="display:none">
+        <div class="sub-page">
+          <div class="sub-toolbar">
+            <div class="sub-stat">
+              <span class="sub-stat-num" id="sub-count-big">0</span>
+              <span class="sub-stat-label">subscribers</span>
+            </div>
+            <button class="btn btn-primary" onclick="syncFromFormspree()">Sync from Formspree</button>
           </div>
-          <button class="btn btn-primary" onclick="syncFromFormspree()">Sync from Formspree</button>
-        </div>
-
-        <div class="sub-list-section">
-          <ul id="sub-list"></ul>
-        </div>
-
-        <div class="sub-add-section">
-          <label class="field-label">Add manually</label>
-          <div class="sub-add-row">
-            <input type="email" id="sub-email-input" placeholder="email@example.com">
-            <button class="btn" onclick="addSubscriber()">Add</button>
+          <div class="sub-list-section">
+            <ul id="sub-list"></ul>
+          </div>
+          <div class="sub-add-section">
+            <label class="field-label">Add manually</label>
+            <div class="sub-add-row">
+              <input type="email" id="sub-email-input" placeholder="email@example.com">
+              <button class="btn" onclick="addSubscriber()">Add</button>
+            </div>
           </div>
         </div>
+      </div>
 
+    </div>
+
+    <!-- Preview (hidden on subscribers tab) -->
+    <div class="preview" id="preview-panel">
+      <div class="preview-toolbar">
+        <button id="preview-email-btn" class="active" onclick="setPreviewMode('email')">Email</button>
+        <button id="preview-web-btn" onclick="setPreviewMode('web')">Web page</button>
+      </div>
+      <div class="preview-frame" id="preview-frame"></div>
+      <div class="social-posts" id="social-panel" style="display:none">
+        <h3>Social posts</h3>
+        <div id="social-output"></div>
       </div>
     </div>
-
   </div>
 
-  <!-- RIGHT: Preview (hidden on subscribers tab) -->
-  <div class="preview" id="preview-panel">
-    <div class="preview-toolbar">
-      <button id="preview-email-btn" class="active" onclick="setPreviewMode('email')">Email</button>
-      <button id="preview-web-btn" onclick="setPreviewMode('web')">Web page</button>
-    </div>
-    <div class="preview-frame" id="preview-frame"></div>
-
-    <div class="social-posts" id="social-panel" style="display:none">
-      <h3>Social posts</h3>
-      <div id="social-output"></div>
-    </div>
+  <!-- Action bar -->
+  <div class="action-bar">
+    <button class="btn" onclick="saveDraft()">Save draft</button>
+    <button class="btn" onclick="generateSocial()">Generate social posts</button>
+    <span class="spacer"></span>
+    <span class="save-status" id="save-status"></span>
+    <button class="btn" onclick="sendTest()">Send test email</button>
+    <button class="btn btn-primary" onclick="publish()">Publish</button>
   </div>
-
-</div>
-
-<!-- Bottom action bar -->
-<div class="action-bar">
-  <button class="btn" onclick="saveDraft()">Save draft</button>
-  <button class="btn" onclick="generateSocial()">Generate social posts</button>
-  <span class="spacer"></span>
-  <span class="save-status" id="save-status"></span>
-  <button class="btn" onclick="sendTest()">Send test email</button>
-  <button class="btn btn-primary" onclick="publish()">Publish</button>
 </div>
 
 <div class="toast" id="toast"></div>

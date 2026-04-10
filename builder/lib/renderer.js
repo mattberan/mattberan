@@ -19,19 +19,13 @@ function escapeHtml(str = '') {
 
 function itemUrl(issue, item) {
   if (item.has_deep) {
-    return `${BASE_URL}/newsletter/${issue.slug}/${item.slug}/`;
+    return `${BASE_URL}/bb/${issue.slug}/${item.slug}/`;
   }
   return item.external_link || '#';
 }
 
 function renderEmail(issue) {
   let lines = [];
-  if (issue.preheader) {
-    lines.push(issue.preheader);
-    lines.push('');
-  }
-  lines.push(issue.salutation || 'Hi!');
-  lines.push('');
   lines.push(issue.greeting || '');
   lines.push('');
 
@@ -53,7 +47,7 @@ function renderEmail(issue) {
 
 function renderIssuePage(issue) {
   const tmpl = loadTemplate('issue.html');
-  const issueUrl = `${BASE_URL}/newsletter/${issue.slug}/`;
+  const issueUrl = `${BASE_URL}/bb/${issue.slug}/`;
 
   const itemsHtml = issue.items.map(item => {
     const url = itemUrl(issue, item);
@@ -80,7 +74,7 @@ function renderIssuePage(issue) {
 
 function renderDeepPage(issue, item) {
   const tmpl = loadTemplate('deep.html');
-  const issueUrl = `${BASE_URL}/newsletter/${issue.slug}/`;
+  const issueUrl = `${BASE_URL}/bb/${issue.slug}/`;
   const pageUrl = `${issueUrl}${item.slug}/`;
   const description = (item.deep_content || '').slice(0, 160).replace(/\n/g, ' ');
 
@@ -109,11 +103,11 @@ function renderNewsletterIndex() {
   const issues = getAllIssues();
 
   const issuesHtml = issues.map(issue => {
-    const url = `${BASE_URL}/newsletter/${issue.slug}/`;
+    const url = `${BASE_URL}/bb/${issue.slug}/`;
     return `
     <article class="issue-item">
       <time datetime="${issue.date}">${formatDate(issue.date)}</time>
-      <a href="/newsletter/${issue.slug}/">${escapeHtml(issue.items.map(i => i.sentence).join(' / '))}</a>
+      <a href="/bb/${issue.slug}/">${escapeHtml(issue.items.map(i => i.sentence).join(' / '))}</a>
     </article>`;
   }).join('\n');
 
@@ -121,8 +115,8 @@ function renderNewsletterIndex() {
 }
 
 function getAllIssues() {
-  const siteNewsletterDir = path.join(__dirname, '../../site/newsletter');
-  if (!fs.existsSync(siteNewsletterDir)) return [];
+  const siteBBDir = path.join(__dirname, '../../site/bb');
+  if (!fs.existsSync(siteBBDir)) return [];
 
   // Read drafts to get issue metadata for any published issues
   const draftsDir = path.join(__dirname, '../drafts');

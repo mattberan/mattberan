@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const renderer = require('../lib/renderer');
 const email = require('../lib/email');
 const subscribers = require('../lib/subscribers');
@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
 
   try {
     // 1. Render and write site pages
-    const issueDir = path.join(SITE_DIR, 'newsletter', issue.slug);
+    const issueDir = path.join(SITE_DIR, 'bb', issue.slug);
     fs.mkdirSync(issueDir, { recursive: true });
 
     fs.writeFileSync(
@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
 
     // 2. Rebuild newsletter index
     fs.writeFileSync(
-      path.join(SITE_DIR, 'newsletter', 'index.html'),
+      path.join(SITE_DIR, 'bb', 'index.html'),
       renderer.renderNewsletterIndex()
     );
 
@@ -48,9 +48,9 @@ router.post('/', async (req, res) => {
 
     // 3. Commit and push
     const repoRoot = path.join(__dirname, '../..');
-    execSync('git add site/', { cwd: repoRoot });
-    execSync(`git commit -m "Issue ${issue.slug}: ${subject}"`, { cwd: repoRoot });
-    execSync('git push', { cwd: repoRoot });
+    execFileSync('git', ['add', 'site/'], { cwd: repoRoot });
+    execFileSync('git', ['commit', '-m', `Issue ${issue.slug}: ${subject}`], { cwd: repoRoot });
+    execFileSync('git', ['push'], { cwd: repoRoot });
 
     // 4. Send to full list
     const list = subscribers.load();

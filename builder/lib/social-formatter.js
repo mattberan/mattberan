@@ -1,8 +1,8 @@
 const BASE_URL = process.env.SITE_BASE_URL || 'https://mattberan.com';
 
 function itemUrl(issue, item) {
-  if (item.has_deep) return `${BASE_URL}/newsletter/${issue.slug}/${item.slug}/`;
-  return item.external_link || `${BASE_URL}/newsletter/${issue.slug}/`;
+  if (item.has_deep) return `${BASE_URL}/bb/${issue.slug}/${item.slug}/`;
+  return item.external_link || `${BASE_URL}/bb/${issue.slug}/`;
 }
 
 function format(issue) {

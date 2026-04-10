@@ -6,7 +6,12 @@ const styleLogger = require('../lib/style-logger');
 
 const DRAFTS_DIR = path.join(__dirname, '../drafts');
 
+function isValidSlug(slug) {
+  return /^[a-zA-Z0-9_-]+$/.test(slug);
+}
+
 function draftsPath(slug) {
+  if (!isValidSlug(slug)) throw new Error('Invalid slug');
   return path.join(DRAFTS_DIR, `${slug}.json`);
 }
 
@@ -15,7 +20,7 @@ router.get('/', (req, res) => {
   const files = fs.readdirSync(DRAFTS_DIR).filter(f => f.endsWith('.json'));
   const drafts = files.map(f => {
     const data = JSON.parse(fs.readFileSync(path.join(DRAFTS_DIR, f), 'utf8'));
-    return { slug: data.slug, date: data.date };
+    return { slug: data.slug, date: data.date, subject: data.subject || '', status: data.status || 'draft' };
   }).sort((a, b) => b.date.localeCompare(a.date));
   res.json(drafts);
 });

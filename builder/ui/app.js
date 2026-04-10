@@ -5,67 +5,149 @@ const DEFAULT_ITEMS = [
   { id: 3, category: 'Worth Your Time', sentence: '', slug: '', has_deep: false, deep_content: '', external_link: '' },
 ];
 
-let issue = {
-  slug: '',
-  date: nextThursday(),
-  subject: '',
-  preheader: '',
-  salutation: '',
-  greeting: '',
-  items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)),
-};
-
+let issue = null;
 let previewMode = 'email';
-let autosaveTimer = null;
+let autosaveInterval = null;
 let previewTimer = null;
 
 // ── Init ───────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
-  document.getElementById('issue-date').value = issue.date;
-  issue.slug = dateToSlug(issue.date);
+  await loadDashboard();
+  loadSubscriberCount();
+});
+
+// ── Views ──────────────────────────────────────────────────────────────────
+function showView(viewName) {
+  document.querySelectorAll('.view').forEach(el => el.style.display = 'none');
+  document.getElementById(`view-${viewName}`).style.display = '';
+}
+
+async function goToDashboard() {
+  if (issue) {
+    // Auto-save before leaving
+    await saveDraftQuiet();
+  }
+  stopAutosave();
+  issue = null;
+  await loadDashboard();
+  showView('dashboard');
+}
+
+function openEditor(data) {
+  issue = data;
+  document.getElementById('issue-date').value = data.date;
+  document.getElementById('issue-subject').value = data.subject || '';
+  document.getElementById('issue-greeting').value = data.greeting || '';
   renderItems();
-  await loadDraftPicker();
-  await checkForResume();
-  scheduleAutosave();
+  showTab('details');
+  showView('editor');
+  startAutosave();
   updatePreview();
   loadSubscribers();
 
-  // Wire change listeners
-  document.getElementById('issue-date').addEventListener('change', e => {
-    issue.date = e.target.value;
-    issue.slug = dateToSlug(e.target.value);
+  // Wire change listeners (re-wire each time to avoid stacking)
+  const dateEl = document.getElementById('issue-date');
+  const subjectEl = document.getElementById('issue-subject');
+  const greetingEl = document.getElementById('issue-greeting');
+
+  dateEl.onchange = () => {
+    issue.date = dateEl.value;
+    issue.slug = dateToSlug(dateEl.value);
     deferPreview();
-  });
-  document.getElementById('issue-subject').addEventListener('input', e => {
-    issue.subject = e.target.value;
-  });
-  document.getElementById('issue-preheader').addEventListener('input', e => {
-    issue.preheader = e.target.value;
-    deferPreview();
-  });
-  document.getElementById('issue-salutation').addEventListener('input', e => {
-    issue.salutation = e.target.value;
-    deferPreview();
-  });
-  document.getElementById('issue-greeting').addEventListener('input', e => {
-    issue.greeting = e.target.value;
-    deferPreview();
-  });
-});
+  };
+  subjectEl.oninput = () => { issue.subject = subjectEl.value; };
+  greetingEl.oninput = () => { issue.greeting = greetingEl.value; deferPreview(); };
+}
+
+// ── Dashboard ──────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  const res = await fetch('/api/issues');
+  const drafts = await res.json();
+  const tbody = document.getElementById('drafts-tbody');
+  const noMsg = document.getElementById('no-drafts');
+  const table = document.getElementById('drafts-table');
+
+  if (drafts.length === 0) {
+    table.style.display = 'none';
+    noMsg.style.display = '';
+    return;
+  }
+
+  table.style.display = '';
+  noMsg.style.display = 'none';
+  tbody.innerHTML = drafts.map(d => {
+    const status = d.status === 'published'
+      ? '<span class="badge badge-published">Published</span>'
+      : '<span class="badge badge-draft">Draft</span>';
+    const subject = d.subject
+      ? `<span class="subject-col">${esc(d.subject)}</span>`
+      : `<span class="subject-col empty">No subject</span>`;
+    return `<tr>
+      <td class="date-col">${d.date}</td>
+      <td>${subject}</td>
+      <td class="status-col">${status}</td>
+      <td class="actions-col">
+        <button class="row-btn edit-btn" onclick="editDraft('${d.slug}')">Edit</button>
+        <button class="row-btn delete-btn" onclick="deleteDraftFromDash('${d.slug}', '${d.date}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function loadSubscriberCount() {
+  const res = await fetch('/api/subscribers');
+  const list = await res.json();
+  document.getElementById('dash-sub-count').textContent = list.length;
+}
+
+function newIssue() {
+  const data = {
+    slug: dateToSlug(nextThursday()),
+    date: nextThursday(),
+    subject: '',
+    greeting: '',
+    status: 'draft',
+    items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)),
+  };
+  openEditor(data);
+}
+
+async function editDraft(slug) {
+  const res = await fetch(`/api/issues/${slug}`);
+  if (!res.ok) { toast('Draft not found'); return; }
+  const data = await res.json();
+  openEditor(data);
+}
+
+async function deleteDraftFromDash(slug, date) {
+  if (!confirm(`Delete draft for ${date}? This cannot be undone.`)) return;
+  await fetch(`/api/issues/${slug}`, { method: 'DELETE' });
+  await loadDashboard();
+  toast('Draft deleted');
+}
 
 // ── Date helpers ───────────────────────────────────────────────────────────
 function nextThursday() {
   const d = new Date();
-  const day = d.getDay(); // 0=Sun, 4=Thu
+  const day = d.getDay();
   const daysUntilThursday = (4 - day + 7) % 7 || 7;
   d.setDate(d.getDate() + daysUntilThursday);
   return d.toISOString().split('T')[0];
 }
 
 function dateToSlug(dateStr) {
-  // Format: DDMMYYYY
   const [y, m, d] = dateStr.split('-');
   return `${d}${m}${y}`;
+}
+
+// ── Tab navigation ─────────────────────────────────────────────────────────
+function showTab(tabName) {
+  document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(`tab-${tabName}`).style.display = '';
+  document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+  document.getElementById('preview-panel').style.display = tabName === 'subscribers' ? 'none' : '';
+  if (tabName === 'subscribers') loadSubscribers();
 }
 
 // ── Item rendering ─────────────────────────────────────────────────────────
@@ -91,10 +173,7 @@ function buildItemBlock(item, idx) {
     </div>
     <div class="field-group">
       <label>Sentence</label>
-      <div class="sentence-row">
-        <textarea data-field="sentence" data-idx="${idx}" rows="2">${esc(item.sentence)}</textarea>
-        <button class="btn-suggest" data-idx="${idx}" onclick="suggestSentence(${idx})">Suggest</button>
-      </div>
+      <textarea data-field="sentence" data-idx="${idx}" rows="2">${esc(item.sentence)}</textarea>
     </div>
     <div class="why-field" id="why-${idx}" style="display:none">
       <div class="field-group">
@@ -124,7 +203,6 @@ function buildItemBlock(item, idx) {
     </div>
   `;
 
-  // Wire input listeners
   div.querySelectorAll('[data-field]').forEach(el => {
     const field = el.dataset.field;
     const i = parseInt(el.dataset.idx);
@@ -135,19 +213,17 @@ function buildItemBlock(item, idx) {
         const prev = originalSentence.value;
         const next = el.value;
         issue.items[i].sentence = next;
-        // Auto-slug from sentence
         const slugEl = div.querySelector(`[data-field="slug"]`);
         if (slugEl && (!slugEl.value || slugEl.value === slugify(prev))) {
           slugEl.value = slugify(next);
           issue.items[i].slug = slugify(next);
         }
-        // Show why-field if sentence changed from original
         if (next !== prev && prev !== '') {
           document.getElementById(`why-${i}`).style.display = '';
         }
         deferPreview();
       } else if (field === 'why') {
-        // Logged on blur
+        // logged on blur
       } else if (field === 'slug') {
         issue.items[i].slug = el.value;
       } else if (field === 'deep_content') {
@@ -168,7 +244,7 @@ function buildItemBlock(item, idx) {
         const current = issue.items[i].sentence;
         if (reason || originalSentence.value !== current) {
           logEdit(originalSentence.value, current, reason, `item ${i + 1}, issue ${issue.slug}`);
-          originalSentence.value = current; // reset after logging
+          originalSentence.value = current;
           document.getElementById(`why-${i}`).style.display = 'none';
           el.value = '';
         }
@@ -187,17 +263,17 @@ function toggleDeep(idx) {
   deferPreview();
 }
 
-// ── Slug helper ────────────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────
 function slugify(str) {
-  return str.toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-')
-    .slice(0, 60);
+  return str.toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').slice(0, 60);
 }
 
 function esc(str) {
   return (str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function escHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 // ── Preview ────────────────────────────────────────────────────────────────
@@ -214,6 +290,7 @@ function deferPreview() {
 }
 
 async function updatePreview() {
+  if (!issue) return;
   const frame = document.getElementById('preview-frame');
   try {
     const res = await fetch(`/api/preview?mode=${previewMode}`, {
@@ -232,121 +309,56 @@ async function updatePreview() {
   }
 }
 
-function escHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
-
 // ── Draft persistence ──────────────────────────────────────────────────────
 function buildIssuePayload() {
   return {
     ...issue,
     date: document.getElementById('issue-date').value,
     subject: document.getElementById('issue-subject').value,
-    preheader: document.getElementById('issue-preheader').value,
-    salutation: document.getElementById('issue-salutation').value,
     greeting: document.getElementById('issue-greeting').value,
   };
 }
 
-async function saveDraft() {
+async function saveDraftQuiet() {
+  if (!issue) return;
   const payload = buildIssuePayload();
   issue = payload;
-  const slug = issue.slug || dateToSlug(issue.date);
-  issue.slug = slug;
-  await fetch(`/api/issues/${slug}`, {
+  issue.slug = issue.slug || dateToSlug(issue.date);
+  await fetch(`/api/issues/${issue.slug}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(issue),
   });
-  showStatus('Draft saved');
-  toast('Draft saved');
-  await loadDraftPicker();
 }
 
-function scheduleAutosave() {
-  setInterval(async () => {
-    if (!issue.date) return;
-    const payload = buildIssuePayload();
-    issue = payload;
-    await fetch(`/api/issues/${issue.slug}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(issue),
-    });
+async function saveDraft() {
+  await saveDraftQuiet();
+  showStatus('Draft saved');
+  toast('Draft saved');
+}
+
+function startAutosave() {
+  stopAutosave();
+  autosaveInterval = setInterval(async () => {
+    if (!issue) return;
+    await saveDraftQuiet();
     showStatus('Autosaved ' + new Date().toLocaleTimeString());
   }, 60000);
 }
 
-async function loadDraftPicker() {
-  const picker = document.getElementById('draft-picker');
-  const res = await fetch('/api/issues');
-  const drafts = await res.json();
-  picker.innerHTML = '<option value="">Open draft…</option>' +
-    drafts.map(d => `<option value="${d.slug}">${d.date}</option>`).join('');
-
-  picker.onchange = async () => {
-    if (!picker.value) return;
-    const res = await fetch(`/api/issues/${picker.value}`);
-    const data = await res.json();
-    loadIssueDraft(data);
-    picker.value = '';
-  };
+function stopAutosave() {
+  if (autosaveInterval) { clearInterval(autosaveInterval); autosaveInterval = null; }
 }
 
-function loadIssueDraft(data) {
-  issue = data;
-  document.getElementById('issue-date').value = data.date;
-  document.getElementById('issue-subject').value = data.subject || '';
-  document.getElementById('issue-preheader').value = data.preheader || '';
-  document.getElementById('issue-salutation').value = data.salutation || '';
-  document.getElementById('issue-greeting').value = data.greeting || '';
-  renderItems();
-  updatePreview();
-}
-
-async function checkForResume() {
-  const todaySlug = dateToSlug(nextThursday());
-  const res = await fetch(`/api/issues/${todaySlug}`);
-  if (!res.ok) return;
-  const data = await res.json();
-  const banner = document.getElementById('resume-banner');
-  document.getElementById('resume-msg').textContent = `Resume draft from ${data.date}?`;
-  banner.style.display = 'flex';
-  document.getElementById('resume-yes').onclick = () => {
-    loadIssueDraft(data);
-    banner.style.display = 'none';
-  };
-  document.getElementById('resume-no').onclick = () => {
-    banner.style.display = 'none';
-  };
-}
-
-// ── AI suggest ─────────────────────────────────────────────────────────────
-async function suggestSentence(idx) {
-  const btn = document.querySelector(`[data-idx="${idx}"].btn-suggest`) ||
-              document.querySelector(`#item-block-${idx} .btn-suggest`);
-  if (btn) { btn.textContent = '…'; btn.classList.add('loading'); }
-
-  const item = issue.items[idx];
-  try {
-    const res = await fetch('/api/social/suggest', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ item, context: '' }),
-    });
-    const { suggestion } = await res.json();
-    const sentenceEl = document.querySelector(`#item-block-${idx} [data-field="sentence"]`);
-    if (sentenceEl) {
-      sentenceEl.value = suggestion;
-      issue.items[idx].sentence = suggestion;
-      deferPreview();
-    }
-    toast('Suggestion applied');
-  } catch (e) {
-    toast('Suggest failed: ' + e.message);
-  } finally {
-    if (btn) { btn.textContent = 'Suggest'; btn.classList.remove('loading'); }
-  }
+async function deleteDraft() {
+  if (!issue) return;
+  if (!confirm(`Delete draft for ${issue.date}? This cannot be undone.`)) return;
+  await fetch(`/api/issues/${issue.slug}`, { method: 'DELETE' });
+  stopAutosave();
+  issue = null;
+  await loadDashboard();
+  showView('dashboard');
+  toast('Draft deleted');
 }
 
 // ── Style logging ──────────────────────────────────────────────────────────
@@ -426,46 +438,29 @@ async function publish() {
 
   toast('Publishing…');
   try {
+    const payload = buildIssuePayload();
+    payload.status = 'published';
     const res = await fetch('/api/publish', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ issue: buildIssuePayload(), subject, testOnly: false }),
+      body: JSON.stringify({ issue: payload, subject, testOnly: false }),
     });
     const data = await res.json();
-    if (data.ok) toast('Published! Pages live + email sent.');
+    if (data.ok) {
+      issue.status = 'published';
+      await saveDraftQuiet(); // persist published status
+      toast(data.warning || 'Published! Pages live + email sent.');
+    }
     else toast('Error: ' + data.error);
   } catch (e) {
     toast('Error: ' + e.message);
   }
 }
 
-// ── UI helpers ─────────────────────────────────────────────────────────────
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
-}
-
-function showStatus(msg) {
-  document.getElementById('save-status').textContent = msg;
-}
-
-// ── Tab navigation ─────────────────────────────────────────────────────────
-function showTab(tabName) {
-  document.querySelectorAll('.tab-pane').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById(`tab-${tabName}`).style.display = '';
-  document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
-  document.getElementById('preview-panel').style.display = tabName === 'subscribers' ? 'none' : '';
-  if (tabName === 'subscribers') loadSubscribers();
-}
-
 // ── Subscribers ────────────────────────────────────────────────────────────
 async function loadSubscribers() {
   const res = await fetch('/api/subscribers');
   const list = await res.json();
-  // Update count in both places
   document.getElementById('sub-count').textContent = list.length;
   document.getElementById('sub-count-big').textContent = list.length;
   const ul = document.getElementById('sub-list');
@@ -508,7 +503,8 @@ async function syncFromFormspree() {
     const res = await fetch('/api/subscribers/sync', { method: 'POST' });
     const data = await res.json();
     if (res.ok) {
-      loadSubscribers();
+      if (document.getElementById('sub-count')) loadSubscribers();
+      loadSubscriberCount();
       const msg = `Synced — ${data.added} added${data.removed ? `, ${data.removed} unsubscribed` : ''} (${data.total} total)`;
       toast(msg);
     } else {
@@ -519,25 +515,14 @@ async function syncFromFormspree() {
   }
 }
 
-async function importCSV(input) {
-  const file = input.files[0];
-  if (!file) return;
-  try {
-    const csv = await file.text();
-    const res = await fetch('/api/subscribers/import', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ csv }),
-    });
-    const data = await res.json();
-    input.value = ''; // reset so same file can be re-selected
-    if (res.ok) {
-      loadSubscribers();
-      toast(`Imported ${data.added} new subscribers (${data.total} total)`);
-    } else {
-      toast('Import failed: ' + data.error);
-    }
-  } catch (err) {
-    toast('Import error: ' + err.message);
-  }
+// ── UI helpers ─────────────────────────────────────────────────────────────
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function showStatus(msg) {
+  document.getElementById('save-status').textContent = msg;
 }

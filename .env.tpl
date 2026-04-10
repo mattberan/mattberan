@@ -1,0 +1,13 @@
+ANTHROPIC_API_KEY=op://MB Apps/Anthropic API Key/credential
+SMTP_HOST=smtp.porkbun.com
+SMTP_PORT=587
+SMTP_USER=matt@mattberan.com
+SMTP_PASS=op://MB Apps/PorkBun Email password/password
+FROM_EMAIL=matt@mattberan.com
+FORMSPREE_FORM_ID=xqegopqp
+FORMSPREE_UNSUB_FORM_ID=mojpzpdk
+FORMSPREE_API_KEY=op://MB Apps/FormSpree Subscribe Form API/credential
+FORMSPREE_UNSUB_API_KEY=op://MB Apps/FormSpree Unsubscribe Key/credential
+OLLAMA_HOST=http://localhost:11434
+OLLAMA_MODEL=llama3
+SITE_BASE_URL=https://mattberan.com
