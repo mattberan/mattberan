@@ -59,11 +59,6 @@ body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 .choice-btn:hover{background:#2a2a55;border-color:#5566aa;transform:translateX(4px)}
 .choice-btn.primary{background:#1a3a6a;border-color:#2255aa}
 .choice-btn.primary:hover{background:#1a4a8a}
-.begin-quarter-btn{animation:pulseGlow 2s ease-in-out infinite;position:relative}
-@keyframes pulseGlow{0%,100%{box-shadow:0 0 8px rgba(34,85,170,0.4)}50%{box-shadow:0 0 20px rgba(34,85,170,0.8),0 0 40px rgba(34,85,170,0.3)}}
-.quarter-nudge{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#1a3a6a;border:1px solid #2255aa;color:#dde;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;white-space:nowrap;z-index:10;animation:nudgeFade 0.4s ease-out;box-shadow:0 4px 20px rgba(0,0,0,0.4)}
-.quarter-nudge::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:6px solid transparent;border-top-color:#2255aa}
-@keyframes nudgeFade{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 .choice-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none!important}
 .character-quote{background:#0f0f20;border-left:3px solid #4477cc;padding:8px 12px;margin:8px 0;border-radius:0 6px 6px 0;font-size:12px;font-style:italic;color:#99aabb}
 .character-quote .speaker{font-style:normal;font-weight:bold;color:#ddd}
@@ -121,38 +116,41 @@ body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 ::-webkit-scrollbar-track{background:#0a0a15}
 ::-webkit-scrollbar-thumb{background:#2a2a4a;border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:#3a3a6a}
-
-/* ========== SWIVEL CHAIR MODAL ========== */
-#swivel-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:2000;justify-content:center;align-items:center}
+#swivel-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:1000;justify-content:center;align-items:center}
 #swivel-overlay.active{display:flex}
-#swivel-modal{background:#1e1e35;border:2px solid #3a3a6a;border-radius:12px;width:92%;max-width:920px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
-#swivel-header{padding:16px 20px 12px;border-bottom:1px solid #2a2a4a}
-#swivel-header h2{color:#fff;font-size:18px;margin-bottom:4px}
-#swivel-header p{color:#6677aa;font-size:13px;line-height:1.5}
-#swivel-body{display:flex;flex:1;overflow:hidden;min-height:0}
-#swivel-left{width:46%;background:#0a120a;border-right:2px solid #1a3a1a;overflow-y:auto;padding:12px;font-family:'Courier New',monospace;user-select:none;-webkit-user-select:none}
-.legacy-header{background:#1a3a1a;color:#44ff44;padding:6px 10px;font-size:11px;margin-bottom:12px;border-radius:3px;letter-spacing:.05em}
-.legacy-record{border:1px solid #1a3a1a;border-radius:4px;padding:10px;margin-bottom:10px;background:#080f08}
-.legacy-record-header{color:#33cc33;font-size:10px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid #1a3a1a}
-.legacy-field{display:flex;gap:8px;margin-bottom:3px;font-size:11px}
-.legacy-key{color:#228822;flex:0 0 110px}
-.legacy-val{color:#88ff88}
-#swivel-right{width:54%;overflow-y:auto;padding:12px 16px;background:#12121f}
-.new-system-header{background:#1a2a4a;color:#88aaff;padding:6px 10px;font-size:11px;margin-bottom:12px;border-radius:3px;letter-spacing:.05em}
-.swivel-record-form{border:1px solid #2a2a4a;border-radius:6px;padding:10px 12px;margin-bottom:10px;background:#1a1a30}
-.swivel-record-num{font-size:11px;color:#6677aa;margin-bottom:8px;font-family:'Courier New',monospace}
-.swivel-field-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.swivel-field-label{font-size:11px;color:#8899bb;flex:0 0 100px}
-.swivel-field-input{flex:1;background:#0f0f20;border:1px solid #2a2a4a;border-radius:4px;color:#dde;padding:5px 8px;font-size:12px;font-family:'Courier New',monospace;outline:none;transition:border-color .2s,background .2s}
-.swivel-field-input:focus{border-color:#4466aa}
-.swivel-field-input.correct{border-color:#44cc88;background:#0a1f12}
-.swivel-field-input.wrong{border-color:#cc4444;background:#1f0a0a}
-#swivel-footer{padding:12px 20px;border-top:1px solid #2a2a4a;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
-#swivel-progress{font-size:12px;color:#6677aa;font-family:'Courier New',monospace}
-#swivel-submit{background:#1a3a6a;border:1px solid #2255aa;color:#dde;padding:9px 22px;border-radius:6px;font-size:13px;cursor:pointer;transition:all .2s}
-#swivel-submit:hover{background:#1a4a8a;border-color:#3366cc}
-#swivel-skip{background:transparent;border:1px solid #2a2a3a;color:#445;padding:9px 16px;border-radius:6px;font-size:12px;cursor:pointer;transition:all .2s}
-#swivel-skip:hover{border-color:#555;color:#888}
+.swivel-container{width:95%;max-width:1100px;height:85vh;display:flex;flex-direction:column}
+.swivel-header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#1a1a2e;border:1px solid #3a3a6a;border-bottom:none;border-radius:8px 8px 0 0}
+.swivel-timer{font-size:24px;font-weight:bold;color:#ff6644;font-family:'Courier New',monospace}
+.swivel-timer.warning{color:#ff2222;animation:timerPulse 0.5s infinite}
+@keyframes timerPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+.swivel-progress{font-size:14px;color:#8899bb}
+.swivel-score{font-size:16px;color:#44cc88;font-family:'Courier New',monospace}
+.swivel-panels{display:flex;flex:1;border:1px solid #3a3a6a;border-radius:0 0 8px 8px;overflow:hidden}
+.swivel-excel{width:60%;background:#0a2a0a;border-right:2px solid #3a3a6a;overflow:auto;padding:0;font-family:'Courier New',monospace;font-size:12px;position:relative}
+.swivel-excel-toolbar{background:#2a4a2a;padding:4px 8px;border-bottom:1px solid #1a3a1a;display:flex;align-items:center;gap:8px;font-size:11px;color:#6a8a6a}
+.swivel-excel-formula{background:#0a1a0a;border:1px solid #1a3a1a;color:#4a8a4a;padding:2px 6px;flex:1;font-family:'Courier New',monospace;font-size:11px}
+.swivel-excel table{width:100%;border-collapse:collapse}
+.swivel-excel th{background:#1a3a1a;color:#4a8a4a;padding:4px 8px;text-align:left;border:1px solid #2a4a2a;font-weight:normal;position:sticky;top:0}
+.swivel-excel td{padding:4px 8px;border:1px solid #1a3a1a;color:#3a8a3a}
+.swivel-excel tr.current td{background:#1a3a1a;color:#6aea6a}
+.swivel-excel .cell-ref{color:#2a5a2a;font-size:10px;user-select:none}
+.swivel-form{width:40%;background:#12121f;padding:16px;display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.swivel-form h3{color:#7faaff;font-size:14px;margin-bottom:4px}
+.swivel-field{display:flex;flex-direction:column;gap:3px}
+.swivel-field label{font-size:11px;color:#6677aa;text-transform:uppercase;letter-spacing:1px}
+.swivel-field input{background:#1a1a30;border:1px solid #2a2a4a;color:#dde;padding:8px;border-radius:4px;font-size:13px;font-family:'Courier New',monospace}
+.swivel-field input:focus{border-color:#4488ff;outline:none}
+.swivel-field input.correct{border-color:#44cc88;background:#1a2a1a}
+.swivel-field input.partial{border-color:#cccc44;background:#2a2a1a}
+.swivel-field input.wrong{border-color:#cc4444;background:#2a1a1a}
+.swivel-submit{background:#1a3a6a;border:2px solid #2255aa;color:#fff;padding:10px;border-radius:6px;font-size:14px;cursor:pointer;margin-top:auto;transition:all 0.2s}
+.swivel-submit:hover{background:#1a4a8a}
+.swivel-submit:disabled{opacity:0.4;cursor:not-allowed}
+.swivel-skip{background:#2a2a45;border:2px solid #3a3a6a;color:#aab;padding:8px;border-radius:6px;font-size:12px;cursor:pointer;margin-top:4px;transition:all 0.2s}
+.swivel-skip:hover{background:#3a3a55}
+.swivel-glitch{animation:swivelGlitch 0.1s}
+@keyframes swivelGlitch{0%{transform:translate(2px,-1px)}25%{transform:translate(-2px,1px)}50%{transform:translate(1px,2px)}75%{transform:translate(-1px,-2px)}100%{transform:none}}
+.swivel-not-responding{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#e0e0e0;border:2px solid #888;padding:12px 20px;color:#333;font-family:'Segoe UI',sans-serif;font-size:13px;border-radius:4px;box-shadow:2px 2px 8px rgba(0,0,0,0.5);z-index:10}
 </style>
 </head>
 <body>
@@ -187,6 +185,7 @@ body{background:#0f0f1a;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-seri
 </div>
 <div id="modal-overlay"><div id="modal"></div></div>
 <div id="cmdb-overlay" onclick="if(event.target===this)closeCMDB()"><div id="cmdb-view"></div></div>
+<div id="swivel-overlay"><div class="swivel-container"><div class="swivel-header"><div class="swivel-timer" id="swivel-timer">⏱ 60</div><div class="swivel-progress" id="swivel-progress">Record 1 of 3</div><div class="swivel-score" id="swivel-score">Score: 0</div></div><div class="swivel-panels"><div class="swivel-excel" id="swivel-excel"></div><div class="swivel-form" id="swivel-form"></div></div></div></div>
 <script>
 // ===================== CONFIGURATION =====================
 const TICKER_HEADLINES = [
@@ -221,6 +220,55 @@ const TASKS = [
 {id:'requests',name:'Employee Asset Requests',desc:'Handle the queue of people wanting new/better equipment',icon:'💻'},
 {id:'patching',name:'Security Patching Support',desc:'Ensure tracked assets are up to date on patches',icon:'🔒'},
 ];
+const CHARACTER_ROSTER = [
+{id:0,name:'Diane Chen',title:'The Perfectionist',accuracy:95,speed:40,morale:70,color:'#4488cc',hairColor:'#222',bio:'Has been in ITAM for 15 years. Her spreadsheets have spreadsheets.',category:'accurate'},
+{id:1,name:'Kevin Murphy',title:'The Cowboy',accuracy:45,speed:90,morale:80,color:'#cc5544',hairColor:'#c66',bio:'Types 120 WPM. 40% of those keystrokes are wrong.',category:'fast'},
+{id:2,name:'Priya Sharma',title:'The Analyst',accuracy:80,speed:70,morale:60,color:'#9955cc',hairColor:'#333',bio:'Built a dashboard that tracks dashboards.',category:'accurate'},
+{id:3,name:'TJ Washington',title:'The Intern',accuracy:55,speed:60,morale:90,color:'#44aa55',hairColor:'#543',bio:'Started as an intern 14 months ago. Nobody filed the paperwork.',category:'balanced'},
+{id:4,name:'Marcus Rivera',title:'The Veteran',accuracy:75,speed:55,morale:65,color:'#aa7744',hairColor:'#555',bio:'20 years in IT. Has seen every disaster twice.',category:'balanced'},
+{id:5,name:'Aisha Okonkwo',title:'The Automator',accuracy:70,speed:85,morale:55,color:'#44aaaa',hairColor:'#222',bio:'Scripts everything. Her cron jobs have cron jobs.',category:'fast'},
+{id:6,name:'Greg Holt',title:'The Yes Man',accuracy:50,speed:75,morale:85,color:'#88aa44',hairColor:'#b88',bio:'Agreeable to a fault. Will say yes to literally anything.',category:'fast'},
+{id:7,name:'Lydia Vasquez',title:'The Auditor',accuracy:90,speed:35,morale:50,color:'#cc6688',hairColor:'#4a2a1a',bio:'Ex-compliance. Sleeps with a copy of ISO 27001 under her pillow.',category:'accurate'},
+{id:8,name:'Chen Wei',title:'The Night Owl',accuracy:65,speed:80,morale:45,color:'#5577cc',hairColor:'#111',bio:'Works odd hours. Nobody knows when he sleeps.',category:'fast'},
+{id:9,name:'Fatima Al-Rashidi',title:'The Connector',accuracy:60,speed:65,morale:75,color:'#cc8855',hairColor:'#2a1a0a',bio:'Knows everyone in every department by name.',category:'balanced'},
+{id:10,name:'Danny Park',title:'The Hoarder',accuracy:55,speed:50,morale:70,color:'#77aa77',hairColor:'#3a2a1a',bio:'Never throws anything away. His desk is an archaeological dig.',category:'balanced'},
+{id:11,name:'Olivia Thornton',title:'The Consultant',accuracy:85,speed:45,morale:40,color:'#aa55aa',hairColor:'#c90',bio:'Expensive taste. Her coffee order takes 45 seconds to say.',category:'accurate'},
+];
+function selectTeam() {
+let accurate = CHARACTER_ROSTER.filter(c => c.category === 'accurate');
+let fast = CHARACTER_ROSTER.filter(c => c.category === 'fast');
+let balanced = CHARACTER_ROSTER.filter(c => c.category === 'balanced');
+let pick = function(arr) { return arr.splice(Math.floor(Math.random() * arr.length), 1)[0]; };
+let team = [];
+team.push(pick(accurate));
+team.push(pick(fast));
+let remaining = [...accurate, ...fast, ...balanced];
+team.push(pick(remaining));
+team.push(pick(remaining));
+return team.map(function(c) { return {id:c.id,name:c.name,title:c.title,accuracy:c.accuracy,speed:c.speed,morale:c.morale,color:c.color,hairColor:c.hairColor,bio:c.bio,assignment:null}; });
+}
+function levenshtein(a, b) {
+a = a.toLowerCase(); b = b.toLowerCase();
+let m = a.length, n = b.length;
+if (m === 0) return n;
+if (n === 0) return m;
+let d = [];
+for (let i = 0; i <= m; i++) { d[i] = []; d[i][0] = i; }
+for (let j = 0; j <= n; j++) d[0][j] = j;
+for (let i = 1; i <= m; i++)
+for (let j = 1; j <= n; j++)
+d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1] + (a[i-1] !== b[j-1] ? 1 : 0));
+return d[m][n];
+}
+function scoreField(input, expected) {
+if (!input || input.trim() === '') return 0;
+input = input.trim();
+if (input.toLowerCase() === expected.toLowerCase()) return 1.0;
+let dist = levenshtein(input, expected);
+let threshold = expected.length <= 5 ? 1 : 2;
+if (dist <= threshold) return 0.5;
+return 0;
+}
 const BRIEFINGS = [
 {speaker:"CEO",msg:"Welcome aboard, new IT Asset Manager! We just need you to get things organized. The last person left... suddenly. Their desk was covered in sticky notes that just said 'WHY'. I'm sure it's fine.",sub:"Quarter 1 of 12 — The Honeymoon Phase"},
 {speaker:"CEO",msg:"Great first quarter! Or at least, nothing caught fire. The CFO wants to know why we have 'a lot of computers.' That's a direct quote. Maybe get some numbers together?",sub:"Quarter 2 of 12"},
@@ -379,12 +427,7 @@ totalQuarters = totalQuarters || 12;
 return {
 quarter:1, totalQuarters:totalQuarters, phase:'briefing', gameOver:false, started:false,
 metrics:{budget:50000,cmdbAccuracy:65,riskScore:30,employeeSatisfaction:70,execConfidence:60,revenueImpact:1.0},
-team:[
-{id:0,name:'Diane Chen',title:'The Perfectionist',accuracy:95,speed:40,morale:70,color:'#4488cc',assignment:null,bio:'Has been in ITAM for 15 years. Her spreadsheets have spreadsheets.'},
-{id:1,name:'Kevin Murphy',title:'The Cowboy',accuracy:45,speed:90,morale:80,color:'#cc5544',assignment:null,bio:'Types 120 WPM. 40% of those keystrokes are wrong.'},
-{id:2,name:'Priya Sharma',title:'The Analyst',accuracy:80,speed:70,morale:60,color:'#9955cc',assignment:null,bio:'Built a dashboard that tracks dashboards.'},
-{id:3,name:'TJ Washington',title:'The Intern',accuracy:55,speed:60,morale:90,color:'#44aa55',assignment:null,bio:'Started as an intern 14 months ago. Nobody filed the paperwork.'},
-],
+team:selectTeam(),
 history:{cleanupGap:0,docsDone:0,trainingSpent:0,toolSpent:0,auditsDone:0,incidentScores:[],quarterGrades:[],tjTraining:0,priyaOffer:0,softwareAuditActive:false,budgetCutQuarters:0,cmdbHistory:[],riskHistory:[]},
 office:{desks:4,clutter:0,trophies:[],serverRacks:2},
 budgetAlloc:{hardware:0,software:0,tools:0,training:0,reserve:0},
@@ -395,7 +438,8 @@ currentEventIdx:0,
 cmdbErrors:20,cmdbDuplicates:15,cmdbUnknown:10,cmdbTotal:150,
 processConnections:0,
 prevMetrics:null,
-nudgeShown:false,
+lastSwivelScore:null,
+lastSwivelImpact:null,
 };
 }
 
@@ -691,7 +735,7 @@ roundRect(ctx, 8, 8, 200, 30, 6, true, false);
 ctx.fillStyle = '#7faaff';
 ctx.font = '12px monospace';
 ctx.textAlign = 'left';
-let phaseNames = {briefing:'BRIEFING',team:'TEAM ASSIGNMENT',budget:'BUDGET',events:'EVENTS',results:'RESULTS',audit:'FINAL AUDIT',review:'REVIEW DASHBOARD'};
+let phaseNames = {briefing:'BRIEFING',team:'TEAM ASSIGNMENT',budget:'BUDGET',events:'EVENTS',swivel:'CMDB UPDATE',results:'RESULTS',audit:'FINAL AUDIT',review:'REVIEW DASHBOARD'};
 ctx.fillText('Q' + G.quarter + ' — ' + (phaseNames[G.phase] || ''), 18, 28);
 }
 function drawDiamond(x, y, w, h, color) {
@@ -772,7 +816,7 @@ ctx.arc(x, y - 8 + bobY, 6, 0, Math.PI * 2);
 ctx.fillStyle = '#ffd5aa';
 ctx.fill();
 // Hair
-ctx.fillStyle = member.id === 0 ? '#222' : member.id === 1 ? '#c66' : member.id === 2 ? '#333' : '#543';
+ctx.fillStyle = member.hairColor || '#543';
 ctx.beginPath();
 ctx.arc(x, y - 10 + bobY, 6, Math.PI, Math.PI * 2);
 ctx.fill();
@@ -1046,15 +1090,11 @@ function updateActionButtons() {
 let ab = document.getElementById('action-buttons');
 ab.innerHTML = '';
 if (G.phase === 'review') {
-let nudge = (G.quarter === 2 && !G.nudgeShown) ? `<div class="quarter-nudge" id="quarterNudge">👆 Click here to start the next quarter!</div>` : '';
-ab.innerHTML += `<div style="position:relative;flex:1"><button class="choice-btn primary begin-quarter-btn" onclick="dismissNudge();startPhase('briefing')" style="width:100%;text-align:center;padding:10px;font-size:14px;font-weight:bold">▶ Begin Quarter ${G.quarter} →</button>${nudge}</div>`;
-if (G.quarter === 2 && !G.nudgeShown) { G.nudgeShown = true; setTimeout(function(){ let n = document.getElementById('quarterNudge'); if(n) n.style.display='none'; }, 8000); }
+ab.innerHTML += `<button class="choice-btn primary" onclick="startPhase('briefing')" style="flex:1;text-align:center;padding:10px;font-size:14px;font-weight:bold">▶ Begin Quarter ${G.quarter} →</button>`;
 }
 ab.innerHTML += `<button class="choice-btn" onclick="openCMDB()" style="flex:1;text-align:center;padding:8px;font-size:12px">📊 CMDB View</button>`;
 ab.innerHTML += `<button class="choice-btn" onclick="saveGame()" style="flex:1;text-align:center;padding:8px;font-size:12px">💾 Save Game</button>`;
 }
-
-function dismissNudge() { let n = document.getElementById('quarterNudge'); if(n) n.style.display='none'; }
 
 // ===================== PHASE SYSTEM =====================
 function startPhase(phase) {
@@ -1065,6 +1105,7 @@ case 'briefing': showBriefing(); break;
 case 'team': showTeamAssignment(); break;
 case 'budget': showBudget(); break;
 case 'events': processEvents(); break;
+case 'swivel': showSwivelTransition(); break;
 case 'results': showResults(); break;
 case 'audit': showFinalAudit(); break;
 case 'review': break; // Dashboard is visible, player clicks "Begin Quarter" in sidebar
@@ -1170,17 +1211,21 @@ render();
 }
 function getTaskHint(taskId, char) {
 if (!char) return '';
-let hints = {
-'inventory': char.id===1 ? '⚡ Kevin is fast but error-prone here' : char.id===0 ? '✨ Diane is thorough but slow' : '',
-'cleanup': char.id===0 ? '✨ Diane excels at data cleanup!' : char.id===1 ? '⚠️ Kevin hates this (morale ↓)' : char.id===2 ? '⚠️ Priya prefers automated work' : '',
-'license': char.id===2 ? '✨ Priya\'s specialty! Bonus effectiveness' : '',
-'procurement': char.id===3 ? '💰 TJ is cheapest for this' : '',
-'documentation': char.id===1 ? '⚠️ Kevin despises documentation (morale ↓↓)' : char.id===0 ? '✨ Diane\'s docs are impeccable' : '',
-'shadowit': char.id===2 ? '✨ Priya\'s specialty! Bonus effectiveness' : char.id===1 ? '⚡ Kevin loves field work (morale ↑)' : '',
-'requests': '',
-'patching': char.id===2 ? '✨ Priya excels here with her analysis skills' : '',
+let charHints = {
+0:{inventory:'✨ Diane is thorough but slow',cleanup:'✨ Diane excels at data cleanup!',documentation:'✨ Diane\'s docs are impeccable'},
+1:{inventory:'⚡ Kevin is fast but error-prone',cleanup:'⚠️ Kevin hates this (morale ↓)',documentation:'⚠️ Kevin despises documentation (morale ↓↓)',shadowit:'⚡ Kevin loves field work (morale ↑)'},
+2:{license:'✨ Priya\'s specialty!',shadowit:'✨ Priya\'s specialty!',patching:'✨ Priya excels with analysis',inventory:'⚠️ Priya prefers automated work'},
+3:{procurement:'💰 TJ handles this cheaply'},
+4:{inventory:'🛡️ Marcus brings old-school reliability'},
+5:{patching:'✨ Aisha automates patching',shadowit:'✨ Aisha scripts the sweep',license:'✨ Aisha automates license checks',inventory:'⚠️ Aisha hates manual work (morale ↓)',requests:'⚠️ Aisha hates manual work (morale ↓)'},
+6:{requests:'😊 Greg says yes to everyone',procurement:'😊 Greg happily processes orders'},
+7:{documentation:'✨✨ Lydia is documentation royalty (2x)',cleanup:'✨ Lydia\'s compliance eye spots everything',license:'✨ Lydia audits licenses meticulously'},
+8:{patching:'✨ Chen Wei patches at 3 AM (+50%)',shadowit:'✨ Chen Wei finds shadow IT at night (+50%)'},
+9:{requests:'✨ Fatima keeps employees happy (1.5x)',procurement:'✨ Fatima\'s relationships speed things up',license:'⚠️ Fatima is weak at technical tasks',patching:'⚠️ Fatima is weak at technical tasks'},
+10:{inventory:'✨ Danny remembers where everything is (+3 ACC)',procurement:'💰 Danny gets 10% discounts'},
+11:{cleanup:'✨ Olivia delivers premium quality',documentation:'✨ Olivia\'s docs are executive-grade'},
 };
-return hints[taskId] || '';
+return (charHints[char.id] && charHints[char.id][taskId]) || '';
 }
 function showBudget() {
 G.budgetAlloc = {hardware:0,software:0,tools:0,training:0,reserve:0};
@@ -1263,70 +1308,113 @@ checkCharacterQuirkEvents();
 showNextEvent();
 }
 function checkCharacterQuirkEvents() {
-// Diane: angry if cleanup skipped 2+ quarters
 let cleanupDone = G.team.some(m => m.assignment === 'cleanup');
 if (!cleanupDone) G.history.cleanupGap++;
 else G.history.cleanupGap = 0;
-if (G.history.cleanupGap >= 2 && G.team[0].morale > 20) {
-G.team[0].morale -= 10;
+G.team.forEach((member, teamIdx) => {
+switch(member.id) {
+case 0: // Diane — hates skipped cleanup
+if (G.history.cleanupGap >= 2 && member.morale > 20) {
+member.morale -= 10;
 G.eventLog.push('📧 Diane sent a passive-aggressive email about skipping CMDB cleanup.');
-addSpeechBubble(0, 'We SKIPPED cleanup AGAIN?!');
+addSpeechBubble(teamIdx, 'We SKIPPED cleanup AGAIN?!');
 }
-// Kevin: morale from assignments
-let kevin = G.team[1];
-if (kevin.assignment === 'inventory' || kevin.assignment === 'shadowit') kevin.morale = Math.min(100, kevin.morale + 5);
-if (kevin.assignment === 'documentation' || kevin.assignment === 'cleanup') kevin.morale = Math.max(10, kevin.morale - 10);
-// Priya: morale from tools investment
-let priya = G.team[2];
-if (G.budgetAlloc.tools > 5000) priya.morale = Math.min(100, priya.morale + 5);
-if (priya.assignment === 'inventory' || priya.assignment === 'requests') priya.morale = Math.max(10, priya.morale - 3);
-// Priya: poaching risk every 3 quarters
+break;
+case 1: // Kevin — morale from assignments
+if (member.assignment === 'inventory' || member.assignment === 'shadowit') member.morale = Math.min(100, member.morale + 5);
+if (member.assignment === 'documentation' || member.assignment === 'cleanup') member.morale = Math.max(10, member.morale - 10);
+break;
+case 2: // Priya — tools investment + poaching risk
+if (G.budgetAlloc.tools > 5000) member.morale = Math.min(100, member.morale + 5);
+if (member.assignment === 'inventory' || member.assignment === 'requests') member.morale = Math.max(10, member.morale - 3);
 G.history.priyaOffer++;
 if (G.history.priyaOffer >= 3) {
 G.history.priyaOffer = 0;
 if (G.budgetAlloc.training < 3000 && G.budgetAlloc.tools < 5000) {
-G.pendingEvents.push({
-id:'priya_poached',title:'Priya Got an Offer',
-desc:'LinkedIn recruiter strikes again. Priya has a competing offer for 30% more salary. She\'ll stay if you invest in tools or training — otherwise she\'s considering it seriously.',
+G.pendingEvents.push({id:'priya_poached',title:'Priya Got an Offer',
+desc:'LinkedIn recruiter strikes again. Priya has a competing offer for 30% more salary.',
 quotes:[{s:'Priya',t:'"Look, I love the team. But they\'re offering me a tool budget that isn\'t a sad joke."'}],
 choices:[
 {text:'Promise more tool investment next quarter',fx:{execConfidence:-2}},
 {text:'Counter with a $5K retention bonus',fx:{budget:-5000}},
-{text:'Let her make her decision (risky)',fx:function(g){if(g.team[2].morale>60)return{};g.team[2].morale-=15;return{cmdbAccuracy:-3};}},
+{text:'Let her make her decision (risky)',fx:function(g){let p=g.team.find(m=>m.id===2);if(p&&p.morale>60)return{};if(p)p.morale-=15;return{cmdbAccuracy:-3};}},
 ]});
 }
 }
-// TJ: moments
-let tj = G.team[3];
+break;
+case 3: // TJ — blunders + training
 let tjMomentChance = G.history.tjTraining > 4 ? 0.05 : G.history.tjTraining > 2 ? 0.1 : 0.2;
 if (Math.random() < tjMomentChance && G.quarter > 1) {
 let moments = [
-{title:'TJ Moment: The Great Reimage',desc:'TJ accidentally reimaged the CFO\'s laptop instead of the test machine. The CFO\'s face is... memorable.',fx:{execConfidence:-8,employeeSatisfaction:-3}},
-{title:'TJ Moment: Bulk Order Oops',desc:'TJ ordered 50 monitors instead of 5. The warehouse is calling. They sound confused.',fx:{budget:-8000}},
+{title:'TJ Moment: The Great Reimage',desc:'TJ accidentally reimaged the CFO\'s laptop instead of the test machine.',fx:{execConfidence:-8,employeeSatisfaction:-3}},
+{title:'TJ Moment: Bulk Order Oops',desc:'TJ ordered 50 monitors instead of 5. The warehouse is calling.',fx:{budget:-8000}},
 {title:'TJ Moment: Admin Access',desc:'TJ granted admin access to the entire printer fleet. To an intern. Who is also TJ.',fx:{riskScore:8}},
 ];
 let moment = moments[Math.floor(Math.random() * moments.length)];
-G.pendingEvents.push({
-id:'tj_moment',title:moment.title,desc:moment.desc,
+G.pendingEvents.push({id:'tj_moment',title:moment.title,desc:moment.desc,
 quotes:[{s:'TJ',t:'"I am SO sorry. But also, did you know our printer fleet has an API? Because I do now."'}],
 choices:[
 {text:'Fix it and use it as a training moment',fx:{...moment.fx}},
 {text:'Sigh deeply and add it to the incident log',fx:{...moment.fx, riskScore:(moment.fx.riskScore||0)+2}},
 ]});
 }
-// TJ: training improvement
 if (G.budgetAlloc.training >= 3000) {
 G.history.tjTraining++;
-if (G.history.tjTraining <= 8) {
-tj.accuracy = Math.min(90, tj.accuracy + 3);
-tj.speed = Math.min(85, tj.speed + 3);
+if (G.history.tjTraining <= 8) { member.accuracy = Math.min(90, member.accuracy + 3); member.speed = Math.min(85, member.speed + 3); }
 }
+break;
+case 4: // Marcus — boosts team morale, hates expensive tools
+G.team.forEach((m, i) => { if (i !== teamIdx) m.morale = Math.min(100, m.morale + 1); });
+if (G.budgetAlloc.tools > 8000) { member.morale = Math.max(10, member.morale - 5); addSpeechBubble(teamIdx, 'We don\'t need fancy tools...'); }
+break;
+case 5: // Aisha — frustrated by manual tasks
+if (member.assignment === 'inventory' || member.assignment === 'requests') {
+member.morale = Math.max(10, member.morale - 5);
+addSpeechBubble(teamIdx, 'This should be automated...');
 }
+break;
+case 6: // Greg — boosts exec confidence, accuracy drops under pressure
+G.metrics.execConfidence = Math.min(100, G.metrics.execConfidence + 1);
+if (G.metrics.riskScore > 60) { member.accuracy = Math.max(30, member.accuracy - 5); }
+break;
+case 7: // Lydia — finds compliance issues every 4Q, needs recognition
+if (!G.history.lydiaQuarters) G.history.lydiaQuarters = 0;
+G.history.lydiaQuarters++;
+if (G.history.lydiaQuarters % 4 === 0) {
+G.metrics.riskScore += 5; G.metrics.cmdbAccuracy += 3;
+G.eventLog.push('🔍 Lydia found a hidden compliance issue. Risk up but accuracy improved.');
+addSpeechBubble(teamIdx, 'Found another compliance gap.');
+}
+if (G.budgetAlloc.training < 2000) member.morale = Math.max(10, member.morale - 3);
+break;
+case 8: // Chen Wei — morale decays faster, goes dark below 25
+member.morale = Math.max(0, member.morale - 3);
+if (member.morale < 25) {
+member.assignment = null;
+G.eventLog.push('🌙 Chen Wei has gone dark. He\'ll be back next quarter... probably.');
+addSpeechBubble(teamIdx, 'zzz...');
+}
+break;
+case 9: // Fatima — passive (bonuses in applyTaskResults and applyEffects)
+break;
+case 10: // Danny — increases clutter
+G.office.clutter = Math.min(100, G.office.clutter + 5);
+break;
+case 11: // Olivia — demands $2K training or morale drops
+if (G.budgetAlloc.training >= 2000) {
+G.metrics.riskScore = Math.max(0, G.metrics.riskScore - 2);
+} else {
+member.morale = Math.max(10, member.morale - 8);
+addSpeechBubble(teamIdx, 'My professional development matters.');
+}
+break;
+}
+});
 }
 function showNextEvent() {
 if (G.currentEventIdx >= G.pendingEvents.length) {
 closeModal();
-startPhase('results');
+startPhase('swivel');
 return;
 }
 let ev = G.pendingEvents[G.currentEventIdx];
@@ -1383,8 +1471,10 @@ window._nextAfterOutcome = function() { showNextEvent(); };
 }
 function applyEffects(fx) {
 if (!fx) return;
+let fatimaOnTeam = G.team.some(m => m.id === 9);
 Object.entries(fx).forEach(([key, val]) => {
 if (key in G.metrics) {
+if (fatimaOnTeam && key === 'employeeSatisfaction' && val < 0) val = Math.round(val * 0.7);
 G.metrics[key] += val;
 if (val > 0 && key !== 'riskScore') addFloatingText('+' + (key==='revenueImpact'?val.toFixed(2):Math.round(val)) + ' ' + key, '#44cc88');
 if (val < 0 && key !== 'riskScore') addFloatingText(Math.round(val) + ' ' + key, '#cc4444');
@@ -1410,8 +1500,8 @@ Object.keys(G.metrics).forEach(k => { beforeMetrics[k] = G.metrics[k]; });
 G.team.forEach(m => applyTaskResults(m));
 // Apply budget spending effects
 applyBudgetEffects();
-// Natural decay
-G.metrics.cmdbAccuracy -= (3 + Math.random() * 2);
+// Natural decay (reduced — swivel seat is primary accuracy driver)
+G.metrics.cmdbAccuracy -= (1 + Math.random() * 1);
 G.metrics.riskScore += (1 + Math.random() * 2);
 G.metrics.employeeSatisfaction -= (1 + Math.random());
 // Process connections bonus
@@ -1459,6 +1549,14 @@ let sign = v > 0 ? '+' : '';
 html += `<div class="results-metric"><span>${labels[k]}</span><span class="change ${cls}">${sign}${fmt}</span></div>`;
 });
 html += '</div>';
+// Swivel seat summary
+if (G.lastSwivelScore !== null) {
+let swColor = G.lastSwivelScore >= 80 ? '#44cc88' : G.lastSwivelScore >= 50 ? '#cccc44' : '#cc4444';
+let swSign = G.lastSwivelImpact >= 0 ? '+' : '';
+html += '<div style="text-align:center;margin:8px;padding:8px;background:#0f0f20;border-radius:6px"><span style="font-size:12px;color:#8899bb">CMDB Update Session:</span> <span style="color:'+swColor+';font-weight:bold">'+Math.round(G.lastSwivelScore)+'% accuracy</span> <span style="color:'+(G.lastSwivelImpact>=0?'#44cc88':'#cc4444')+';">('+swSign+G.lastSwivelImpact+' CMDB)</span></div>';
+G.lastSwivelScore = null;
+G.lastSwivelImpact = null;
+}
 // Character comments
 let comments = getQuarterComments(grade);
 comments.forEach(c => {
@@ -1485,10 +1583,20 @@ let comp = Math.min(1, member.speed / 80);
 let errRate = Math.max(0, (100 - member.accuracy) / 200);
 // Character-specific bonuses
 let bonus = 1.0;
-if (member.id === 0 && (member.assignment === 'cleanup' || member.assignment === 'inventory')) bonus = 1.4;
-if (member.id === 1) { comp = 1.0; errRate *= 1.5; } // Kevin always finishes but more errors
-if (member.id === 2 && (member.assignment === 'license' || member.assignment === 'shadowit' || member.assignment === 'patching')) bonus = 1.5;
-if (member.id === 3) bonus *= (0.8 + G.history.tjTraining * 0.05); // TJ improves with training
+switch(member.id) {
+case 0: if (member.assignment === 'cleanup' || member.assignment === 'inventory') bonus = 1.4; break;
+case 1: comp = 1.0; errRate *= 1.5; break;
+case 2: if (member.assignment === 'license' || member.assignment === 'shadowit' || member.assignment === 'patching') bonus = 1.5; break;
+case 3: bonus *= (0.8 + G.history.tjTraining * 0.05); break;
+case 4: break;
+case 5: if (member.assignment === 'patching' || member.assignment === 'shadowit' || member.assignment === 'license') bonus = 1.3; break;
+case 6: bonus = 0.9; break;
+case 7: if (member.assignment === 'documentation') bonus = 2.0; break;
+case 8: if (member.assignment === 'patching' || member.assignment === 'shadowit') bonus = 1.5; break;
+case 9: if (member.assignment === 'requests' || member.assignment === 'procurement') bonus = 1.5; if (member.assignment === 'license' || member.assignment === 'patching') bonus = 0.6; break;
+case 10: if (member.assignment === 'inventory') G.metrics.cmdbAccuracy += 3; break;
+case 11: bonus = 1.2; break;
+}
 switch(member.assignment) {
 case 'inventory':
 G.metrics.cmdbAccuracy += 5 * eff * comp * bonus;
@@ -1544,22 +1652,25 @@ clampMetrics();
 }
 function applyBudgetEffects() {
 let a = G.budgetAlloc;
-// Hardware refresh
+let aishaOnTeam = G.team.some(m => m.id === 5);
+let dannyOnTeam = G.team.some(m => m.id === 10);
+// Hardware refresh (Danny makes procurement 10% cheaper = 10% more value)
 if (a.hardware > 0) {
-G.metrics.employeeSatisfaction += a.hardware / 3000;
-G.metrics.riskScore -= a.hardware / 5000;
+let hwMultiplier = dannyOnTeam ? 1.1 : 1;
+G.metrics.employeeSatisfaction += (a.hardware * hwMultiplier) / 3000;
+G.metrics.riskScore -= (a.hardware * hwMultiplier) / 5000;
 G.cmdbTotal += Math.floor(a.hardware / 2000);
 }
 // Software licenses
 if (a.software > 0) {
 G.metrics.riskScore -= a.software / 2500;
 }
-// Tools & automation
+// Tools & automation (Aisha doubles effectiveness)
 if (a.tools > 0) {
+let toolMult = aishaOnTeam ? 2 : 1;
 G.history.toolSpent += a.tools;
-G.processConnections += a.tools / 8000;
-G.cmdbErrors = Math.max(0, G.cmdbErrors - Math.floor(a.tools / 3000));
-// Compound benefit
+G.processConnections += (a.tools * toolMult) / 8000;
+G.cmdbErrors = Math.max(0, G.cmdbErrors - Math.floor((a.tools * toolMult) / 3000));
 let toolBonus = Math.min(5, G.history.toolSpent / 10000);
 G.metrics.cmdbAccuracy += toolBonus * 0.5;
 }
@@ -1585,19 +1696,28 @@ if (score >= 40) return 'D';
 return 'F';
 }
 function getQuarterComments(grade) {
+let commentPool = {
+0:{A:'"Acceptable. But there\'s always room for improvement. See my 23-page report."',B:'"Not terrible. My standards are higher, but I\'ll allow it."',C:'"A C. A C! Do you know what a C means? MEDIOCRITY."',DF:'"I submitted my concerns in writing. All 47 pages."'},
+1:{A:'"Crushed it! High five! ...anyone? No? Just me?"',B:'"B is basically an A minus. I\'ll take it!"',C:'"C\'s get degrees! Am I right? ...Why is everyone staring?"',DF:'"So... that happened. Want to grab a beer and not talk about it?"'},
+2:{A:'"My models predicted this. Updating my portfolio."',B:'"Not bad. My models predicted a B. I\'m never wrong. Except that one time."',C:'"I\'ve updated my LinkedIn. Not leaving. Just... keeping options open."',DF:'"I\'ve updated my LinkedIn. Just... as a precaution."'},
+3:{A:'"We got an A?! Best day of my professional career! All 14 months!"',B:'"A B! That\'s like, really good right?"',C:'"Is a C bad? In college I was happy with a C. Different vibe here though."',DF:'"Is this bad? This feels bad. Should I be worried? I\'m worried."'},
+4:{A:'"Seen plenty of teams get here. Not many stay. Don\'t get comfortable."',B:'"Solid work. Reminds me of the old days."',C:'"I\'ve seen worse. I\'ve also seen better."',DF:'"In 20 years I\'ve never... actually, no, I have seen this before."'},
+5:{A:'"If we\'d automated more, we could\'ve gotten A+. Just saying."',B:'"Decent. My prediction script said B+. Close enough."',C:'"This is what happens when you do things manually."',DF:'"I\'m going to automate my job search."'},
+6:{A:'"Great job everyone! I always believed in us! Go team!"',B:'"Good quarter! Really good! Everything is great! ...Right?"',C:'"Still positive! We can turn this around! ...Please?"',DF:'"This is fine! Everything is fine! *nervous laughter*"'},
+7:{A:'"The documentation supports this grade. I have the receipts. Literally."',B:'"Adequate. I\'ve noted 14 items for remediation."',C:'"Non-compliant with my personal standards."',DF:'"I need to speak with compliance. And possibly a therapist."'},
+8:{A:'"Cool. *sent at 3:47 AM*"',B:'"Not bad. I\'ll run overnight tests to find improvements."',C:'"Meh. Had ideas at 2 AM but forgot to write them down."',DF:'"I\'ll be working from home. Indefinitely."'},
+9:{A:'"The departments are happy. That\'s what matters."',B:'"Good relationships kept us afloat."',C:'"I\'ve been hearing concerns from other departments."',DF:'"Even my contacts can\'t spin this."'},
+10:{A:'"I knew keeping those old reports would pay off!"',B:'"Pretty good. Found spare parts from 2019 that might help."',C:'"I have a backup plan somewhere in my desk..."',DF:'"I\'m going to need more storage space. For my resume."'},
+11:{A:'"This meets my standards. Barely."',B:'"Acceptable for the investment level."',C:'"This is what happens with inadequate professional development."',DF:'"I have a consulting firm that could help. They\'re not cheap."'},
+};
 let comments = [];
-if (grade === 'A') {
-comments.push({s:'Diane',t:'"Acceptable. But there\'s always room for improvement. See my 23-page report."'});
-comments.push({s:'TJ',t:'"We got an A?! This is the best day of my professional career! All 14 months of it!"'});
-} else if (grade === 'B') {
-comments.push({s:'Priya',t:'"Not bad. My models predicted a B. I\'m never wrong. Except that one time."'});
-comments.push({s:'Kevin',t:'"B is basically an A minus. I\'ll take it!"'});
-} else if (grade === 'C') {
-comments.push({s:'Diane',t:'"A C. A C! Do you know what a C means? It means MEDIOCRITY. I did not spend 15 years in ITAM for a C."'});
-comments.push({s:'Kevin',t:'"C\'s get degrees! Am I right? ...Why is Diane staring at me like that?"'});
-} else {
-comments.push({s:'Priya',t:'"I\'ve updated my LinkedIn. Just... as a precaution."'});
-comments.push({s:'TJ',t:'"Is this bad? This feels bad. Should I be worried? I\'m worried."'});
+let shuffled = [...G.team].sort(() => Math.random() - 0.5);
+for (let i = 0; i < Math.min(2, shuffled.length); i++) {
+let m = shuffled[i];
+let pool = commentPool[m.id];
+if (!pool) continue;
+let key = grade === 'A' ? 'A' : grade === 'B' ? 'B' : grade === 'C' ? 'C' : 'DF';
+comments.push({s:m.name.split(' ')[0],t:pool[key]});
 }
 return comments;
 }
@@ -1699,6 +1819,203 @@ showModal(html);
 G.gameOver = true;
 }
 
+// ===================== SWIVEL SEAT MINI-GAME =====================
+let swivelState = null;
+function getSwivelRecordCount() {
+let q = G.quarter;
+if (q <= 2) return 3 + Math.floor(Math.random() * 3);
+if (q <= 4) return 5 + Math.floor(Math.random() * 3);
+return Math.min(12, 6 + Math.floor((q - 4)));
+}
+function generateSwivelRecords(count) {
+let records = [];
+let fieldKeys = ['tag','type','serial','location','user','status'];
+let fieldLabels = {tag:'Asset Tag',type:'Type',serial:'Serial Number',location:'Location',user:'Assigned User',status:'Status'};
+for (let i = 0; i < count; i++) {
+let type = ASSET_TYPES[Math.floor(Math.random() * ASSET_TYPES.length)];
+let tag = 'AST-' + (1000 + Math.floor(Math.random() * 9000));
+let serialLen = 8 + Math.floor(Math.random() * 6);
+let chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789';
+let serial = '';
+for (let j = 0; j < serialLen; j++) {
+if (Math.random() < 0.15) {
+let confusables = ['O','0','I','l','1','S','5','B','8'];
+serial += confusables[Math.floor(Math.random() * confusables.length)];
+} else {
+serial += chars[Math.floor(Math.random() * chars.length)];
+}
+}
+let location = LOCATIONS[Math.floor(Math.random() * (LOCATIONS.length - 1))];
+let user = NAMES_POOL[Math.floor(Math.random() * NAMES_POOL.length)];
+let status = STATUSES[Math.floor(Math.random() * 3)];
+let correctionField = fieldKeys[Math.floor(Math.random() * fieldKeys.length)];
+records.push({tag:tag,type:type,serial:serial,location:location,user:user,status:status,correctionField:correctionField,correctionLabel:fieldLabels[correctionField]});
+}
+return records;
+}
+function showSwivelTransition() {
+let html = '<h2>📋 Time to Update the CMDB</h2>';
+html += '<div class="modal-subtitle">The Swivel Seat — every IT asset manager\'s favorite exercise</div>';
+html += '<div class="modal-body"><p>The legacy spreadsheet has records that need correcting in the ITAM system. Each record has one field that\'s missing or wrong — look it up in the spreadsheet and fix it!</p>';
+html += '<p style="color:#8899bb;font-size:13px">One correction per record. Speed and accuracy both matter!</p></div>';
+html += '<div class="modal-choices"><button class="choice-btn primary" onclick="closeModal();startSwivelSeat()">Let\'s do this →</button></div>';
+showModal(html);
+}
+function startSwivelSeat() {
+let count = getSwivelRecordCount();
+let records = generateSwivelRecords(count);
+let timeLimit = count * 12;
+swivelState = {records:records,currentRecord:0,scores:[],timeLeft:timeLimit,timeTotal:timeLimit,timer:null,glitchTimer:null,nrTimer:null,done:false};
+document.getElementById('swivel-overlay').classList.add('active');
+renderSwivelExcel();
+renderSwivelForm();
+startSwivelTimer();
+scheduleSwivelGlitches();
+}
+function renderSwivelExcel() {
+let el = document.getElementById('swivel-excel');
+let records = swivelState.records;
+let html = '<div class="swivel-excel-toolbar"><span>📊</span><span>Asset_Records_FINAL_v3_REAL.xlsx</span><span style="flex:1"></span><span style="color:#4a6a4a">Sheet 1 of 1</span></div>';
+html += '<div style="padding:4px 8px;background:#0a1a0a;border-bottom:1px solid #1a3a1a;display:flex;align-items:center;gap:4px"><span style="color:#3a6a3a;font-size:10px">fx</span><div class="swivel-excel-formula">=VLOOKUP(A' + (swivelState.currentRecord + 2) + ',Assets!A:F,6,FALSE)</div></div>';
+html += '<div style="overflow-x:auto"><table><thead><tr><th style="width:30px"></th><th>A<br><span style="font-size:9px">Asset Tag</span></th><th>B<br><span style="font-size:9px">Type</span></th><th>C<br><span style="font-size:9px">Serial Number</span></th><th>D<br><span style="font-size:9px">Location</span></th><th>E<br><span style="font-size:9px">Assigned User</span></th><th>F<br><span style="font-size:9px">Status</span></th></tr></thead><tbody>';
+records.forEach((r, i) => {
+let cls = i === swivelState.currentRecord ? 'current' : '';
+let row = i + 2;
+html += '<tr class="'+cls+'"><td class="cell-ref">'+row+'</td><td>'+r.tag+'</td><td>'+r.type+'</td><td>'+r.serial+'</td><td>'+r.location+'</td><td>'+r.user+'</td><td>'+r.status+'</td></tr>';
+});
+html += '</tbody></table></div>';
+el.innerHTML = html;
+}
+function renderSwivelForm() {
+let el = document.getElementById('swivel-form');
+if (swivelState.done) return;
+let r = swivelState.records[swivelState.currentRecord];
+let corrField = r.correctionField;
+let allFields = [
+{key:'tag',label:'Asset Tag'},
+{key:'type',label:'Type'},
+{key:'serial',label:'Serial Number'},
+{key:'location',label:'Location'},
+{key:'user',label:'Assigned User'},
+{key:'status',label:'Status'},
+];
+let html = '<h3>📋 CMDB Correction — Record #'+(swivelState.currentRecord+1)+'</h3>';
+html += '<div style="font-size:11px;color:#556;margin-bottom:8px">Fix the <span style="color:#ff6644;font-weight:bold">'+r.correctionLabel+'</span> field — look it up in the spreadsheet</div>';
+allFields.forEach(function(f){
+if (f.key === corrField) {
+html += '<div class="swivel-field"><label style="color:#ff6644">⚠ '+f.label+' (NEEDS CORRECTION)</label><input type="text" id="swivel-correction" placeholder="Look up the correct value in the spreadsheet" autocomplete="off" onkeydown="if(event.key===\'Enter\')submitSwivelRecord()"></div>';
+} else {
+html += '<div class="swivel-field"><label>'+f.label+'</label><div style="padding:8px;background:#1a1a30;border:1px solid #2a2a4a;border-radius:4px;font-size:13px;color:#6677aa;font-family:\'Courier New\',monospace">'+r[f.key]+'</div></div>';
+}
+});
+html += '<button class="swivel-submit" onclick="submitSwivelRecord()">Submit Correction →</button>';
+html += '<button class="swivel-skip" onclick="skipSwivelRecord()">Skip Record</button>';
+el.innerHTML = html;
+setTimeout(function(){let f=document.getElementById('swivel-correction');if(f)f.focus();},100);
+}
+function startSwivelTimer() {
+updateSwivelUI();
+swivelState.timer = setInterval(function(){
+swivelState.timeLeft--;
+updateSwivelUI();
+if(swivelState.timeLeft<=0) endSwivelSeat();
+},1000);
+}
+function updateSwivelUI() {
+document.getElementById('swivel-timer').textContent = '⏱ ' + swivelState.timeLeft + 's';
+document.getElementById('swivel-timer').className = 'swivel-timer' + (swivelState.timeLeft <= 10 ? ' warning' : '');
+document.getElementById('swivel-progress').textContent = 'Record '+(swivelState.currentRecord+1)+' of '+swivelState.records.length;
+let totalScore = swivelState.scores.reduce((a,b)=>a+b,0);
+document.getElementById('swivel-score').textContent = 'Score: '+totalScore.toFixed(1);
+}
+function submitSwivelRecord() {
+if (swivelState.done) return;
+let r = swivelState.records[swivelState.currentRecord];
+let input = document.getElementById('swivel-correction');
+let val = input ? input.value : '';
+let score = scoreField(val, r[r.correctionField]);
+if (input) {
+input.disabled = true;
+input.className += score === 1 ? ' correct' : score === 0.5 ? ' partial' : ' wrong';
+}
+swivelState.scores.push(score);
+setTimeout(function(){
+swivelState.currentRecord++;
+if (swivelState.currentRecord >= swivelState.records.length) endSwivelSeat();
+else { renderSwivelExcel(); renderSwivelForm(); }
+},800);
+}
+function skipSwivelRecord() {
+if (swivelState.done) return;
+swivelState.scores.push(-0.5);
+swivelState.currentRecord++;
+if (swivelState.currentRecord >= swivelState.records.length) endSwivelSeat();
+else { renderSwivelExcel(); renderSwivelForm(); }
+}
+function scheduleSwivelGlitches() {
+let scheduleGlitch = function(){
+if(swivelState.done)return;
+swivelState.glitchTimer = setTimeout(function(){
+if(swivelState.done)return;
+let el = document.getElementById('swivel-excel');
+if(el){el.classList.add('swivel-glitch');setTimeout(function(){el.classList.remove('swivel-glitch');},150);}
+scheduleGlitch();
+},5000+Math.random()*15000);
+};
+scheduleGlitch();
+let scheduleNR = function(){
+if(swivelState.done)return;
+swivelState.nrTimer = setTimeout(function(){
+if(swivelState.done)return;
+let el = document.getElementById('swivel-excel');
+if(el){
+let nr = document.createElement('div');
+nr.className = 'swivel-not-responding';
+nr.textContent = '⚠ Asset_Records_FINAL_v3_REAL.xlsx (Not Responding)';
+el.appendChild(nr);
+setTimeout(function(){if(nr.parentNode)nr.parentNode.removeChild(nr);},2000);
+}
+scheduleNR();
+},10000+Math.random()*20000);
+};
+scheduleNR();
+}
+function endSwivelSeat() {
+if(swivelState.done)return;
+swivelState.done = true;
+clearInterval(swivelState.timer);
+clearTimeout(swivelState.glitchTimer);
+clearTimeout(swivelState.nrTimer);
+while(swivelState.scores.length < swivelState.records.length) swivelState.scores.push(-0.5);
+let maxScore = swivelState.records.length;
+let earned = swivelState.scores.reduce((a,b)=>a+b,0);
+let pct = Math.max(0,(earned/maxScore)*100);
+let cmdbImpact;
+if(pct>=80) cmdbImpact = 3+Math.floor((pct-80)/7);
+else if(pct>=50) cmdbImpact = Math.floor((pct-50)/15);
+else cmdbImpact = -2-Math.floor((50-pct)/10);
+G.metrics.cmdbAccuracy += cmdbImpact;
+clampMetrics();
+G.lastSwivelScore = pct;
+G.lastSwivelImpact = cmdbImpact;
+let formEl = document.getElementById('swivel-form');
+let color = pct>=80?'#44cc88':pct>=50?'#cccc44':'#cc4444';
+let impactColor = cmdbImpact>=0?'#44cc88':'#cc4444';
+let impactSign = cmdbImpact>=0?'+':'';
+let msg = pct>=80?'Excellent work! The CMDB thanks you.':pct>=50?'Not bad. Some records may need cleanup later.':'Rough session. The data quality took a hit.';
+let goodCount = swivelState.scores.filter(s=>s>0).length;
+let failCount = swivelState.scores.filter(s=>s===0).length;
+let skipCount = swivelState.scores.filter(s=>s<0).length;
+formEl.innerHTML = '<div style="text-align:center;padding:20px"><h3 style="color:#fff;margin-bottom:12px">Data Entry Complete</h3><div style="font-size:48px;font-weight:bold;color:'+color+'">'+Math.round(pct)+'%</div><div style="font-size:14px;color:#8899bb;margin:8px 0">Accuracy Score</div><div style="font-size:16px;color:'+impactColor+';margin:8px 0">CMDB Accuracy: '+impactSign+cmdbImpact+'</div><div style="font-size:13px;color:#6677aa;margin:12px 0">'+msg+'</div><div style="font-size:12px;color:#556;margin:8px 0">Records: '+goodCount+' good, '+failCount+' failed, '+skipCount+' skipped</div><button class="swivel-submit" onclick="closeSwivelSeat()" style="margin-top:16px">Continue →</button></div>';
+G.eventLog.push('📋 CMDB update session: '+Math.round(pct)+'% accuracy ('+(cmdbImpact>=0?'+':'')+cmdbImpact+' CMDB)');
+updateDashboard();
+}
+function closeSwivelSeat() {
+document.getElementById('swivel-overlay').classList.remove('active');
+swivelState = null;
+startPhase('results');
+}
+
 // ===================== CMDB VIEW =====================
 function openCMDB() {
 let ov = document.getElementById('cmdb-overlay');
@@ -1751,6 +2068,8 @@ let data = localStorage.getItem('itam_save');
 if (!data) { alert('No saved game found!'); return; }
 G = JSON.parse(data);
 if (!G.totalQuarters) G.totalQuarters = 12;
+G.team.forEach(function(m){if(!m.hairColor){let r=CHARACTER_ROSTER.find(c=>c.id===m.id);m.hairColor=r?r.hairColor:'#543';}});
+if (G.phase === 'swivel') G.phase = 'results';
 G.started = true;
 document.getElementById('title-screen').style.display = 'none';
 let gc2 = document.getElementById('game-container');
@@ -1791,106 +2110,6 @@ let hs = localStorage.getItem('itam_highscore');
 let hsd = document.getElementById('highscore-display');
 if (hs && hsd) hsd.textContent = 'High Score: ' + JSON.parse(hs) + '%';
 }
-// ===================== SWIVEL CHAIR INTRO =====================
-const SWIVEL_RECORDS = [
-  { legacy: {'RECORD ID':'REC-2019-0042','ASSET TAG':'LAP-00421','SERIAL NO':'XK7-29A-441B','ASSIGNED TO':'S. Mitchell','DEPT':'Marketing','LOCATION':'Floor 2','STATUS':'ACTIVE','LAST UPDATED':'03/14/2019'},
-    fields:[{label:'Assigned To',key:'user',answer:'S. Mitchell'}]},
-  { legacy: {'RECORD ID':'REC-2020-0117','ASSET TAG':'MON-01178','SERIAL NO':'MON-88F-221C','ASSIGNED TO':'B. Hernandez','DEPT':'Finance','LOCATION':'Floor 1','STATUS':'ACTIVE','LAST UPDATED':'07/02/2020'},
-    fields:[{label:'Dept',key:'dept',answer:'Finance'}]},
-  { legacy: {'RECORD ID':'REC-2018-0009','ASSET TAG':'SRV-00091','SERIAL NO':'SVR-14D-009A','ASSIGNED TO':'(Unassigned)','DEPT':'IT','LOCATION':'Server Room','STATUS':'ACTIVE','LAST UPDATED':'11/30/2018'},
-    fields:[{label:'Status',key:'status',answer:'ACTIVE'}]},
-];
-
-function showSwivelChairIntro() {
-  let leftHtml = `<div class="legacy-header">&#9658; ASSETTRACKPRO v2.3.1 &mdash; LEGACY SYSTEM &nbsp;[READ ONLY]</div>`;
-  SWIVEL_RECORDS.forEach((rec, i) => {
-    leftHtml += `<div class="legacy-record"><div class="legacy-record-header">&#9472;&#9472;&#9472; RECORD ${i+1} OF ${SWIVEL_RECORDS.length} &#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;</div>`;
-    Object.entries(rec.legacy).forEach(([k,v]) => {
-      leftHtml += `<div class="legacy-field"><span class="legacy-key">${k}:</span><span class="legacy-val">${v}</span></div>`;
-    });
-    leftHtml += `</div>`;
-  });
-
-  let rightHtml = `<div class="new-system-header">&#9679; CMDB PORTAL &mdash; NEW RECORD ENTRY &nbsp;[Type values from legacy system]</div>`;
-  SWIVEL_RECORDS.forEach((rec, i) => {
-    rightHtml += `<div class="swivel-record-form"><div class="swivel-record-num">ENTRY ${i+1} / ${SWIVEL_RECORDS.length}</div>`;
-    rec.fields.forEach(f => {
-      rightHtml += `<div class="swivel-field-row"><span class="swivel-field-label">${f.label}</span><input class="swivel-field-input" type="text" data-rec="${i}" data-key="${f.key}" placeholder="enter value..." autocomplete="off" spellcheck="false"></div>`;
-    });
-    rightHtml += `</div>`;
-  });
-
-  let overlay = document.createElement('div');
-  overlay.id = 'swivel-overlay';
-  overlay.className = 'active';
-  overlay.innerHTML = `<div id="swivel-modal">
-    <div id="swivel-header">
-      <h2>&#128197; Day 1 &mdash; First Task: Data Migration</h2>
-      <p>Welcome to MegaCorp IT. Before you can access the new CMDB, you need to migrate 3 records from the legacy system. Manually. There is no export button &mdash; the old system "doesn't integrate" with the new one. Nobody knows why. Nobody has ever asked. Please type the values exactly as shown on the left.</p>
-    </div>
-    <div id="swivel-body">
-      <div id="swivel-left">${leftHtml}</div>
-      <div id="swivel-right">${rightHtml}</div>
-    </div>
-    <div id="swivel-footer">
-      <div id="swivel-progress">Correct fields: <span id="swivel-count">0</span> / ${SWIVEL_RECORDS.length}</div>
-      <div style="display:flex;gap:8px">
-        <button id="swivel-skip" onclick="completeSwivelChair(false)">Skip &mdash; I'll do it later</button>
-        <button id="swivel-submit" onclick="completeSwivelChair(true)">Submit Records &rarr;</button>
-      </div>
-    </div>
-  </div>`;
-  document.body.appendChild(overlay);
-  overlay.querySelectorAll('.swivel-field-input').forEach(inp => inp.addEventListener('input', updateSwivelProgress));
-}
-
-function updateSwivelProgress() {
-  let correct = 0;
-  SWIVEL_RECORDS.forEach((rec, ri) => {
-    rec.fields.forEach(f => {
-      let inp = document.querySelector(`.swivel-field-input[data-rec="${ri}"][data-key="${f.key}"]`);
-      if (!inp) return;
-      let v = inp.value.trim();
-      if (v === '') { inp.classList.remove('correct','wrong'); return; }
-      let ok = v.toLowerCase() === f.answer.toLowerCase();
-      inp.classList.toggle('correct', ok);
-      inp.classList.toggle('wrong', !ok);
-      if (ok) correct++;
-    });
-  });
-  document.getElementById('swivel-count').textContent = correct;
-}
-
-function completeSwivelChair(submitted) {
-  let correct = 0, total = SWIVEL_RECORDS.length;
-  if (submitted) {
-    SWIVEL_RECORDS.forEach((rec, ri) => {
-      rec.fields.forEach(f => {
-        let inp = document.querySelector(`.swivel-field-input[data-rec="${ri}"][data-key="${f.key}"]`);
-        if (inp && inp.value.trim().toLowerCase() === f.answer.toLowerCase()) correct++;
-      });
-    });
-  }
-  let overlay = document.getElementById('swivel-overlay');
-  if (overlay) overlay.remove();
-  if (!submitted) {
-    G.metrics.cmdbAccuracy = Math.max(0, G.metrics.cmdbAccuracy - 3);
-    G.eventLog.push('⚠ Skipped Day 1 data migration. Already behind.');
-  } else if (correct === total) {
-    G.metrics.cmdbAccuracy = Math.min(100, G.metrics.cmdbAccuracy + 5);
-    G.eventLog.push('✓ Perfect data migration — all 3 fields correct. Diane is impressed (slightly).');
-  } else if (correct >= 2) {
-    G.eventLog.push(`Data migration: ${correct}/${total} serials correct. Close enough.`);
-  } else if (correct === 1) {
-    G.metrics.cmdbAccuracy = Math.max(0, G.metrics.cmdbAccuracy - 2);
-    G.eventLog.push('⚠ Data migration: 1/3 serials correct. Two bad records imported.');
-  } else {
-    G.metrics.cmdbAccuracy = Math.max(0, G.metrics.cmdbAccuracy - 5);
-    G.eventLog.push('✗ Day 1 data entry was a disaster. You are already the previous person.');
-  }
-  startPhase('briefing');
-}
-
 function startNewGame(numQuarters) {
 G = newGameState(numQuarters);
 G.started = true;
@@ -1901,7 +2120,7 @@ gc.classList.add('active');
 initCanvas();
 initTicker();
 updateDashboard();
-showSwivelChairIntro();
+startPhase('briefing');
 }
 // Init
 document.addEventListener('DOMContentLoaded', () => {
