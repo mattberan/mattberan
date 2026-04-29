@@ -201,6 +201,17 @@ header nav a:hover { color: var(--text); }
 }
 
 /* Footer */
+.quick-links {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+.quick-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13px;
+}
+.quick-links a:hover { text-decoration: underline; }
 footer {
   margin-top: 64px;
   padding: 24px 0;
