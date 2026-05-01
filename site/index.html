@@ -495,6 +495,45 @@
 
   .card .card-link:hover { color: var(--accent-hover); }
 
+  /* New project highlight card */
+  [data-theme="light"] .card-new { background: #efefef; }
+  [data-theme="dark"]  .card-new { background: #2a2a2a; }
+
+  /* Floating announcement badge */
+  .announce-badge {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 999px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    z-index: 999;
+    transition: opacity 0.2s, transform 0.2s;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  }
+  .announce-badge:hover { opacity: 0.9; transform: translateY(-1px); }
+  .announce-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0.85;
+    flex-shrink: 0;
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 0.85; transform: scale(1); }
+    50%       { opacity: 1;    transform: scale(1.3); }
+  }
+
   /* ========== COMMUNITIES ========== */
   .community-grid {
     display: grid;
@@ -1046,6 +1085,12 @@
       <div class="line"></div>
     </div>
     <div class="card-grid cols-2">
+      <div class="card card-new">
+        <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 8h2"/><path d="M15 8h2"/><path d="M11 12v-4"/><path d="M13 12v-4"/></svg></div>
+        <h3>Stocked UP</h3>
+        <p>A fast-paced inventory and asset management game where you stock shelves, track items, and race against the chaos of a busy IT department. How long can you keep everything in order?</p>
+        <a href="https://stocked-desk-flow.base44.app" class="card-link" target="_blank" rel="noopener">Play the game &rarr;</a>
+      </div>
       <div class="card">
         <div class="card-icon"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
         <h3>Psychological Safety Simulator</h3>
@@ -1176,6 +1221,12 @@
     icon.style.transform = isShown ? '' : 'rotate(180deg)';
   }
 </script>
+<a href="#projects" class="announce-badge">
+  <span class="announce-dot"></span>
+  <span>New project: Stocked UP</span>
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+</a>
+
 <script data-goatcounter="https://mattberan.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 <script>
