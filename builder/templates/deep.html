@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,12 @@
 <meta property="og:type" content="article">
 <link rel="canonical" href="{{page_url}}">
 <link rel="stylesheet" href="/styles/main.css">
+<script>
+  (function(){
+    var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    document.documentElement.setAttribute('data-theme',t);
+  })();
+</script>
 </head>
 <body>
 <header>

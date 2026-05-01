@@ -53,6 +53,20 @@
     </div>
   </div>
 
+  <!-- Action bar -->
+  <div class="action-bar">
+    <button class="btn btn-primary" onclick="saveDraft()">Save draft</button>
+    <button class="btn btn-primary" onclick="generateSocial()">Generate social posts</button>
+    <span class="spacer"></span>
+    <span class="save-status" id="save-status"></span>
+    <button class="btn btn-primary" onclick="sendTest()">Send test email</button>
+    <button class="btn btn-primary" onclick="pushToSite()">Push to site</button>
+    <button class="btn btn-publish" onclick="sendEmail()">⚡ Send email</button>
+  </div>
+
+  <!-- Site links panel (shown after push) -->
+  <div id="site-links-panel" class="site-links-panel" style="display:none"></div>
+
   <div class="workspace">
     <div class="editor" id="editor-panel">
 
@@ -69,6 +83,10 @@
         <div class="field-group">
           <label>Greeting</label>
           <textarea id="issue-greeting" rows="4" placeholder="Hi! Happy Thursday — hope your week is going well."></textarea>
+        </div>
+        <div class="field-group">
+          <label>Schedule email <span class="label-note">— sends on next login after this time</span></label>
+          <input type="datetime-local" id="issue-send-at">
         </div>
         <div class="delete-draft-row">
           <button class="btn-delete-draft" onclick="deleteDraft()">Delete this draft</button>
@@ -113,21 +131,15 @@
       </div>
       <div class="preview-frame" id="preview-frame"></div>
       <div class="social-posts" id="social-panel" style="display:none">
-        <h3>Social posts</h3>
+        <div class="social-header">
+          <h3>Social posts</h3>
+          <button class="btn btn-primary" onclick="closeSocial()">Save and close</button>
+        </div>
         <div id="social-output"></div>
       </div>
     </div>
   </div>
 
-  <!-- Action bar -->
-  <div class="action-bar">
-    <button class="btn" onclick="saveDraft()">Save draft</button>
-    <button class="btn" onclick="generateSocial()">Generate social posts</button>
-    <span class="spacer"></span>
-    <span class="save-status" id="save-status"></span>
-    <button class="btn" onclick="sendTest()">Send test email</button>
-    <button class="btn btn-primary" onclick="publish()">Publish</button>
-  </div>
 </div>
 
 <div class="toast" id="toast"></div>

@@ -82,6 +82,7 @@ body {
 }
 .badge-draft { background: #fff3cd; color: #856404; }
 .badge-published { background: #d4edda; color: #155724; }
+.badge-scheduled { background: #dbeafe; color: #1e40af; }
 
 .row-btn {
   padding: 4px 12px;
@@ -144,6 +145,24 @@ body {
 }
 .tab-btn:hover { color: #1a1a1a; }
 .tab-btn.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+
+/* ═══ Site links panel ═══ */
+.site-links-panel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 24px;
+  background: #f0faf4;
+  border-bottom: 1px solid #b7dfc6;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.site-links-panel a {
+  color: #1a7f3c;
+  text-decoration: none;
+  font-weight: 600;
+}
+.site-links-panel a:hover { text-decoration: underline; }
 
 /* ═══ Workspace ═══ */
 .workspace {
@@ -283,7 +302,7 @@ input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
 .web-preview { font-size: 14px; }
 .web-preview .item { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #eee; }
 .web-preview .item:last-child { border-bottom: none; }
-.web-preview .category { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #888; }
+.web-preview .category { font-size: 18px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #1a1a1a; }
 .web-preview .sentence { margin: 6px 0 8px; font-size: 16px; }
 .web-preview a { color: #1a1a1a; font-size: 13px; }
 
@@ -362,7 +381,7 @@ input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
   gap: 12px;
   padding: 12px 24px;
   background: #fff;
-  border-top: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
   flex-shrink: 0;
 }
 .btn {
@@ -381,12 +400,19 @@ input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
   border-color: #1a1a1a;
 }
 .btn-primary:hover { background: #333; }
+.btn-publish {
+  background: #1a7f3c;
+  color: #fff;
+  border-color: #1a7f3c;
+}
+.btn-publish:hover { background: #156b32; }
 .action-bar .spacer { flex: 1; }
 .save-status { font-size: 12px; color: #888; }
 
 /* ═══ Social ═══ */
 .social-posts { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
-.social-posts h3 { font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: #888; }
+.social-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.social-header h3 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #888; margin: 0; }
 .social-item { margin-bottom: 16px; }
 .social-item .platform { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #555; margin-bottom: 4px; }
 .social-item textarea { width: 100%; min-height: 80px; font-size: 13px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit; }
@@ -397,7 +423,7 @@ input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
 /* ═══ Toast ═══ */
 .toast {
   position: fixed;
-  bottom: 60px;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   background: #1a1a1a;

@@ -1,16 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{date}} — The Beran Brief</title>
+<title>{{subject}} — The Beran Brief</title>
 <meta name="description" content="{{description}}">
-<meta property="og:title" content="The Beran Brief — {{date}}">
+<meta property="og:title" content="{{subject}}">
 <meta property="og:description" content="{{description}}">
 <meta property="og:url" content="{{issue_url}}">
 <meta property="og:type" content="article">
 <link rel="canonical" href="{{issue_url}}">
 <link rel="stylesheet" href="/styles/main.css">
+<script>
+  (function(){
+    var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    document.documentElement.setAttribute('data-theme',t);
+  })();
+</script>
 </head>
 <body>
 <header>
@@ -20,6 +26,7 @@
 
 <main class="issue">
   <time datetime="{{date}}">{{date}}</time>
+  <h1 class="issue-title">{{subject}}</h1>
   <p class="greeting">{{greeting}}</p>
 
   <div class="items">

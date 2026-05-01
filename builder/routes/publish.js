@@ -9,55 +9,69 @@ const subscribers = require('../lib/subscribers');
 
 const SITE_DIR = path.join(__dirname, '../../site');
 
-// POST /api/publish — renders pages, commits, pushes, sends email
+const BASE_URL = process.env.SITE_BASE_URL || 'https://mattberan.com';
+
+// POST /api/publish
+// modes: testOnly, siteOnly, emailOnly, or full (default)
 router.post('/', async (req, res) => {
-  const { issue, subject, testOnly = false } = req.body;
-  const errors = [];
+  const { issue, subject, testOnly = false, siteOnly = false, emailOnly = false } = req.body;
 
   try {
-    // 1. Render and write site pages
-    const issueDir = path.join(SITE_DIR, 'bb', issue.slug);
-    fs.mkdirSync(issueDir, { recursive: true });
-
-    fs.writeFileSync(
-      path.join(issueDir, 'index.html'),
-      renderer.renderIssuePage(issue)
-    );
-
-    for (const item of issue.items) {
-      if (item.has_deep && item.deep_content) {
-        const itemDir = path.join(issueDir, item.slug);
-        fs.mkdirSync(itemDir, { recursive: true });
-        fs.writeFileSync(
-          path.join(itemDir, 'index.html'),
-          renderer.renderDeepPage(issue, item)
-        );
-      }
-    }
-
-    // 2. Rebuild newsletter index
-    fs.writeFileSync(
-      path.join(SITE_DIR, 'bb', 'index.html'),
-      renderer.renderNewsletterIndex()
-    );
-
+    // Test email only — no render, no push
     if (testOnly) {
       await email.sendTest(issue, subject);
       return res.json({ ok: true, mode: 'test' });
     }
 
-    // 3. Commit and push
+    // Email only — no render, no push
+    if (emailOnly) {
+      const list = subscribers.load();
+      if (list.length === 0) return res.json({ ok: true, mode: 'email', warning: 'No subscribers yet.' });
+      await email.sendToList(issue, subject, list);
+      return res.json({ ok: true, mode: 'email' });
+    }
+
+    // Render and write site pages
+    const issueDir = path.join(SITE_DIR, 'bb', issue.slug);
+    fs.mkdirSync(issueDir, { recursive: true });
+    fs.writeFileSync(path.join(issueDir, 'index.html'), renderer.renderIssuePage(issue));
+
+    for (const item of issue.items) {
+      if (item.has_deep && item.deep_content) {
+        const itemDir = path.join(issueDir, item.slug);
+        fs.mkdirSync(itemDir, { recursive: true });
+        fs.writeFileSync(path.join(itemDir, 'index.html'), renderer.renderDeepPage(issue, item));
+      }
+    }
+
+    fs.writeFileSync(path.join(SITE_DIR, 'bb', 'index.html'), renderer.renderNewsletterIndex());
+
+    // Commit and push (skip if nothing changed)
     const repoRoot = path.join(__dirname, '../..');
     execFileSync('git', ['add', 'site/'], { cwd: repoRoot });
-    execFileSync('git', ['commit', '-m', `Issue ${issue.slug}: ${subject}`], { cwd: repoRoot });
-    execFileSync('git', ['push'], { cwd: repoRoot });
+    const diff = require('child_process').spawnSync('git', ['diff', '--cached', '--quiet'], { cwd: repoRoot });
+    if (diff.status !== 0) {
+      execFileSync('git', ['commit', '-m', `Issue ${issue.slug}: ${subject}`], { cwd: repoRoot });
+      execFileSync('git', ['push'], { cwd: repoRoot });
+    }
 
-    // 4. Send to full list
+    // Site only — return URLs for proofing
+    if (siteOnly) {
+      const urls = {
+        issue: `${BASE_URL}/bb/${issue.slug}/`,
+        deepPages: issue.items
+          .filter(i => i.has_deep && i.deep_content)
+          .map(i => ({ category: i.category, url: `${BASE_URL}/bb/${issue.slug}/${i.slug}/` })),
+      };
+      return res.json({ ok: true, mode: 'site', urls });
+    }
+
+    // Full publish — also send email
     const list = subscribers.load();
     if (list.length === 0) return res.json({ ok: true, mode: 'publish', warning: 'No subscribers yet — pages published but no email sent.' });
     await email.sendToList(issue, subject, list);
-
     res.json({ ok: true, mode: 'publish' });
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

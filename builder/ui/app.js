@@ -38,6 +38,7 @@ function openEditor(data) {
   document.getElementById('issue-date').value = data.date;
   document.getElementById('issue-subject').value = data.subject || '';
   document.getElementById('issue-greeting').value = data.greeting || '';
+  document.getElementById('issue-send-at').value = data.send_at || '';
   renderItems();
   showTab('details');
   showView('editor');
@@ -57,6 +58,9 @@ function openEditor(data) {
   };
   subjectEl.oninput = () => { issue.subject = subjectEl.value; };
   greetingEl.oninput = () => { issue.greeting = greetingEl.value; deferPreview(); };
+
+  const sendAtEl = document.getElementById('issue-send-at');
+  sendAtEl.onchange = () => { issue.send_at = sendAtEl.value || null; };
 }
 
 // ── Dashboard ──────────────────────────────────────────────────────────────
@@ -78,7 +82,9 @@ async function loadDashboard() {
   tbody.innerHTML = drafts.map(d => {
     const status = d.status === 'published'
       ? '<span class="badge badge-published">Published</span>'
-      : '<span class="badge badge-draft">Draft</span>';
+      : d.send_at
+        ? '<span class="badge badge-scheduled">Scheduled</span>'
+        : '<span class="badge badge-draft">Draft</span>';
     const subject = d.subject
       ? `<span class="subject-col">${esc(d.subject)}</span>`
       : `<span class="subject-col empty">No subject</span>`;
@@ -107,6 +113,7 @@ function newIssue() {
     subject: '',
     greeting: '',
     status: 'draft',
+    send_at: null,
     items: JSON.parse(JSON.stringify(DEFAULT_ITEMS)),
   };
   openEditor(data);
@@ -405,6 +412,10 @@ async function generateSocial() {
   }
 }
 
+function closeSocial() {
+  document.getElementById('social-panel').style.display = 'none';
+}
+
 function copyText(btn, text) {
   navigator.clipboard.writeText(text).then(() => {
     btn.textContent = 'Copied!';
@@ -431,27 +442,64 @@ async function sendTest() {
   }
 }
 
-async function publish() {
+async function pushToSite() {
   const subject = document.getElementById('issue-subject').value;
-  if (!subject) { toast('Add a subject line before publishing'); return; }
-  if (!confirm(`Publish issue ${issue.slug} and send to your full list?`)) return;
+  if (!subject) { toast('Add a subject line before pushing'); return; }
 
-  toast('Publishing…');
+  toast('Pushing to site…');
+  try {
+    await saveDraftQuiet();
+    const res = await fetch('/api/publish', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ issue: buildIssuePayload(), subject, siteOnly: true }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showSiteLinks(data.urls);
+      toast('Pages pushed — ready to proof!');
+    } else {
+      toast('Error: ' + data.error);
+    }
+  } catch (e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+function showSiteLinks(urls) {
+  const panel = document.getElementById('site-links-panel');
+  let html = `<span style="color:#888;font-size:12px">Allow ~60s for Vercel to deploy, then:</span>
+    <a href="${urls.issue}" target="_blank">Issue page</a>`;
+  for (const p of urls.deepPages) {
+    html += `<a href="${p.url}" target="_blank">${esc(p.category)}</a>`;
+  }
+  panel.innerHTML = html;
+  panel.style.display = 'flex';
+}
+
+async function sendEmail() {
+  const subject = document.getElementById('issue-subject').value;
+  if (!subject) { toast('Add a subject line before sending'); return; }
+  const subCount = document.getElementById('sub-count').textContent;
+  if (!confirm(`Send "${subject}" to ${subCount} subscribers?\n\nThis cannot be undone.`)) return;
+
+  toast('Sending…');
   try {
     const payload = buildIssuePayload();
     payload.status = 'published';
     const res = await fetch('/api/publish', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ issue: payload, subject, testOnly: false }),
+      body: JSON.stringify({ issue: payload, subject, emailOnly: true }),
     });
     const data = await res.json();
     if (data.ok) {
       issue.status = 'published';
-      await saveDraftQuiet(); // persist published status
-      toast(data.warning || 'Published! Pages live + email sent.');
+      await saveDraftQuiet();
+      toast(data.warning || 'Email sent!');
+    } else {
+      toast('Error: ' + data.error);
     }
-    else toast('Error: ' + data.error);
   } catch (e) {
     toast('Error: ' + e.message);
   }

@@ -17,11 +17,51 @@ function escapeHtml(str = '') {
     .replace(/"/g, '&quot;');
 }
 
+function renderParagraph(text) {
+  const pattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s]+)/g;
+  let result = '';
+  let lastIdx = 0;
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    result += escapeHtml(text.slice(lastIdx, match.index));
+    if (match[1]) {
+      result += `<a href="${match[2]}" target="_blank" rel="noopener">${escapeHtml(match[1])}</a>`;
+    } else {
+      result += `<a href="${match[3]}" target="_blank" rel="noopener">${escapeHtml(match[3])}</a>`;
+    }
+    lastIdx = match.index + match[0].length;
+  }
+  result += escapeHtml(text.slice(lastIdx));
+  return result.replace(/\n/g, '<br>');
+}
+
 function itemUrl(issue, item) {
   if (item.has_deep) {
     return `${BASE_URL}/bb/${issue.slug}/${item.slug}/`;
   }
   return item.external_link || '#';
+}
+
+function renderEmailHtml(issue) {
+  const s = 'font-family:Georgia,serif;font-size:15px;line-height:1.7;color:#1a1a1a;margin:0 0 16px 0;';
+  let blocks = [];
+
+  blocks.push(`<p style="${s}">${escapeHtml(issue.greeting || '')}</p>`);
+
+  for (const item of issue.items) {
+    const url = itemUrl(issue, item);
+    const hasLink = item.has_deep || !!item.external_link;
+    const linkHtml = hasLink
+      ? `<br><a href="${url}" style="color:#1a1a1a;">dig deeper &rarr;</a>`
+      : '';
+    blocks.push(`<p style="${s}">## ${escapeHtml(item.category)}<br>${escapeHtml(item.sentence)}${linkHtml}</p>`);
+  }
+
+  blocks.push(`<p style="${s}">Thanks for subscribing, send to someone or reply with feedback!</p>`);
+  blocks.push(`<p style="${s}">/Matt</p>`);
+  blocks.push(`<p style="font-family:Georgia,serif;font-size:12px;color:#888;margin:0;">To unsubscribe: <a href="{{UNSUBSCRIBE_LINK}}" style="color:#888;">click here</a></p>`);
+
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:24px;background:#fff;">${blocks.join('\n')}</body></html>`;
 }
 
 function renderEmail(issue) {
@@ -30,9 +70,10 @@ function renderEmail(issue) {
   lines.push('');
 
   for (const item of issue.items) {
-    lines.push(item.category);
+    lines.push(`## ${item.category}`);
     lines.push(item.sentence);
-    lines.push(itemUrl(issue, item));
+    const url = itemUrl(issue, item);
+    if (url !== '#') lines.push(url);
     lines.push('');
   }
 
@@ -51,12 +92,14 @@ function renderIssuePage(issue) {
 
   const itemsHtml = issue.items.map(item => {
     const url = itemUrl(issue, item);
+    const hasLink = item.has_deep || !!item.external_link;
     const target = item.has_deep ? '' : ' target="_blank" rel="noopener"';
+    const linkHtml = hasLink ? `<a href="${url}"${target}>dig deeper &rarr;</a>` : '';
     return `
     <article class="item">
       <span class="category">${escapeHtml(item.category)}</span>
       <p class="sentence">${escapeHtml(item.sentence)}</p>
-      <a href="${url}"${target}>dig deeper &rarr;</a>
+      ${linkHtml}
     </article>`;
   }).join('\n');
 
@@ -65,6 +108,7 @@ function renderIssuePage(issue) {
   return tmpl
     .replace(/\{\{slug\}\}/g, issue.slug)
     .replace(/\{\{date\}\}/g, issue.date)
+    .replace(/\{\{subject\}\}/g, escapeHtml(issue.subject || ''))
     .replace(/\{\{greeting\}\}/g, escapeHtml(issue.greeting || ''))
     .replace(/\{\{items\}\}/g, itemsHtml)
     .replace(/\{\{base_url\}\}/g, BASE_URL)
@@ -78,11 +122,10 @@ function renderDeepPage(issue, item) {
   const pageUrl = `${issueUrl}${item.slug}/`;
   const description = (item.deep_content || '').slice(0, 160).replace(/\n/g, ' ');
 
-  // Convert newlines to paragraphs
   const contentHtml = (item.deep_content || '')
     .split(/\n\n+/)
     .filter(Boolean)
-    .map(p => `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
+    .map(p => `<p>${renderParagraph(p)}</p>`)
     .join('\n');
 
   return tmpl
@@ -137,4 +180,4 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 }
 
-module.exports = { renderEmail, renderIssuePage, renderDeepPage, renderNewsletterIndex };
+module.exports = { renderEmail, renderEmailHtml, renderIssuePage, renderDeepPage, renderNewsletterIndex };
