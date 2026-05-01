@@ -74,7 +74,7 @@ header nav a:hover { color: var(--text); }
 }
 .description {
   margin-bottom: 40px;
-  color: #333;
+  color: var(--text);
 }
 
 /* Subscribe form */
@@ -162,7 +162,7 @@ header nav a:hover { color: var(--text); }
 }
 .issue .greeting {
   margin-bottom: 40px;
-  color: #333;
+  color: var(--text);
 }
 .items { }
 .item {
