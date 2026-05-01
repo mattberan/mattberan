@@ -499,40 +499,59 @@
   [data-theme="light"] .card-new { background: #efefef; }
   [data-theme="dark"]  .card-new { background: #2a2a2a; }
 
-  /* Floating announcement badge */
+  /* Floating announcement card */
   .announce-badge {
     position: fixed;
-    bottom: 24px;
+    top: 120px;
     right: 24px;
+    width: 160px;
     display: flex;
-    align-items: center;
-    gap: 8px;
+    flex-direction: column;
+    gap: 6px;
     background: var(--accent);
     color: #fff;
     text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 10px 16px;
-    border-radius: 999px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
     z-index: 999;
-    transition: opacity 0.2s, transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   }
-  .announce-badge:hover { opacity: 0.9; transform: translateY(-1px); }
+  .announce-badge:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+  .announce-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
   .announce-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background: #fff;
-    opacity: 0.85;
     flex-shrink: 0;
     animation: pulse-dot 2s infinite;
   }
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 0.85; transform: scale(1); }
-    50%       { opacity: 1;    transform: scale(1.3); }
+  .announce-title {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
   }
+  .announce-cta {
+    font-size: 11px;
+    opacity: 0.75;
+    margin-top: 2px;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1;   transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(1.4); }
+  }
+  @media (max-width: 900px) { .announce-badge { display: none; } }
 
   /* ========== COMMUNITIES ========== */
   .community-grid {
@@ -1222,9 +1241,9 @@
   }
 </script>
 <a href="#projects" class="announce-badge">
-  <span class="announce-dot"></span>
-  <span>New project: Stocked UP</span>
-  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  <span class="announce-label"><span class="announce-dot"></span>New Project</span>
+  <span class="announce-title">Stocked UP</span>
+  <span class="announce-cta">Check it out &rarr;</span>
 </a>
 
 <script data-goatcounter="https://mattberan.goatcounter.com/count"
