@@ -204,6 +204,11 @@ body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var
 .confetti-piece { position:fixed; width:8px; height:8px; z-index:250; animation:confettiFall 2s ease-in forwards; }
 @keyframes confettiFall { 0%{transform:translateY(0) rotate(0deg);opacity:1} 100%{transform:translateY(100vh) rotate(720deg);opacity:0} }
 
+/* Sponsor Banner */
+.sponsor-banner { display:block; width:100%; max-width:700px; margin:28px auto 0; border-radius:10px; overflow:hidden; box-shadow:0 4px 20px rgba(0,0,0,0.4); transition:opacity 0.2s; }
+.sponsor-banner:hover { opacity:0.88; }
+.sponsor-banner img { width:100%; height:auto; display:block; }
+
 /* Responsive */
 @media(max-width:600px) { .top-bar{font-size:0.8rem;gap:8px;padding:8px 10px} .event-card{padding:14px} .choice-btn{padding:10px 12px;font-size:0.85rem} .main-panel{padding:10px} }
 
@@ -946,6 +951,7 @@ function renderTitle() {
     </p>
     <div class="btn-group"><button class="btn btn-primary" onclick="startGame()">Start Game</button></div>
     <p style="color:var(--text-dim);margin-top:24px;font-size:0.75rem;">A game about what IT leadership is really like.</p>
+    ${renderSponsorBanner()}
   </div>`;
 }
 
@@ -1130,6 +1136,7 @@ function renderQuarterEnd() {
     <button class="btn btn-primary" onclick="proceedFromQuarter()">
       ${state.pendingLevelUp?'🎉 Level Up!':'Next Quarter'}
     </button>
+    ${renderSponsorBanner()}
   </div>`;
 }
 
@@ -1202,10 +1209,17 @@ function renderGameOver() {
       <button class="btn btn-primary" onclick="startGame()">🔄 Play Again</button>
       <button class="btn btn-secondary" onclick="state.screen='title';render();">🏠 Menu</button>
     </div>
+    ${renderSponsorBanner()}
   </div>`;
 }
 
 // ==================== HELPERS ====================
+function renderSponsorBanner() {
+  return `<a class="sponsor-banner" href="https://invgate.com/?utm_source=mattberandotcom&utm_medium=matt-organic&utm_campaign=CIOSIM" target="_blank" rel="noopener noreferrer">
+    <img src="Banner1i.png" alt="InvGate Service Management — Ready for better Service Management?">
+  </a>`;
+}
+
 function formatMoney(n) { return n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?(n/1000).toFixed(0)+'K':n.toString(); }
 function getMoodEmoji(c) { if(c.mood>=3)return'😊';if(c.mood>=1)return'🙂';if(c.mood<=-3)return'😠';if(c.mood<=-1)return'😤';return c.emoji; }
 
