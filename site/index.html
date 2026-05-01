@@ -501,14 +501,14 @@
 
   /* Announcement card above hero */
   .announce-badge {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
     background: var(--accent);
     color: #fff;
     text-decoration: none;
-    border-radius: 8px;
-    padding: 14px 18px;
+    border-radius: 12px;
+    padding: 16px 24px;
     margin-bottom: 24px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     transition: transform 0.2s, box-shadow 0.2s;
@@ -524,7 +524,6 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     opacity: 0.8;
-    white-space: nowrap;
   }
   .announce-dot {
     width: 6px;
@@ -538,12 +537,11 @@
     font-size: 15px;
     font-weight: 700;
     line-height: 1.3;
-    flex: 1;
   }
   .announce-cta {
-    font-size: 12px;
-    opacity: 0.8;
-    white-space: nowrap;
+    font-size: 11px;
+    opacity: 0.75;
+    margin-top: 2px;
   }
   @keyframes pulse-dot {
     0%, 100% { opacity: 1;   transform: scale(1); }
