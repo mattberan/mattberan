@@ -4,6 +4,8 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const renderer = require('../lib/renderer');
+
+const SECRET_ARCHIVE_DIR = path.join(__dirname, '../../site/thisiswhereistoreallmynewsletters');
 const email = require('../lib/email');
 const subscribers = require('../lib/subscribers');
 
@@ -45,6 +47,8 @@ router.post('/', async (req, res) => {
     }
 
     fs.writeFileSync(path.join(SITE_DIR, 'bb', 'index.html'), renderer.renderNewsletterIndex());
+    fs.mkdirSync(SECRET_ARCHIVE_DIR, { recursive: true });
+    fs.writeFileSync(path.join(SECRET_ARCHIVE_DIR, 'index.html'), renderer.renderArchive());
 
     // Commit and push (skip if nothing changed)
     const repoRoot = path.join(__dirname, '../..');

@@ -143,18 +143,46 @@ function renderDeepPage(issue, item) {
 
 function renderNewsletterIndex() {
   const tmpl = loadTemplate('index.html');
-  const issues = getAllIssues();
+  return tmpl.replace(/\{\{base_url\}\}/g, BASE_URL);
+}
 
+function renderArchive() {
+  const issues = getAllIssues();
   const issuesHtml = issues.map(issue => {
-    const url = `${BASE_URL}/bb/${issue.slug}/`;
+    const title = escapeHtml(issue.subject || issue.date);
     return `
     <article class="issue-item">
       <time datetime="${issue.date}">${formatDate(issue.date)}</time>
-      <a href="/bb/${issue.slug}/">${escapeHtml(issue.items.map(i => i.sentence).join(' / '))}</a>
+      <a href="/bb/${issue.slug}/">${title}</a>
     </article>`;
   }).join('\n');
 
-  return tmpl.replace(/\{\{issues\}\}/g, issuesHtml).replace(/\{\{base_url\}\}/g, BASE_URL);
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Beran Brief — Archive</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+<header>
+  <a href="/" class="home-link">Matt Beran</a>
+</header>
+<main class="newsletter-index">
+  <h1>The Beran Brief</h1>
+  <p class="tagline">Everything you need to know. Nothing you don't.</p>
+  <section class="issue-list">
+    <h2>All issues</h2>
+    ${issuesHtml}
+  </section>
+</main>
+<footer>
+  <p>&copy; Matt Beran</p>
+</footer>
+</body>
+</html>`;
 }
 
 function getAllIssues() {
@@ -180,4 +208,4 @@ function formatDate(dateStr) {
   return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 }
 
-module.exports = { renderEmail, renderEmailHtml, renderIssuePage, renderDeepPage, renderNewsletterIndex };
+module.exports = { renderEmail, renderEmailHtml, renderIssuePage, renderDeepPage, renderNewsletterIndex, renderArchive };
