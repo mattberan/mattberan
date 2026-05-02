@@ -31,6 +31,16 @@ router.post('/sync', async (req, res) => {
   }
 });
 
+// GET /api/subscribers/export — download subscriber list as CSV
+router.get('/export', (req, res) => {
+  const list = subscribers.load();
+  const csv = 'email\n' + list.join('\n');
+  const date = new Date().toISOString().slice(0, 10);
+  res.setHeader('Content-Type', 'text/csv');
+  res.setHeader('Content-Disposition', `attachment; filename="subscribers-${date}.csv"`);
+  res.send(csv);
+});
+
 // POST /api/subscribers/import — CSV file upload fallback
 router.post('/import', (req, res) => {
   const { csv } = req.body;

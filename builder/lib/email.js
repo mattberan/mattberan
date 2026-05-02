@@ -45,6 +45,16 @@ async function sendToList(issue, subject, recipients) {
       html: baseHtml.replace('{{UNSUBSCRIBE_LINK}}', unsubscribeLink),
     });
   }
+
+  const date = new Date().toISOString().slice(0, 10);
+  const csv = 'email\n' + recipients.join('\n');
+  await transport.sendMail({
+    from: process.env.FROM_EMAIL,
+    to: process.env.FROM_EMAIL,
+    subject: `[BB Backup] ${recipients.length} subscribers — ${subject}`,
+    text: `Subscriber list at time of send (${recipients.length} total).`,
+    attachments: [{ filename: `subscribers-${date}.csv`, content: csv, contentType: 'text/csv' }],
+  });
 }
 
 module.exports = { sendTest, sendToList };
