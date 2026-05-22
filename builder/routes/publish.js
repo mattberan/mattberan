@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const { execFileSync } = require('child_process');
+const { execFileSync, spawnSync } = require('child_process');
 const renderer = require('../lib/renderer');
 
 const SECRET_ARCHIVE_DIR = path.join(__dirname, '../../site/thisiswhereistoreallmynewsletters');
@@ -53,10 +53,31 @@ router.post('/', async (req, res) => {
     // Commit and push (skip if nothing changed)
     const repoRoot = path.join(__dirname, '../..');
     execFileSync('git', ['add', 'site/'], { cwd: repoRoot });
-    const diff = require('child_process').spawnSync('git', ['diff', '--cached', '--quiet'], { cwd: repoRoot });
+    const diff = spawnSync('git', ['diff', '--cached', '--quiet'], { cwd: repoRoot });
     if (diff.status !== 0) {
       execFileSync('git', ['commit', '-m', `Issue ${issue.slug}: ${subject}`], { cwd: repoRoot });
-      execFileSync('git', ['push'], { cwd: repoRoot });
+
+      let pushResult = spawnSync('git', ['push'], { cwd: repoRoot });
+
+      if (pushResult.status !== 0) {
+        const pushStderr = pushResult.stderr.toString();
+        // Remote is ahead — stash, pull --rebase, pop, retry
+        if (pushStderr.includes('fetch first') || pushStderr.includes('[rejected]')) {
+          const stashResult = spawnSync('git', ['stash'], { cwd: repoRoot });
+          const didStash = !stashResult.stdout.toString().includes('No local changes to save');
+          try {
+            execFileSync('git', ['pull', '--rebase'], { cwd: repoRoot });
+          } finally {
+            if (didStash) spawnSync('git', ['stash', 'pop'], { cwd: repoRoot });
+          }
+          pushResult = spawnSync('git', ['push'], { cwd: repoRoot });
+          if (pushResult.status !== 0) {
+            throw new Error('Git push failed after rebase:\n' + pushResult.stderr.toString());
+          }
+        } else {
+          throw new Error('Git push failed:\n' + pushStderr);
+        }
+      }
     }
 
     // Site only — return URLs for proofing
