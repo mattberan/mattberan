@@ -30,6 +30,14 @@ router.post('/', async (req, res) => {
       const list = subscribers.load();
       if (list.length === 0) return res.json({ ok: true, mode: 'email', warning: 'No subscribers yet.' });
       await email.sendToList(issue, subject, list);
+      if (issue.slug && /^[a-zA-Z0-9_-]+$/.test(issue.slug)) {
+        const draftPath = path.join(__dirname, '../drafts', `${issue.slug}.json`);
+        if (fs.existsSync(draftPath)) {
+          const draft = JSON.parse(fs.readFileSync(draftPath, 'utf8'));
+          draft.status = 'published';
+          fs.writeFileSync(draftPath, JSON.stringify(draft, null, 2));
+        }
+      }
       return res.json({ ok: true, mode: 'email' });
     }
 
