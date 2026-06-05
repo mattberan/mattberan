@@ -11,12 +11,87 @@
 <link rel="canonical" href="https://mattberan.com/lawsofUX/">
 <link rel="stylesheet" href="/styles/main.css">
 <style>
+  body {
+    max-width: none;
+    padding: 0;
+  }
+  header {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  footer {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+  .page-layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+  .law-nav {
+    position: sticky;
+    top: 32px;
+    padding-top: 8px;
+  }
+  .law-nav-title {
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted, #666);
+    margin-bottom: 12px;
+  }
+  .law-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .law-nav li {
+    margin-bottom: 2px;
+  }
+  .law-nav a {
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 0.78rem;
+    color: var(--muted, #666);
+    text-decoration: none;
+    line-height: 1.6;
+    display: block;
+    padding: 2px 0;
+    transition: color 0.15s;
+  }
+  .law-nav a:hover {
+    color: var(--accent, #2563eb);
+  }
+  .law-nav a.active {
+    color: var(--accent, #2563eb);
+    font-weight: 600;
+  }
+  .laws-content h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .tagline {
+    font-style: italic;
+    color: var(--muted, #666);
+    margin-bottom: 0;
+  }
   .laws-list {
     margin-top: 40px;
   }
   .law {
     border-top: 1px solid var(--border);
     padding: 28px 0;
+    scroll-margin-top: 32px;
   }
   .law:last-child {
     border-bottom: 1px solid var(--border);
@@ -41,6 +116,23 @@
     color: var(--text);
     margin: 0;
   }
+  @media (max-width: 720px) {
+    .page-layout {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .law-nav {
+      position: static;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 8px;
+    }
+    .law-nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 12px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -48,149 +140,194 @@
   <a href="/" class="home-link">Matt Beran</a>
 </header>
 
-<main>
-  <h1>The Laws of UX</h1>
-  <p class="tagline">Principles that shape how humans interact with design.</p>
+<div class="page-layout">
+  <nav class="law-nav">
+    <div class="law-nav-title">Jump to</div>
+    <ul>
+      <li><a href="#aesthetic-usability-effect">Aesthetic Usability Effect</a></li>
+      <li><a href="#cunninghams-law">Cunningham's Law</a></li>
+      <li><a href="#doherty-threshold">Doherty Threshold</a></li>
+      <li><a href="#fitts-law">Fitt's Law</a></li>
+      <li><a href="#goodharts-law">Goodhart's Law</a></li>
+      <li><a href="#hicks-law">Hick's Law</a></li>
+      <li><a href="#jakobs-law">Jakob's Law</a></li>
+      <li><a href="#law-of-common-region">Law of Common Region</a></li>
+      <li><a href="#law-of-pragnanz">Law of Pragnanz</a></li>
+      <li><a href="#law-of-proximity">Law of Proximity</a></li>
+      <li><a href="#law-of-similarity">Law of Similarity</a></li>
+      <li><a href="#law-of-uniform-connectedness">Law of Uniform Connectedness</a></li>
+      <li><a href="#millers-law">Miller's Law</a></li>
+      <li><a href="#occams-razor">Occam's Razor</a></li>
+      <li><a href="#pareto-principle">Pareto Principle</a></li>
+      <li><a href="#parkinsons-law">Parkinson's Law</a></li>
+      <li><a href="#peak-end-rule">Peak-End Rule</a></li>
+      <li><a href="#postels-law">Postel's Law</a></li>
+      <li><a href="#serial-position-effect">Serial Position Effect</a></li>
+      <li><a href="#teslers-law">Tesler's Law</a></li>
+      <li><a href="#von-restorff-effect">Von Restorff Effect</a></li>
+      <li><a href="#zeigarnik-effect">Zeigarnik Effect</a></li>
+    </ul>
+  </nav>
 
-  <div class="laws-list">
+  <main class="laws-content">
+    <h1>The Laws of UX</h1>
+    <p class="tagline">Principles that shape how humans interact with design.</p>
 
-    <div class="law">
-      <div class="law-tagline">Post the wrong answer</div>
-      <div class="law-name">Cunningham's Law</div>
-      <p>The best way to get the right answer on the internet is not to ask a question; it's to post the wrong answer.</p>
+    <div class="laws-list">
+
+      <div class="law" id="cunninghams-law">
+        <div class="law-tagline">Post the wrong answer</div>
+        <div class="law-name">Cunningham's Law</div>
+        <p>The best way to get the right answer on the internet is not to ask a question; it's to post the wrong answer.</p>
+      </div>
+
+      <div class="law" id="aesthetic-usability-effect">
+        <div class="law-tagline">Make things look good</div>
+        <div class="law-name">Aesthetic Usability Effect</div>
+        <p>Users often perceive aesthetically pleasing design as design that's more usable.</p>
+      </div>
+
+      <div class="law" id="doherty-threshold">
+        <div class="law-tagline">Things should move as fast as people</div>
+        <div class="law-name">Doherty Threshold</div>
+        <p>Productivity soars when a computer and its users interact at a pace (around 400ms) that ensures that neither has to wait on the other.</p>
+      </div>
+
+      <div class="law" id="fitts-law">
+        <div class="law-tagline">Distance and size matter</div>
+        <div class="law-name">Fitt's Law</div>
+        <p>The time to acquire a target is a function of the distance to and size of the target.</p>
+      </div>
+
+      <div class="law" id="goodharts-law">
+        <div class="law-tagline">Metrics change behavior</div>
+        <div class="law-name">Goodhart's Law</div>
+        <p>When a measure becomes a target, it ceases to be a good measure.</p>
+      </div>
+
+      <div class="law" id="hicks-law">
+        <div class="law-tagline">Reduce complexity</div>
+        <div class="law-name">Hick's Law</div>
+        <p>The time it takes to make a decision increases with the number and complexity of choices.</p>
+      </div>
+
+      <div class="law" id="jakobs-law">
+        <div class="law-tagline">Follow web norms</div>
+        <div class="law-name">Jakob's Law</div>
+        <p>Users spend most of their time on other sites. This means that users prefer your site to work the same way as all the other sites they already know.</p>
+      </div>
+
+      <div class="law" id="law-of-common-region">
+        <div class="law-tagline">Group like things with visuals</div>
+        <div class="law-name">Law of Common Region</div>
+        <p>Elements tend to be perceived in groups if they are sharing an area with a clearly defined boundary.</p>
+      </div>
+
+      <div class="law" id="law-of-pragnanz">
+        <div class="law-tagline">Simplest form wins</div>
+        <div class="law-name">Law of Pragnanz</div>
+        <p>People will perceive and interpret ambiguous or complex images as the simplest form possible, because it is the interpretation that requires the least cognitive effort of us.</p>
+      </div>
+
+      <div class="law" id="law-of-proximity">
+        <div class="law-tagline">Near things group together</div>
+        <div class="law-name">Law of Proximity</div>
+        <p>Objects that are near, or proximate to each other, tend to be grouped together.</p>
+      </div>
+
+      <div class="law" id="law-of-similarity">
+        <div class="law-tagline">Similar things feel connected</div>
+        <div class="law-name">Law of Similarity</div>
+        <p>The human eye tends to perceive similar elements in a design as a complete picture, shape, or group, even if those elements are separated.</p>
+      </div>
+
+      <div class="law" id="law-of-uniform-connectedness">
+        <div class="law-tagline">Visual connection implies relation</div>
+        <div class="law-name">Law of Uniform Connectedness</div>
+        <p>Elements that are visually connected are perceived as more related than elements with no connection.</p>
+      </div>
+
+      <div class="law" id="millers-law">
+        <div class="law-tagline">Working memory has limits</div>
+        <div class="law-name">Miller's Law</div>
+        <p>The average person can only keep 7 (plus or minus 2) items in their working memory.</p>
+      </div>
+
+      <div class="law" id="occams-razor">
+        <div class="law-tagline">Fewest assumptions wins</div>
+        <div class="law-name">Occam's Razor</div>
+        <p>Among competing hypotheses that predict equally well, the one with the fewest assumptions should be selected.</p>
+      </div>
+
+      <div class="law" id="pareto-principle">
+        <div class="law-tagline">80% of effects come from 20% of causes</div>
+        <div class="law-name">Pareto Principle</div>
+        <p>For many events, roughly 80% of the effects come from 20% of the causes.</p>
+      </div>
+
+      <div class="law" id="parkinsons-law">
+        <div class="law-tagline">Work expands to fill time</div>
+        <div class="law-name">Parkinson's Law</div>
+        <p>Any task will inflate until all of the available time is spent.</p>
+      </div>
+
+      <div class="law" id="peak-end-rule">
+        <div class="law-tagline">First and last moments define the experience</div>
+        <div class="law-name">Peak-End Rule</div>
+        <p>People judge an experience largely based on how they felt at its peak and at its end, rather than the total sum or average of every moment of the experience.</p>
+      </div>
+
+      <div class="law" id="postels-law">
+        <div class="law-tagline">Be generous in, precise out</div>
+        <div class="law-name">Postel's Law</div>
+        <p>Be liberal in what you accept and conservative in what you send.</p>
+      </div>
+
+      <div class="law" id="serial-position-effect">
+        <div class="law-tagline">First and last stick</div>
+        <div class="law-name">Serial Position Effect</div>
+        <p>Users have a propensity to best remember the first and last items in a series.</p>
+      </div>
+
+      <div class="law" id="teslers-law">
+        <div class="law-tagline">Some complexity can't be removed</div>
+        <div class="law-name">Tesler's Law</div>
+        <p>For any system there is a certain amount of complexity which cannot be removed.</p>
+      </div>
+
+      <div class="law" id="von-restorff-effect">
+        <div class="law-tagline">The odd one out is remembered</div>
+        <div class="law-name">Von Restorff Effect</div>
+        <p>When multiple similar items are present, the one that differs the most is most likely to be remembered.</p>
+      </div>
+
+      <div class="law" id="zeigarnik-effect">
+        <div class="law-tagline">Unfinished things linger</div>
+        <div class="law-name">Zeigarnik Effect</div>
+        <p>People remember uncompleted or interrupted tasks better than completed ones.</p>
+      </div>
+
     </div>
-
-    <div class="law">
-      <div class="law-tagline">Make things look good</div>
-      <div class="law-name">Aesthetic Usability Effect</div>
-      <p>Users often perceive aesthetically pleasing design as design that's more usable.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Things should move as fast as people</div>
-      <div class="law-name">Doherty Threshold</div>
-      <p>Productivity soars when a computer and its users interact at a pace (around 400ms) that ensures that neither has to wait on the other.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Distance and size matter</div>
-      <div class="law-name">Fitt's Law</div>
-      <p>The time to acquire a target is a function of the distance to and size of the target.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Metrics change behavior</div>
-      <div class="law-name">Goodhart's Law</div>
-      <p>When a measure becomes a target, it ceases to be a good measure.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Reduce complexity</div>
-      <div class="law-name">Hick's Law</div>
-      <p>The time it takes to make a decision increases with the number and complexity of choices.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Follow web norms</div>
-      <div class="law-name">Jakob's Law</div>
-      <p>Users spend most of their time on other sites. This means that users prefer your site to work the same way as all the other sites they already know.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Group like things with visuals</div>
-      <div class="law-name">Law of Common Region</div>
-      <p>Elements tend to be perceived in groups if they are sharing an area with a clearly defined boundary.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Simplest form wins</div>
-      <div class="law-name">Law of Pragnanz</div>
-      <p>People will perceive and interpret ambiguous or complex images as the simplest form possible, because it is the interpretation that requires the least cognitive effort of us.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Near things group together</div>
-      <div class="law-name">Law of Proximity</div>
-      <p>Objects that are near, or proximate to each other, tend to be grouped together.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Similar things feel connected</div>
-      <div class="law-name">Law of Similarity</div>
-      <p>The human eye tends to perceive similar elements in a design as a complete picture, shape, or group, even if those elements are separated.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Visual connection implies relation</div>
-      <div class="law-name">Law of Uniform Connectedness</div>
-      <p>Elements that are visually connected are perceived as more related than elements with no connection.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Working memory has limits</div>
-      <div class="law-name">Miller's Law</div>
-      <p>The average person can only keep 7 (plus or minus 2) items in their working memory.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Fewest assumptions wins</div>
-      <div class="law-name">Occam's Razor</div>
-      <p>Among competing hypotheses that predict equally well, the one with the fewest assumptions should be selected.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">80% of effects come from 20% of causes</div>
-      <div class="law-name">Pareto Principle</div>
-      <p>For many events, roughly 80% of the effects come from 20% of the causes.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Work expands to fill time</div>
-      <div class="law-name">Parkinson's Law</div>
-      <p>Any task will inflate until all of the available time is spent.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">First and last moments define the experience</div>
-      <div class="law-name">Peak-End Rule</div>
-      <p>People judge an experience largely based on how they felt at its peak and at its end, rather than the total sum or average of every moment of the experience.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Be generous in, precise out</div>
-      <div class="law-name">Postel's Law</div>
-      <p>Be liberal in what you accept and conservative in what you send.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">First and last stick</div>
-      <div class="law-name">Serial Position Effect</div>
-      <p>Users have a propensity to best remember the first and last items in a series.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Some complexity can't be removed</div>
-      <div class="law-name">Tesler's Law</div>
-      <p>For any system there is a certain amount of complexity which cannot be removed.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">The odd one out is remembered</div>
-      <div class="law-name">Von Restorff Effect</div>
-      <p>When multiple similar items are present, the one that differs the most is most likely to be remembered.</p>
-    </div>
-
-    <div class="law">
-      <div class="law-tagline">Unfinished things linger</div>
-      <div class="law-name">Zeigarnik Effect</div>
-      <p>People remember uncompleted or interrupted tasks better than completed ones.</p>
-    </div>
-
-  </div>
-</main>
+  </main>
+</div>
 
 <footer>
   <p>&copy; Matt Beran</p>
 </footer>
+
+<script>
+  const links = document.querySelectorAll('.law-nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.law-nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  document.querySelectorAll('.law[id]').forEach(el => observer.observe(el));
+</script>
 </body>
 </html>
