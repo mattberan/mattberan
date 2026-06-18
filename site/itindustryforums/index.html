@@ -410,6 +410,10 @@
           </select>
         </div>
       </div>
+      <div class="form-group" id="other-group" style="display:none;">
+        <label for="other-industry">Tell us your industry</label>
+        <input type="text" id="other-industry" name="other_industry" placeholder="e.g. Legal, Media, Real Estate...">
+      </div>
       <input type="hidden" name="_subject" value="IT Industry Forums - New Interest Signup">
       <button type="submit" class="submit-btn">Notify me when it launches</button>
       <p class="form-note">No spam. One email when your forum is ready.</p>
@@ -431,6 +435,15 @@
 <script>
   const form = document.getElementById('signup-form');
   const successMsg = document.getElementById('success-msg');
+  const industrySelect = document.getElementById('industry');
+  const otherGroup = document.getElementById('other-group');
+  const otherInput = document.getElementById('other-industry');
+
+  industrySelect.addEventListener('change', function() {
+    const isOther = this.value === 'Other';
+    otherGroup.style.display = isOther ? 'block' : 'none';
+    otherInput.required = isOther;
+  });
 
   form.addEventListener('submit', async function(e) {
     e.preventDefault();
