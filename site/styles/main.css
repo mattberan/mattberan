@@ -215,6 +215,14 @@ header nav a:hover { color: var(--text); }
 .deep-page .content p {
   margin-bottom: 1.2em;
 }
+.deep-page .content figure {
+  margin: 2em 0;
+  text-align: center;
+}
+.deep-page .content figure img {
+  max-width: 100%;
+  border-radius: 4px;
+}
 
 /* Footer */
 footer {
