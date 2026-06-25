@@ -224,6 +224,13 @@ header nav a:hover { color: var(--text); }
   border-radius: 4px;
 }
 
+/* Comments */
+.comments {
+  max-width: 680px;
+  margin: 64px auto 0;
+  padding: 0 24px;
+}
+
 /* Footer */
 footer {
   margin-top: 64px;
