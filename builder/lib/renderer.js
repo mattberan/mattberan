@@ -18,16 +18,22 @@ function escapeHtml(str = '') {
 }
 
 function renderParagraph(text) {
-  const pattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s]+)/g;
+  const pattern = /\*\*([^*]+)\*\*|\*([^*]+)\*|_([^_]+)_|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s]+)/g;
   let result = '';
   let lastIdx = 0;
   let match;
   while ((match = pattern.exec(text)) !== null) {
     result += escapeHtml(text.slice(lastIdx, match.index));
-    if (match[1]) {
-      result += `<a href="${match[2]}" target="_blank" rel="noopener">${escapeHtml(match[1])}</a>`;
+    if (match[1] !== undefined) {
+      result += `<strong>${escapeHtml(match[1])}</strong>`;
+    } else if (match[2] !== undefined) {
+      result += `<em>${escapeHtml(match[2])}</em>`;
+    } else if (match[3] !== undefined) {
+      result += `<em>${escapeHtml(match[3])}</em>`;
+    } else if (match[4] !== undefined) {
+      result += `<a href="${match[5]}" target="_blank" rel="noopener">${escapeHtml(match[4])}</a>`;
     } else {
-      result += `<a href="${match[3]}" target="_blank" rel="noopener">${escapeHtml(match[3])}</a>`;
+      result += `<a href="${match[6]}" target="_blank" rel="noopener">${escapeHtml(match[6])}</a>`;
     }
     lastIdx = match.index + match[0].length;
   }
@@ -125,7 +131,13 @@ function renderDeepPage(issue, item) {
   const contentHtml = (item.deep_content || '')
     .split(/\n\n+/)
     .filter(Boolean)
-    .map(p => `<p>${renderParagraph(p)}</p>`)
+    .map(p => {
+      const imgMatch = p.trim().match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+      if (imgMatch) {
+        return `<figure><img src="${escapeHtml(imgMatch[2])}" alt="${escapeHtml(imgMatch[1])}" loading="lazy"></figure>`;
+      }
+      return `<p>${renderParagraph(p)}</p>`;
+    })
     .join('\n');
 
   return tmpl

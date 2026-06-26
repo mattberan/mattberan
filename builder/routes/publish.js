@@ -60,32 +60,28 @@ router.post('/', async (req, res) => {
 
     // Commit and push (skip if nothing changed)
     const repoRoot = path.join(__dirname, '../..');
-    execFileSync('git', ['add', 'site/'], { cwd: repoRoot });
-    const diff = spawnSync('git', ['diff', '--cached', '--quiet'], { cwd: repoRoot });
-    if (diff.status !== 0) {
-      execFileSync('git', ['commit', '-m', `Issue ${issue.slug}: ${subject}`], { cwd: repoRoot });
 
-      let pushResult = spawnSync('git', ['push'], { cwd: repoRoot });
+    // Stash any uncommitted working-tree changes so they don't block git ops
+    const stashOut = spawnSync('git', ['stash'], { cwd: repoRoot }).stdout.toString();
+    const didStash = !stashOut.includes('No local changes to save');
 
-      if (pushResult.status !== 0) {
-        const pushStderr = pushResult.stderr.toString();
-        // Remote is ahead — stash, pull --rebase, pop, retry
-        if (pushStderr.includes('fetch first') || pushStderr.includes('[rejected]')) {
-          const stashResult = spawnSync('git', ['stash'], { cwd: repoRoot });
-          const didStash = !stashResult.stdout.toString().includes('No local changes to save');
-          try {
-            execFileSync('git', ['pull', '--rebase'], { cwd: repoRoot });
-          } finally {
-            if (didStash) spawnSync('git', ['stash', 'pop'], { cwd: repoRoot });
-          }
-          pushResult = spawnSync('git', ['push'], { cwd: repoRoot });
-          if (pushResult.status !== 0) {
-            throw new Error('Git push failed after rebase:\n' + pushResult.stderr.toString());
-          }
-        } else {
-          throw new Error('Git push failed:\n' + pushStderr);
+    try {
+      // Fetch + rebase onto origin BEFORE committing so the push never gets rejected
+      execFileSync('git', ['fetch', 'origin'], { cwd: repoRoot });
+      execFileSync('git', ['rebase', 'origin/main'], { cwd: repoRoot });
+
+      execFileSync('git', ['add', 'site/'], { cwd: repoRoot });
+      const diff = spawnSync('git', ['diff', '--cached', '--quiet'], { cwd: repoRoot });
+      if (diff.status !== 0) {
+        execFileSync('git', ['commit', '-m', `Issue ${issue.slug}: ${subject}`], { cwd: repoRoot });
+        try {
+          execFileSync('git', ['push'], { cwd: repoRoot });
+        } catch (pushErr) {
+          throw new Error('Git push failed: ' + (pushErr.stderr?.toString().trim() || pushErr.message));
         }
       }
+    } finally {
+      if (didStash) spawnSync('git', ['stash', 'pop'], { cwd: repoRoot });
     }
 
     // Site only — return URLs for proofing

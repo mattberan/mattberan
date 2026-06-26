@@ -195,7 +195,13 @@ function buildItemBlock(item, idx) {
     <div id="deep-section-${idx}" style="${item.has_deep ? '' : 'display:none'}">
       <div class="field-group">
         <label>Deep content</label>
-        <textarea data-field="deep_content" data-idx="${idx}" rows="6">${esc(item.deep_content || '')}</textarea>
+        <div class="deep-toolbar">
+          <button type="button" class="fmt-btn" title="Bold" onclick="fmtDeep(${idx},'bold')"><strong>B</strong></button>
+          <button type="button" class="fmt-btn" title="Italic" onclick="fmtDeep(${idx},'italic')"><em>I</em></button>
+          <button type="button" class="fmt-btn" title="Link" onclick="fmtDeep(${idx},'link')">Link</button>
+          <button type="button" class="fmt-btn" title="Upload image" onclick="uploadDeepImage(${idx})">Image</button>
+        </div>
+        <textarea data-field="deep_content" data-idx="${idx}" rows="8">${esc(item.deep_content || '')}</textarea>
       </div>
     </div>
     <div id="link-section-${idx}" style="${item.has_deep ? 'display:none' : ''}">
@@ -561,6 +567,68 @@ async function syncFromFormspree() {
   } catch (err) {
     toast('Sync error: ' + err.message);
   }
+}
+
+// ── Deep content formatting ────────────────────────────────────────────────
+function fmtDeep(idx, type) {
+  const ta = document.querySelector(`[data-field="deep_content"][data-idx="${idx}"]`);
+  if (!ta) return;
+  const start = ta.selectionStart, end = ta.selectionEnd;
+  const sel = ta.value.slice(start, end);
+  let before, after, cursorOffset;
+  if (type === 'bold') {
+    [before, after] = ['**', '**'];
+  } else if (type === 'italic') {
+    [before, after] = ['*', '*'];
+  } else if (type === 'link') {
+    const url = prompt('URL:', 'https://');
+    if (!url) return;
+    [before, after] = ['[', `](${url})`];
+  }
+  cursorOffset = before.length;
+  ta.value = ta.value.slice(0, start) + before + sel + after + ta.value.slice(end);
+  ta.selectionStart = start + cursorOffset;
+  ta.selectionEnd = end + cursorOffset;
+  ta.dispatchEvent(new Event('input'));
+  ta.focus();
+}
+
+async function uploadDeepImage(idx) {
+  const ta = document.querySelector(`[data-field="deep_content"][data-idx="${idx}"]`);
+  if (!ta) return;
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+    toast('Uploading…');
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const base64 = reader.result.split(',')[1];
+        const res = await fetch('/api/images', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filename: file.name, data: base64 }),
+        });
+        const data = await res.json();
+        if (data.url) {
+          const pos = ta.selectionStart;
+          const insert = `\n\n![](${data.url})\n\n`;
+          ta.value = ta.value.slice(0, pos) + insert + ta.value.slice(pos);
+          ta.dispatchEvent(new Event('input'));
+          toast('Image uploaded');
+        } else {
+          toast('Upload failed: ' + (data.error || 'unknown error'));
+        }
+      } catch (e) {
+        toast('Upload error: ' + e.message);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
 }
 
 // ── UI helpers ─────────────────────────────────────────────────────────────
