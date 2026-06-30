@@ -2,3 +2,5 @@
 node_modules/
 builder/drafts/
 builder/style/edits-log.jsonl
+builder/subscribers.json
+builder/pending.json
