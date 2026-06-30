@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const FILE = path.join(__dirname, '../subscribers.json');
+const PENDING_FILE = path.join(__dirname, '../pending.json');
 
 function load() {
   return JSON.parse(fs.readFileSync(FILE, 'utf8'));
@@ -9,6 +10,14 @@ function load() {
 
 function save(list) {
   fs.writeFileSync(FILE, JSON.stringify(list, null, 2));
+}
+
+function loadPending() {
+  try { return JSON.parse(fs.readFileSync(PENDING_FILE, 'utf8')); } catch { return []; }
+}
+
+function savePending(list) {
+  fs.writeFileSync(PENDING_FILE, JSON.stringify(list, null, 2));
 }
 
 function add(email) {
@@ -29,7 +38,6 @@ function remove(email) {
 }
 
 function importCSV(csvText) {
-  // Handles Formspree CSV export — looks for an "email" column
   const lines = csvText.trim().split('\n');
   const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/"/g, ''));
   const emailCol = headers.indexOf('email');
@@ -59,7 +67,7 @@ async function fetchFormspreeEmails(formId, apiKey) {
     const data = await res.json();
     for (const sub of (data.submissions || [])) {
       const email = (sub.email || sub._replyto || '').trim().toLowerCase();
-      if (email && email.includes('@')) emails.push({ email, unsubscribe: !!sub.unsubscribe });
+      if (email && email.includes('@')) emails.push(email);
     }
     if (!data.next) break;
     page++;
@@ -67,43 +75,62 @@ async function fetchFormspreeEmails(formId, apiKey) {
   return emails;
 }
 
+// Returns { added, removed, newPending }
+// newPending = emails just added to pending (caller should send them confirmation emails)
 async function syncFromFormspree() {
   const apiKey = process.env.FORMSPREE_API_KEY;
   if (!apiKey) throw new Error('FORMSPREE_API_KEY not set');
 
-  // Fetch subscribers
   const subFormId = process.env.FORMSPREE_FORM_ID;
   if (!subFormId) throw new Error('FORMSPREE_FORM_ID not set');
-  const subEntries = await fetchFormspreeEmails(subFormId, apiKey);
 
-  // Fetch unsubscribes (optional — only if form ID is configured)
+  const confirmFormId = process.env.FORMSPREE_CONFIRM_FORM_ID;
   const unsubFormId = process.env.FORMSPREE_UNSUB_FORM_ID;
-  const unsubApiKey = process.env.FORMSPREE_UNSUB_API_KEY || apiKey;
-  let unsubEmails = new Set();
-  if (unsubFormId) {
-    const unsubEntries = await fetchFormspreeEmails(unsubFormId, unsubApiKey);
-    unsubEntries.forEach(e => unsubEmails.add(e.email));
-  }
+
+  const [signups, confirms, unsubs] = await Promise.all([
+    fetchFormspreeEmails(subFormId, apiKey),
+    confirmFormId ? fetchFormspreeEmails(confirmFormId, apiKey) : Promise.resolve([]),
+    unsubFormId ? fetchFormspreeEmails(unsubFormId, apiKey) : Promise.resolve([]),
+  ]);
+
+  const confirmedSet = new Set(confirms);
+  const unsubSet = new Set(unsubs);
 
   let list = load();
+  let pending = loadPending();
   let added = 0;
   let removed = 0;
+  const newPending = [];
 
-  // Add new subscribers
-  for (const { email } of subEntries) {
-    if (!list.includes(email) && !unsubEmails.has(email)) {
-      list.push(email);
-      added++;
+  for (const email of signups) {
+    if (unsubSet.has(email)) continue;
+
+    if (confirmedSet.has(email)) {
+      // Confirmed — move to active subscribers
+      if (!list.includes(email)) {
+        list.push(email);
+        added++;
+      }
+      // Remove from pending if present
+      pending = pending.filter(e => e !== email);
+    } else {
+      // Not yet confirmed — put in pending if not already anywhere
+      if (!list.includes(email) && !pending.includes(email)) {
+        pending.push(email);
+        newPending.push(email);
+      }
     }
   }
 
-  // Remove unsubscribers
+  // Remove unsubscribers from both lists
   const before = list.length;
-  list = list.filter(e => !unsubEmails.has(e));
+  list = list.filter(e => !unsubSet.has(e));
   removed = before - list.length;
+  pending = pending.filter(e => !unsubSet.has(e));
 
   save(list);
-  return { added, removed, total: list.length };
+  savePending(pending);
+  return { added, removed, total: list.length, newPending };
 }
 
-module.exports = { load, add, remove, importCSV, syncFromFormspree };
+module.exports = { load, add, remove, importCSV, syncFromFormspree, loadPending, savePending };
