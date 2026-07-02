@@ -256,3 +256,12 @@ footer {
 .issue-nav a:hover { color: var(--text); }
 
 a { color: inherit; }
+
+.issue-outro {
+  margin: 48px 0 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted);
+}
