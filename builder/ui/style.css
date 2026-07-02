@@ -307,6 +307,66 @@ input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
   min-height: 400px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 }
+.linkedin-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.li-block {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 12px 14px 10px;
+  background: #fafafa;
+}
+.li-block-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.li-shuffle-btn {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  padding: 2px 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  color: #555;
+}
+.li-shuffle-btn:hover { background: #f0f0f0; }
+.linkedin-text {
+  font-family: -apple-system, system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0 0 8px;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 8px;
+  background: #fff;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.linkedin-copy-btn {
+  padding: 3px 12px;
+  font-size: 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+.linkedin-copy-btn:hover { background: #e0e0e0; }
+
 .email-preview {
   font-family: Georgia, serif;
   font-size: 15px;
@@ -435,6 +495,34 @@ input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
 .btn-copy { margin-top: 4px; padding: 4px 10px; font-size: 12px; border: 1px solid #ccc; background: #fff; border-radius: 4px; cursor: pointer; }
 .btn-copy:hover { background: #f0f0f0; }
 .btn-copy.copied { color: green; border-color: green; }
+
+/* ═══ Outro ═══ */
+.outro-section {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px solid #e0e0e0;
+}
+.outro-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #888;
+  margin-bottom: 8px;
+}
+.outro-section textarea {
+  width: 100%;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  background: #fafafa;
+  resize: vertical;
+}
+.outro-section textarea:focus { outline: none; border-color: #1a1a1a; background: #fff; }
 
 /* ═══ Toast ═══ */
 .toast {

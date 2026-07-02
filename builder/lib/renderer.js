@@ -63,8 +63,10 @@ function renderEmailHtml(issue) {
     blocks.push(`<p style="${s}">## ${escapeHtml(item.category)}<br>${escapeHtml(item.sentence)}${linkHtml}</p>`);
   }
 
-  blocks.push(`<p style="${s}">Thanks for subscribing, send to someone or reply with feedback!</p>`);
-  blocks.push(`<p style="${s}">/Matt</p>`);
+  const outroHtml = issue.outro
+    ? escapeHtml(issue.outro).replace(/\n/g, '<br>')
+    : 'Thanks for subscribing, send to someone or reply with feedback!<br>/Matt';
+  blocks.push(`<p style="${s}">${outroHtml}</p>`);
   blocks.push(`<p style="font-family:Georgia,serif;font-size:12px;color:#888;margin:0;">To unsubscribe: <a href="{{UNSUBSCRIBE_LINK}}" style="color:#888;">click here</a></p>`);
 
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:24px;background:#fff;">${blocks.join('\n')}</body></html>`;
@@ -83,9 +85,13 @@ function renderEmail(issue) {
     lines.push('');
   }
 
-  lines.push("Thanks for subscribing, send to someone or reply with feedback!");
-  lines.push('');
-  lines.push('/Matt');
+  if (issue.outro) {
+    lines.push(issue.outro);
+  } else {
+    lines.push("Thanks for subscribing, send to someone or reply with feedback!");
+    lines.push('');
+    lines.push('/Matt');
+  }
   lines.push('');
   lines.push('To unsubscribe: {{UNSUBSCRIBE_LINK}}');
 
@@ -110,6 +116,9 @@ function renderIssuePage(issue) {
   }).join('\n');
 
   const description = issue.items.map(i => i.sentence).join(' ');
+  const outroHtml = issue.outro
+    ? `<p class="issue-outro">${escapeHtml(issue.outro).replace(/\n/g, '<br>')}</p>`
+    : '';
 
   return tmpl
     .replace(/\{\{slug\}\}/g, issue.slug)
@@ -117,6 +126,7 @@ function renderIssuePage(issue) {
     .replace(/\{\{subject\}\}/g, escapeHtml(issue.subject || ''))
     .replace(/\{\{greeting\}\}/g, escapeHtml(issue.greeting || ''))
     .replace(/\{\{items\}\}/g, itemsHtml)
+    .replace(/\{\{outro\}\}/g, outroHtml)
     .replace(/\{\{base_url\}\}/g, BASE_URL)
     .replace(/\{\{issue_url\}\}/g, issueUrl)
     .replace(/\{\{description\}\}/g, escapeHtml(description.slice(0, 160)));

@@ -97,6 +97,10 @@
       <!-- TAB: Items -->
       <div id="tab-items" class="tab-pane" style="display:none">
         <div id="items-container"></div>
+        <div class="outro-section">
+          <label class="outro-label">Outro</label>
+          <textarea id="issue-outro" rows="4" placeholder="Sign off, personal note, closing thought…"></textarea>
+        </div>
       </div>
 
       <!-- TAB: Subscribers -->
@@ -130,6 +134,7 @@
       <div class="preview-toolbar">
         <button id="preview-email-btn" class="active" onclick="setPreviewMode('email')">Email</button>
         <button id="preview-web-btn" onclick="setPreviewMode('web')">Web page</button>
+        <button id="preview-linkedin-btn" onclick="setPreviewMode('linkedin')">LinkedIn</button>
       </div>
       <div class="preview-frame" id="preview-frame"></div>
       <div class="social-posts" id="social-panel" style="display:none">

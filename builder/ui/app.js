@@ -39,6 +39,7 @@ function openEditor(data) {
   document.getElementById('issue-subject').value = data.subject || '';
   document.getElementById('issue-greeting').value = data.greeting || '';
   document.getElementById('issue-send-at').value = data.send_at || '';
+  document.getElementById('issue-outro').value = data.outro || '';
   renderItems();
   showTab('details');
   showView('editor');
@@ -58,6 +59,7 @@ function openEditor(data) {
   };
   subjectEl.oninput = () => { issue.subject = subjectEl.value; };
   greetingEl.oninput = () => { issue.greeting = greetingEl.value; deferPreview(); };
+  document.getElementById('issue-outro').oninput = e => { issue.outro = e.target.value; deferPreview(); };
 
   const sendAtEl = document.getElementById('issue-send-at');
   sendAtEl.onchange = () => { issue.send_at = sendAtEl.value || null; };
@@ -182,12 +184,6 @@ function buildItemBlock(item, idx) {
       <label>Sentence</label>
       <textarea data-field="sentence" data-idx="${idx}" rows="2">${esc(item.sentence)}</textarea>
     </div>
-    <div class="why-field" id="why-${idx}" style="display:none">
-      <div class="field-group">
-        <label>Why did you change this? (optional)</label>
-        <textarea data-field="why" data-idx="${idx}" rows="2" placeholder="e.g. Too passive. I want it to feel like news."></textarea>
-      </div>
-    </div>
     <div class="toggle-row">
       <input type="checkbox" id="has-deep-${idx}" data-idx="${idx}" ${item.has_deep ? 'checked' : ''} onchange="toggleDeep(${idx})">
       <label for="has-deep-${idx}">Has deep page</label>
@@ -210,35 +206,17 @@ function buildItemBlock(item, idx) {
         <input type="url" data-field="external_link" data-idx="${idx}" value="${esc(item.external_link || '')}" placeholder="https://…">
       </div>
     </div>
-    <div class="field-group">
-      <label>Item slug</label>
-      <input type="text" data-field="slug" data-idx="${idx}" value="${esc(item.slug)}" placeholder="auto-generated from sentence">
-    </div>
   `;
 
   div.querySelectorAll('[data-field]').forEach(el => {
     const field = el.dataset.field;
     const i = parseInt(el.dataset.idx);
-    const originalSentence = { value: item.sentence };
 
     el.addEventListener('input', () => {
       if (field === 'sentence') {
-        const prev = originalSentence.value;
-        const next = el.value;
-        issue.items[i].sentence = next;
-        const slugEl = div.querySelector(`[data-field="slug"]`);
-        if (slugEl && (!slugEl.value || slugEl.value === slugify(prev))) {
-          slugEl.value = slugify(next);
-          issue.items[i].slug = slugify(next);
-        }
-        if (next !== prev && prev !== '') {
-          document.getElementById(`why-${i}`).style.display = '';
-        }
+        issue.items[i].sentence = el.value;
+        issue.items[i].slug = slugify(el.value);
         deferPreview();
-      } else if (field === 'why') {
-        // logged on blur
-      } else if (field === 'slug') {
-        issue.items[i].slug = el.value;
       } else if (field === 'deep_content') {
         issue.items[i].deep_content = el.value;
         deferPreview();
@@ -251,18 +229,6 @@ function buildItemBlock(item, idx) {
       }
     });
 
-    if (field === 'why') {
-      el.addEventListener('blur', () => {
-        const reason = el.value.trim();
-        const current = issue.items[i].sentence;
-        if (reason || originalSentence.value !== current) {
-          logEdit(originalSentence.value, current, reason, `item ${i + 1}, issue ${issue.slug}`);
-          originalSentence.value = current;
-          document.getElementById(`why-${i}`).style.display = 'none';
-          el.value = '';
-        }
-      });
-    }
   });
 
   return div;
@@ -294,6 +260,7 @@ function setPreviewMode(mode) {
   previewMode = mode;
   document.getElementById('preview-email-btn').classList.toggle('active', mode === 'email');
   document.getElementById('preview-web-btn').classList.toggle('active', mode === 'web');
+  document.getElementById('preview-linkedin-btn').classList.toggle('active', mode === 'linkedin');
   updatePreview();
 }
 
@@ -305,6 +272,12 @@ function deferPreview() {
 async function updatePreview() {
   if (!issue) return;
   const frame = document.getElementById('preview-frame');
+
+  if (previewMode === 'linkedin') {
+    frame.innerHTML = renderLinkedInPreview(buildIssuePayload());
+    return;
+  }
+
   try {
     const res = await fetch(`/api/preview?mode=${previewMode}`, {
       method: 'POST',
@@ -322,6 +295,77 @@ async function updatePreview() {
   }
 }
 
+const LINKEDIN_COMMENTS = [
+  "This is just the first section of my newsletter - there are two more quick topics if you're interested. Sign up at my website. No spam, no account, just a literal email sent by me.",
+  "Heads up - this is only The Take from my newsletter. Two more topics inside if you want them. Sign up at my website. No spam, no account, just a literal email sent by me.",
+  "There are two more quick topics in the full newsletter if this caught your attention. Sign up at my website - no spam, no account, just a literal email. Sent by me.",
+  "Quick note - this is just one of three topics from this week's newsletter. Two more inside. Sign up at my website. No spam, no account, just a real email from me.",
+  "This is only The Take - there are two more quick sections in the full newsletter. Sign up at my website if you're interested. No spam, no account, just a literal email sent by me.",
+];
+let linkedInCommentIdx = 0;
+
+function stripLinks(text) {
+  return text
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '[link redacted for algo]')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1 [link redacted for algo]')
+    .replace(/https?:\/\/[^\s]+/g, '[link redacted for algo]')
+    .replace(/[ \t]+\n/g, '\n')
+    .trim();
+}
+
+function renderLinkedInPreview(payload) {
+  const BASE = 'https://mattberan.com';
+  const issueUrl = `${BASE}/bb/${payload.slug}/`;
+
+  const subject = payload.subject || '';
+
+  const takeItem = payload.items.find(i => i.category === 'The Take');
+  const takeLines = [];
+  if (takeItem && takeItem.sentence) {
+    takeLines.push(takeItem.sentence);
+    takeLines.push('');
+    takeLines.push('The Take');
+    if (takeItem.deep_content) {
+      takeLines.push(stripLinks(takeItem.deep_content));
+    }
+  }
+  const takeText = takeLines.join('\n');
+
+  const comment = LINKEDIN_COMMENTS[linkedInCommentIdx % LINKEDIN_COMMENTS.length];
+
+  return `
+    <div class="linkedin-preview">
+      <div class="li-block">
+        <div class="li-block-label">Post title</div>
+        <textarea class="linkedin-text" id="li-title">${esc(subject)}</textarea>
+        <button class="linkedin-copy-btn" onclick="copyLi(this,'li-title')">Copy</button>
+      </div>
+      <div class="li-block">
+        <div class="li-block-label">The Take</div>
+        <textarea class="linkedin-text" id="li-take" rows="10">${esc(takeText)}</textarea>
+        <button class="linkedin-copy-btn" onclick="copyLi(this,'li-take')">Copy</button>
+      </div>
+      <div class="li-block">
+        <div class="li-block-label">Comment <button class="li-shuffle-btn" onclick="shuffleLinkedInComment()">Try another</button></div>
+        <textarea class="linkedin-text" id="li-comment" rows="4">${esc(comment)}</textarea>
+        <button class="linkedin-copy-btn" onclick="copyLi(this,'li-comment')">Copy</button>
+      </div>
+    </div>`;
+}
+
+function copyLi(btn, id) {
+  const text = document.getElementById(id).value;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+function shuffleLinkedInComment() {
+  linkedInCommentIdx = (linkedInCommentIdx + 1) % LINKEDIN_COMMENTS.length;
+  updatePreview();
+}
+
 // ── Draft persistence ──────────────────────────────────────────────────────
 function buildIssuePayload() {
   return {
@@ -329,6 +373,7 @@ function buildIssuePayload() {
     date: document.getElementById('issue-date').value,
     subject: document.getElementById('issue-subject').value,
     greeting: document.getElementById('issue-greeting').value,
+    outro: document.getElementById('issue-outro').value,
   };
 }
 
