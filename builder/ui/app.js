@@ -279,14 +279,15 @@ async function updatePreview() {
   }
 
   try {
-    const res = await fetch(`/api/preview?mode=${previewMode}`, {
+    const mode = previewMode === 'email' ? 'email-html' : previewMode;
+    const res = await fetch(`/api/preview?mode=${mode}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(buildIssuePayload()),
     });
     const { html } = await res.json();
     if (previewMode === 'email') {
-      frame.innerHTML = `<div class="email-preview">${escHtml(html)}</div>`;
+      frame.innerHTML = `<iframe srcdoc="${esc(html)}" style="width:100%;height:100%;border:none;"></iframe>`;
     } else {
       frame.innerHTML = `<div class="web-preview">${html}</div>`;
     }
@@ -332,6 +333,7 @@ function renderLinkedInPreview(payload) {
   const takeText = takeLines.join('\n');
 
   const comment = LINKEDIN_COMMENTS[linkedInCommentIdx % LINKEDIN_COMMENTS.length];
+  const outro = payload.outro || '';
 
   return `
     <div class="linkedin-preview">
@@ -345,6 +347,11 @@ function renderLinkedInPreview(payload) {
         <textarea class="linkedin-text" id="li-take" rows="10">${esc(takeText)}</textarea>
         <button class="linkedin-copy-btn" onclick="copyLi(this,'li-take')">Copy</button>
       </div>
+      ${outro ? `<div class="li-block">
+        <div class="li-block-label">Outro</div>
+        <textarea class="linkedin-text" id="li-outro" rows="3">${esc(outro)}</textarea>
+        <button class="linkedin-copy-btn" onclick="copyLi(this,'li-outro')">Copy</button>
+      </div>` : ''}
       <div class="li-block">
         <div class="li-block-label">Comment <button class="li-shuffle-btn" onclick="shuffleLinkedInComment()">Try another</button></div>
         <textarea class="linkedin-text" id="li-comment" rows="4">${esc(comment)}</textarea>
