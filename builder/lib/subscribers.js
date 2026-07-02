@@ -13,7 +13,11 @@ function save(list) {
 }
 
 function loadPending() {
-  try { return JSON.parse(fs.readFileSync(PENDING_FILE, 'utf8')); } catch { return []; }
+  try {
+    const raw = JSON.parse(fs.readFileSync(PENDING_FILE, 'utf8'));
+    // migrate old plain-string format
+    return raw.map(item => typeof item === 'string' ? { email: item, sent: false } : item);
+  } catch { return []; }
 }
 
 function savePending(list) {
@@ -63,7 +67,7 @@ async function fetchFormspreeEmails(formId, apiKey) {
   while (true) {
     const url = `https://formspree.io/api/0/forms/${formId}/submissions?page=${page}`;
     const res = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } });
-    if (!res.ok) throw new Error(`Formspree API error: ${res.status} ${res.statusText}`);
+    if (!res.ok) throw new Error(`Formspree API error on form ${formId}: ${res.status} ${res.statusText}`);
     const data = await res.json();
     for (const sub of (data.submissions || [])) {
       const email = (sub.email || sub._replyto || '').trim().toLowerCase();
@@ -86,11 +90,12 @@ async function syncFromFormspree() {
 
   const confirmFormId = process.env.FORMSPREE_CONFIRM_FORM_ID;
   const unsubFormId = process.env.FORMSPREE_UNSUB_FORM_ID;
+  const confirmApiKey = process.env.FORMSPREE_CONFIRM_API_KEY || apiKey;
   const unsubApiKey = process.env.FORMSPREE_UNSUB_API_KEY || apiKey;
 
   const [signups, confirms, unsubs] = await Promise.all([
     fetchFormspreeEmails(subFormId, apiKey),
-    confirmFormId ? fetchFormspreeEmails(confirmFormId, apiKey) : Promise.resolve([]),
+    confirmFormId ? fetchFormspreeEmails(confirmFormId, confirmApiKey) : Promise.resolve([]),
     unsubFormId ? fetchFormspreeEmails(unsubFormId, unsubApiKey) : Promise.resolve([]),
   ]);
 
@@ -107,27 +112,23 @@ async function syncFromFormspree() {
     if (unsubSet.has(email)) continue;
 
     if (confirmedSet.has(email)) {
-      // Confirmed — move to active subscribers
       if (!list.includes(email)) {
         list.push(email);
         added++;
       }
-      // Remove from pending if present
-      pending = pending.filter(e => e !== email);
+      pending = pending.filter(p => p.email !== email);
     } else {
-      // Not yet confirmed — put in pending if not already anywhere
-      if (!list.includes(email) && !pending.includes(email)) {
-        pending.push(email);
+      if (!list.includes(email) && !pending.some(p => p.email === email)) {
+        pending.push({ email, sent: false });
         newPending.push(email);
       }
     }
   }
 
-  // Remove unsubscribers from both lists
   const before = list.length;
   list = list.filter(e => !unsubSet.has(e));
   removed = before - list.length;
-  pending = pending.filter(e => !unsubSet.has(e));
+  pending = pending.filter(p => !unsubSet.has(p.email));
 
   save(list);
   savePending(pending);

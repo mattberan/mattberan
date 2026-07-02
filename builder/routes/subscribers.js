@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const subscribers = require('../lib/subscribers');
+const { sendConfirmation } = require('../lib/email');
 
 // GET /api/subscribers
 router.get('/', (req, res) => {
@@ -21,11 +22,29 @@ router.delete('/', (req, res) => {
   res.json(subscribers.remove(email));
 });
 
-// POST /api/subscribers/sync — pull directly from Formspree API
+// POST /api/subscribers/sync — pull from Formspree and send any pending confirmation emails
 router.post('/sync', async (req, res) => {
   try {
     const result = await subscribers.syncFromFormspree();
-    res.json(result);
+
+    const pending = subscribers.loadPending();
+    const unsent = pending.filter(p => !p.sent);
+    let confirmSent = 0, confirmFailed = 0;
+
+    for (const item of pending) {
+      if (item.sent) continue;
+      try {
+        await sendConfirmation(item.email);
+        item.sent = true;
+        confirmSent++;
+      } catch {
+        confirmFailed++;
+      }
+    }
+
+    if (confirmSent > 0 || confirmFailed > 0) subscribers.savePending(pending);
+
+    res.json({ ...result, confirmSent, confirmFailed, pendingTotal: unsent.length });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

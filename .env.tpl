@@ -9,6 +9,7 @@ FORMSPREE_UNSUB_FORM_ID=mojpzpdk
 FORMSPREE_API_KEY=op://MB Apps/FormSpree Subscribe Form API/credential
 FORMSPREE_UNSUB_API_KEY=op://MB Apps/FormSpree Unsubscribe Key/credential
 FORMSPREE_CONFIRM_FORM_ID=mykqdvza
+FORMSPREE_CONFIRM_API_KEY=op://MB Apps/FormSpree Confirm Key/credential
 OLLAMA_HOST=http://localhost:11434
 OLLAMA_MODEL=llama3
 SITE_BASE_URL=https://mattberan.com
