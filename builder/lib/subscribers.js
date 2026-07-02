@@ -86,11 +86,12 @@ async function syncFromFormspree() {
 
   const confirmFormId = process.env.FORMSPREE_CONFIRM_FORM_ID;
   const unsubFormId = process.env.FORMSPREE_UNSUB_FORM_ID;
+  const unsubApiKey = process.env.FORMSPREE_UNSUB_API_KEY || apiKey;
 
   const [signups, confirms, unsubs] = await Promise.all([
     fetchFormspreeEmails(subFormId, apiKey),
     confirmFormId ? fetchFormspreeEmails(confirmFormId, apiKey) : Promise.resolve([]),
-    unsubFormId ? fetchFormspreeEmails(unsubFormId, apiKey) : Promise.resolve([]),
+    unsubFormId ? fetchFormspreeEmails(unsubFormId, unsubApiKey) : Promise.resolve([]),
   ]);
 
   const confirmedSet = new Set(confirms);
