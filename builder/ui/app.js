@@ -219,7 +219,7 @@ function buildItemBlock(item, idx) {
     el.addEventListener('input', () => {
       if (field === 'sentence') {
         issue.items[i].sentence = el.value;
-        issue.items[i].slug = slugify(el.value);
+        if (!issue.items[i].slug) issue.items[i].slug = slugify(el.value);
         deferPreview();
       } else if (field === 'deep_content') {
         issue.items[i].deep_content = el.value;

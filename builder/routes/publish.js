@@ -41,13 +41,27 @@ router.post('/', async (req, res) => {
       return res.json({ ok: true, mode: 'email' });
     }
 
-    // Render and write site pages
+    const repoRoot = path.join(__dirname, '../..');
+
+    // Stash pre-existing uncommitted changes BEFORE writing new HTML,
+    // so the stash never captures the files we're about to write.
+    const stashOut = spawnSync('git', ['stash'], { cwd: repoRoot }).stdout.toString();
+    const didStash = !stashOut.includes('No local changes to save');
+
+    try {
+      execFileSync('git', ['fetch', 'origin'], { cwd: repoRoot });
+      execFileSync('git', ['rebase', 'origin/main'], { cwd: repoRoot });
+    } finally {
+      if (didStash) spawnSync('git', ['stash', 'pop'], { cwd: repoRoot });
+    }
+
+    // Write site pages AFTER git sync so the stash can't capture them
     const issueDir = path.join(SITE_DIR, 'bb', issue.slug);
     fs.mkdirSync(issueDir, { recursive: true });
     fs.writeFileSync(path.join(issueDir, 'index.html'), renderer.renderIssuePage(issue));
 
     for (const item of issue.items) {
-      if (item.has_deep && item.deep_content) {
+      if (item.has_deep && item.deep_content && item.slug) {
         const itemDir = path.join(issueDir, item.slug);
         fs.mkdirSync(itemDir, { recursive: true });
         fs.writeFileSync(path.join(itemDir, 'index.html'), renderer.renderDeepPage(issue, item));
@@ -58,30 +72,16 @@ router.post('/', async (req, res) => {
     fs.mkdirSync(SECRET_ARCHIVE_DIR, { recursive: true });
     fs.writeFileSync(path.join(SECRET_ARCHIVE_DIR, 'index.html'), renderer.renderArchive());
 
-    // Commit and push (skip if nothing changed)
-    const repoRoot = path.join(__dirname, '../..');
-
-    // Stash any uncommitted working-tree changes so they don't block git ops
-    const stashOut = spawnSync('git', ['stash'], { cwd: repoRoot }).stdout.toString();
-    const didStash = !stashOut.includes('No local changes to save');
-
-    try {
-      // Fetch + rebase onto origin BEFORE committing so the push never gets rejected
-      execFileSync('git', ['fetch', 'origin'], { cwd: repoRoot });
-      execFileSync('git', ['rebase', 'origin/main'], { cwd: repoRoot });
-
-      execFileSync('git', ['add', 'site/'], { cwd: repoRoot });
-      const diff = spawnSync('git', ['diff', '--cached', '--quiet'], { cwd: repoRoot });
-      if (diff.status !== 0) {
-        execFileSync('git', ['commit', '-m', `Issue ${issue.slug}: ${subject}`], { cwd: repoRoot });
-        try {
-          execFileSync('git', ['push'], { cwd: repoRoot });
-        } catch (pushErr) {
-          throw new Error('Git push failed: ' + (pushErr.stderr?.toString().trim() || pushErr.message));
-        }
+    // Stage, commit, push
+    execFileSync('git', ['add', 'site/'], { cwd: repoRoot });
+    const diff = spawnSync('git', ['diff', '--cached', '--quiet'], { cwd: repoRoot });
+    if (diff.status !== 0) {
+      execFileSync('git', ['commit', '-m', `Issue ${issue.slug}: ${subject}`], { cwd: repoRoot });
+      try {
+        execFileSync('git', ['push'], { cwd: repoRoot });
+      } catch (pushErr) {
+        throw new Error('Git push failed: ' + (pushErr.stderr?.toString().trim() || pushErr.message));
       }
-    } finally {
-      if (didStash) spawnSync('git', ['stash', 'pop'], { cwd: repoRoot });
     }
 
     // Site only — return URLs for proofing
