@@ -9,8 +9,13 @@ router.post('/', (req, res) => {
   try {
     let output;
     if (mode === 'web') output = renderer.renderIssuePage(issue);
-    else if (mode === 'email-html') output = renderer.renderEmailHtml(issue);
-    else output = renderer.renderEmail(issue);
+    else if (mode === 'email-html') {
+      const full = renderer.renderEmailHtml(issue);
+      const m = full.match(/<body[^>]*>([\s\S]*)<\/body>/i);
+      output = m ? m[1] : full;
+    } else {
+      output = renderer.renderEmail(issue);
+    }
     res.json({ html: output });
   } catch (err) {
     res.status(500).json({ error: err.message });

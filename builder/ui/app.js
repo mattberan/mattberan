@@ -14,6 +14,11 @@ let previewTimer = null;
 window.addEventListener('DOMContentLoaded', async () => {
   await loadDashboard();
   loadSubscriberCount();
+  const saved = sessionStorage.getItem('openSlug');
+  if (saved) {
+    sessionStorage.removeItem('openSlug');
+    await editDraft(saved);
+  }
 });
 
 // ── Views ──────────────────────────────────────────────────────────────────
@@ -23,17 +28,16 @@ function showView(viewName) {
 }
 
 async function goToDashboard() {
-  if (issue) {
-    // Auto-save before leaving
-    await saveDraftQuiet();
-  }
+  if (issue) await saveDraftQuiet();
   stopAutosave();
   issue = null;
+  sessionStorage.removeItem('openSlug');
   await loadDashboard();
   showView('dashboard');
 }
 
 function openEditor(data) {
+  sessionStorage.setItem('openSlug', data.slug);
   issue = data;
   document.getElementById('issue-date').value = data.date;
   document.getElementById('issue-subject').value = data.subject || '';
@@ -287,7 +291,7 @@ async function updatePreview() {
     });
     const { html } = await res.json();
     if (previewMode === 'email') {
-      frame.innerHTML = `<iframe srcdoc="${esc(html)}" style="width:100%;height:100%;border:none;"></iframe>`;
+      frame.innerHTML = html;
     } else {
       frame.innerHTML = `<div class="web-preview">${html}</div>`;
     }

@@ -54,13 +54,15 @@ function renderEmailHtml(issue) {
 
   blocks.push(`<p style="${s}">${escapeHtml(issue.greeting || '')}</p>`);
 
+  const catStyle = 'font-family:Georgia,serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#888;margin:24px 0 4px 0;';
   for (const item of issue.items) {
     const url = itemUrl(issue, item);
     const hasLink = item.has_deep || !!item.external_link;
     const linkHtml = hasLink
-      ? `<br><a href="${url}" style="color:#1a1a1a;">dig deeper &rarr;</a>`
+      ? `<br><a href="${url}" style="color:#555;font-size:13px;">dig deeper &rarr;</a>`
       : '';
-    blocks.push(`<p style="${s}">## ${escapeHtml(item.category)}<br>${escapeHtml(item.sentence)}${linkHtml}</p>`);
+    blocks.push(`<p style="${catStyle}">${escapeHtml(item.category)}</p>`);
+    blocks.push(`<p style="${s}">${escapeHtml(item.sentence)}${linkHtml}</p>`);
   }
 
   const outroText = issue.outro
