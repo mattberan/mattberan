@@ -63,11 +63,11 @@ function renderEmailHtml(issue) {
     blocks.push(`<p style="${s}">## ${escapeHtml(item.category)}<br>${escapeHtml(item.sentence)}${linkHtml}</p>`);
   }
 
-  const outroHtml = issue.outro
+  const outroText = issue.outro
     ? escapeHtml(issue.outro).replace(/\n/g, '<br>')
     : 'Thanks for subscribing, send to someone or reply with feedback!<br>/Matt';
-  blocks.push(`<p style="${s}">${outroHtml}</p>`);
-  blocks.push(`<p style="font-family:Georgia,serif;font-size:12px;color:#888;margin:0;">To unsubscribe: <a href="{{UNSUBSCRIBE_LINK}}" style="color:#888;">click here</a></p>`);
+  blocks.push(`<p style="font-family:Georgia,serif;font-size:14px;line-height:1.7;color:#555;font-style:italic;margin:32px 0 0;padding-top:20px;border-top:1px solid #e0e0e0;">${outroText}</p>`);
+  blocks.push(`<p style="font-family:Georgia,serif;font-size:12px;color:#aaa;margin:16px 0 0;">To unsubscribe: <a href="{{UNSUBSCRIBE_LINK}}" style="color:#aaa;">click here</a></p>`);
 
   return `<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:24px;background:#fff;">${blocks.join('\n')}</body></html>`;
 }
