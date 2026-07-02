@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Information is power; and I've been trying to track my AI impact in data. — Matt Beran</title>
+<meta name="description" content="Information is power; and I've been trying to track my AI impact in data.  It's not easy, it's very manual and I doubt it's accurate. But you're got to start so">
+<meta property="og:title" content="Information is power; and I've been trying to track my AI impact in data.">
+<meta property="og:description" content="Information is power; and I've been trying to track my AI impact in data.  It's not easy, it's very manual and I doubt it's accurate. But you're got to start so">
+<meta property="og:url" content="https://mattberan.com/bb/10072026/i/">
+<meta property="og:type" content="article">
+<link rel="canonical" href="https://mattberan.com/bb/10072026/i/">
+<link rel="stylesheet" href="/styles/main.css">
+<script>
+  (function(){
+    var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    document.documentElement.setAttribute('data-theme',t);
+  })();
+</script>
+</head>
+<body>
+<header>
+  <a href="/" class="home-link">Matt Beran</a>
+</header>
+
+<main class="deep-page">
+  <nav class="breadcrumb">
+    <a href="https://mattberan.com/bb/10072026/">&larr; Back to 2026-07-10</a>
+  </nav>
+
+  <span class="category">The Take</span>
+  <h1>Information is power; and I've been trying to track my AI impact in data.</h1>
+
+  <div class="content">
+    <p>Information is power; and I've been trying to track my AI impact in data.</p>
+<p>It's not easy, it's very manual and I doubt it's accurate. But you're got to start somewhere right?</p>
+<p>So I've been using EcoLogits calculator and a few others just to see if they are even in the same ballpark.</p>
+<p>They aren't.</p>
+<p>So I'm guessing that a lot of this is conjecture... and down the rabbit hole I go.</p>
+<p>Here are some tips for getting started:<br>1 - agentic sessions burn far more compute than a single chat message - this one is obvious, but your measures need to account for this<br>2 - Use 0.3 Wh as your baseline for a typical text prompt - a few providers have gone on the record to say that is a pretty good estimate.<br>3 - Google's figure is about 0.26 mL per prompt for water consumption (for cooling I think)</p>
+<p>And that's just for public models... </p>
+<p>What continues to pique my curiosity is how teams are going to be measuring this and estimating this. Sure you can go to tokens, but that's only a proxy for how much impact - it's more effective for calculating SPEND - not IMPACT.</p>
+<p>Will this be the job of an asset manager? A sysadmin? Who owns this kind of thing - and is that the right place?</p>
+<p>So, what have you tried? Are you measuring your usage? Concerned or not?</p>
+  </div>
+</main>
+
+<footer>
+  <div class="subscribe-cta">
+    <p>Everything you need to know. Nothing you don't.</p>
+    <a href="/bb/#subscribe" class="subscribe-btn">Subscribe to The Beran Brief</a>
+  </div>
+</footer>
+
+<section class="comments">
+  <script src="https://giscus.app/client.js"
+    data-repo="mattberan/mattberan"
+    data-repo-id="R_kgDORP3Q4Q"
+    data-category="General"
+    data-category-id="DIC_kwDORP3Q4c4C_47V"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="0"
+    data-input-position="bottom"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    crossorigin="anonymous"
+    async>
+  </script>
+  <script>
+    (function() {
+      var t = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      var theme = t === 'dark' ? 'dark' : 'light';
+      function setGiscusTheme() {
+        var iframe = document.querySelector('iframe.giscus-frame');
+        if (iframe) {
+          iframe.contentWindow.postMessage({ giscus: { setConfig: { theme: theme } } }, 'https://giscus.app');
+        }
+      }
+      window.addEventListener('message', function(e) {
+        if (e.origin === 'https://giscus.app' && e.data && e.data.giscus) setGiscusTheme();
+      });
+    })();
+  </script>
+</section>
+</body>
+</html>
