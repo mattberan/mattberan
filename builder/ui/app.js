@@ -370,43 +370,100 @@ function renderLinkedInPreview(payload) {
     </div>`;
 }
 
+// Converts the markdown-ish content to HTML for rich paste into Substack
+function mdToHtml(text) {
+  const inlinePattern = /\*\*([^*]+)\*\*|\*([^*]+)\*|_([^_]+)_|\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+)/g;
+  function inlineParse(line) {
+    return line.replace(inlinePattern, (m, bold, em1, em2, linkText, linkUrl, bareUrl) => {
+      if (bold) return `<strong>${bold}</strong>`;
+      if (em1) return `<em>${em1}</em>`;
+      if (em2) return `<em>${em2}</em>`;
+      if (linkText) return `<a href="${linkUrl}">${linkText}</a>`;
+      if (bareUrl) return `<a href="${bareUrl}">${bareUrl}</a>`;
+      return m;
+    });
+  }
+
+  const html = text.split(/\n\n+/).map(block => {
+    const b = block.trim();
+    if (!b) return '';
+    if (b === '---') return '<hr>';
+    if (b.startsWith('## ')) return `<h2>${b.slice(3)}</h2>`;
+    if (b.startsWith('# ')) return `<h1>${b.slice(2)}</h1>`;
+    // image — skip for paste (Substack won't accept it via clipboard)
+    if (/^!\[[^\]]*\]\([^)]+\)$/.test(b)) return '';
+    return `<p>${inlineParse(b).replace(/\n/g, '<br>')}</p>`;
+  }).filter(Boolean).join('\n');
+
+  return html;
+}
+
+// Plain-text fallback (strips markdown syntax, keeps URLs)
+function mdToPlain(text) {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/_([^_]+)_/g, '$1')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1 $2')
+    .replace(/^#{1,3} /gm, '')
+    .trim();
+}
+
+function substackCopyFormatted(btn, rawText, plain) {
+  const html = `<!DOCTYPE html><html><body>${mdToHtml(rawText)}</body></html>`;
+  try {
+    const item = new ClipboardItem({
+      'text/html': new Blob([html], { type: 'text/html' }),
+      'text/plain': new Blob([plain || mdToPlain(rawText)], { type: 'text/plain' }),
+    });
+    navigator.clipboard.write([item]).then(() => {
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy with formatting', 2000);
+    });
+  } catch {
+    navigator.clipboard.writeText(plain || mdToPlain(rawText)).then(() => {
+      btn.textContent = 'Copied (plain)';
+      setTimeout(() => btn.textContent = 'Copy with formatting', 2000);
+    });
+  }
+}
+
 function renderSubstackPreview(payload) {
   const subject = payload.subject || '';
   const outro = payload.outro || '';
 
   function itemBlock(item) {
     if (!item || !item.sentence) return '';
-    const lines = [];
-    if (item.category) lines.push(`## ${item.category}`);
+    const parts = [];
+    if (item.category) parts.push(`## ${item.category}`);
     if (item.has_deep && item.deep_content) {
-      lines.push(item.deep_content.trim());
+      parts.push(item.deep_content.trim());
     } else {
-      lines.push(item.sentence);
-      if (item.external_link) lines.push(item.external_link);
+      parts.push(item.sentence);
+      if (item.external_link) parts.push(item.external_link);
     }
-    return lines.join('\n');
+    return parts.join('\n\n');
   }
 
   const blocks = payload.items.map(item => itemBlock(item)).filter(Boolean);
-  const bodyText = blocks.join('\n\n---\n\n');
+  const bodyMd = blocks.join('\n\n---\n\n');
+  const bodyHtml = mdToHtml(bodyMd);
+
+  function ssBlock(label, md, plain, id) {
+    return `
+      <div class="ss-block">
+        <div class="li-block-label">${label}</div>
+        <div class="ss-rendered" id="${id}-rendered">${md.startsWith('##') || md.includes('\n') ? mdToHtml(md) : `<p>${esc(md)}</p>`}</div>
+        <button class="ss-copy-btn" onclick="substackCopyFormatted(this, ${JSON.stringify(md)}, ${JSON.stringify(plain || '')})">Copy with formatting</button>
+      </div>`;
+  }
 
   return `
-    <div class="linkedin-preview">
-      <div class="li-block">
-        <div class="li-block-label">Post title</div>
-        <textarea class="linkedin-text" id="ss-title">${esc(subject)}</textarea>
-        <button class="linkedin-copy-btn" onclick="copyLi(this,'ss-title')">Copy</button>
-      </div>
-      <div class="li-block">
-        <div class="li-block-label">Body (all three items)</div>
-        <textarea class="linkedin-text" id="ss-body" rows="16">${esc(bodyText)}</textarea>
-        <button class="linkedin-copy-btn" onclick="copyLi(this,'ss-body')">Copy</button>
-      </div>
-      ${outro ? `<div class="li-block">
-        <div class="li-block-label">Outro</div>
-        <textarea class="linkedin-text" id="ss-outro" rows="3">${esc(outro)}</textarea>
-        <button class="linkedin-copy-btn" onclick="copyLi(this,'ss-outro')">Copy</button>
-      </div>` : ''}
+    <div class="ss-preview">
+      <p class="ss-tip">Click "Copy with formatting" then paste directly into Substack's editor — bold, links, and headings come through automatically.</p>
+      ${ssBlock('Post title', subject, subject, 'ss-title')}
+      ${ssBlock('Body', bodyMd, '', 'ss-body')}
+      ${outro ? ssBlock('Outro', outro, outro, 'ss-outro') : ''}
     </div>`;
 }
 
