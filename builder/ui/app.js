@@ -265,6 +265,7 @@ function setPreviewMode(mode) {
   document.getElementById('preview-email-btn').classList.toggle('active', mode === 'email');
   document.getElementById('preview-web-btn').classList.toggle('active', mode === 'web');
   document.getElementById('preview-linkedin-btn').classList.toggle('active', mode === 'linkedin');
+  document.getElementById('preview-substack-btn').classList.toggle('active', mode === 'substack');
   updatePreview();
 }
 
@@ -279,6 +280,11 @@ async function updatePreview() {
 
   if (previewMode === 'linkedin') {
     frame.innerHTML = renderLinkedInPreview(buildIssuePayload());
+    return;
+  }
+
+  if (previewMode === 'substack') {
+    frame.innerHTML = renderSubstackPreview(buildIssuePayload());
     return;
   }
 
@@ -361,6 +367,44 @@ function renderLinkedInPreview(payload) {
         <textarea class="linkedin-text" id="li-comment" rows="4">${esc(comment)}</textarea>
         <button class="linkedin-copy-btn" onclick="copyLi(this,'li-comment')">Copy</button>
       </div>
+    </div>`;
+}
+
+function renderSubstackPreview(payload) {
+  const subject = payload.subject || '';
+  const outro = payload.outro || '';
+
+  function itemBlock(item) {
+    if (!item || !item.sentence) return '';
+    const lines = [];
+    lines.push(item.sentence);
+    if (item.deep_content) {
+      lines.push('');
+      lines.push(item.deep_content.trim());
+    }
+    return lines.join('\n');
+  }
+
+  const blocks = payload.items.map(item => itemBlock(item)).filter(Boolean);
+  const bodyText = blocks.join('\n\n---\n\n');
+
+  return `
+    <div class="linkedin-preview">
+      <div class="li-block">
+        <div class="li-block-label">Post title</div>
+        <textarea class="linkedin-text" id="ss-title">${esc(subject)}</textarea>
+        <button class="linkedin-copy-btn" onclick="copyLi(this,'ss-title')">Copy</button>
+      </div>
+      <div class="li-block">
+        <div class="li-block-label">Body (all three items)</div>
+        <textarea class="linkedin-text" id="ss-body" rows="16">${esc(bodyText)}</textarea>
+        <button class="linkedin-copy-btn" onclick="copyLi(this,'ss-body')">Copy</button>
+      </div>
+      ${outro ? `<div class="li-block">
+        <div class="li-block-label">Outro</div>
+        <textarea class="linkedin-text" id="ss-outro" rows="3">${esc(outro)}</textarea>
+        <button class="linkedin-copy-btn" onclick="copyLi(this,'ss-outro')">Copy</button>
+      </div>` : ''}
     </div>`;
 }
 
