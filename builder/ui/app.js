@@ -378,12 +378,11 @@ function renderSubstackPreview(payload) {
     if (!item || !item.sentence) return '';
     const lines = [];
     if (item.category) lines.push(`## ${item.category}`);
-    lines.push(item.sentence);
     if (item.has_deep && item.deep_content) {
-      lines.push('');
       lines.push(item.deep_content.trim());
-    } else if (!item.has_deep && item.external_link) {
-      lines.push(item.external_link);
+    } else {
+      lines.push(item.sentence);
+      if (item.external_link) lines.push(item.external_link);
     }
     return lines.join('\n');
   }
