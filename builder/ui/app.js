@@ -301,11 +301,11 @@ async function updatePreview() {
 }
 
 const LINKEDIN_COMMENTS = [
-  "This is just the first section of my newsletter - there are two more quick topics if you're interested. Sign up at my website. No spam, no account, just a literal email sent by me.",
-  "Heads up - this is only The Take from my newsletter. Two more topics inside if you want them. Sign up at my website. No spam, no account, just a literal email sent by me.",
-  "There are two more quick topics in the full newsletter if this caught your attention. Sign up at my website - no spam, no account, just a literal email. Sent by me.",
-  "Quick note - this is just one of three topics from this week's newsletter. Two more inside. Sign up at my website. No spam, no account, just a real email from me.",
-  "This is only The Take - there are two more quick sections in the full newsletter. Sign up at my website if you're interested. No spam, no account, just a literal email sent by me.",
+  "This is just the first section of my newsletter - there are two more quick topics if you're interested. Sign up at my website or on Substack (https://mattberan.substack.com/). No spam, no account, just a literal email sent by me.",
+  "Heads up - this is only The Take from my newsletter. Two more topics inside if you want them. Sign up at my website or on Substack (https://mattberan.substack.com/). No spam, no account, just a literal email sent by me.",
+  "There are two more quick topics in the full newsletter if this caught your attention. Sign up at my website or on Substack - https://mattberan.substack.com/ - no spam, no account, just a literal email. Sent by me.",
+  "Quick note - this is just one of three topics from this week's newsletter. Two more inside. Sign up at my website or on Substack (https://mattberan.substack.com/). No spam, no account, just a real email from me.",
+  "This is only The Take - there are two more quick sections in the full newsletter. Sign up at my website or on Substack (https://mattberan.substack.com/) if you're interested. No spam, no account, just a literal email sent by me.",
 ];
 let linkedInCommentIdx = 0;
 
