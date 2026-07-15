@@ -476,6 +476,12 @@ input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
   border-color: #1a1a1a;
 }
 .btn-primary:hover { background: #333; }
+.btn-schedule {
+  background: #1e40af;
+  color: #fff;
+  border-color: #1e40af;
+}
+.btn-schedule:hover { background: #1730a0; }
 .btn-publish {
   background: #1a7f3c;
   color: #fff;

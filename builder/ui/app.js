@@ -585,6 +585,42 @@ function showSiteLinks(urls) {
   panel.style.display = 'flex';
 }
 
+async function scheduleSend() {
+  const subject = document.getElementById('issue-subject').value;
+  if (!subject) { toast('Add a subject line before scheduling'); return; }
+
+  const sendAtVal = document.getElementById('issue-send-at').value;
+  if (!sendAtVal) { toast('Set a send date/time in the Details tab first'); return; }
+
+  const sendAt = new Date(sendAtVal);
+  if (isNaN(sendAt.getTime())) { toast('Invalid date/time'); return; }
+  if (sendAt <= new Date()) { toast('Send time must be in the future'); return; }
+
+  const formatted = sendAt.toLocaleString('en-US', { weekday: 'long', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  if (!confirm(`Schedule "${subject}" to send on ${formatted}?\n\nThis will push the site now and schedule the email. Your Mac must be on and logged in at send time.`)) return;
+
+  toast('Pushing site and scheduling send…');
+  try {
+    await saveDraftQuiet();
+    const res = await fetch('/api/schedule', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ issue: buildIssuePayload(), subject }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      issue.status = 'scheduled';
+      await saveDraftQuiet();
+      showSiteLinks(data.urls);
+      toast(`Scheduled for ${formatted}. Site is live — proof it!`);
+    } else {
+      toast('Error: ' + data.error);
+    }
+  } catch (e) {
+    toast('Error: ' + e.message);
+  }
+}
+
 async function sendEmail() {
   const subject = document.getElementById('issue-subject').value;
   if (!subject) { toast('Add a subject line before sending'); return; }

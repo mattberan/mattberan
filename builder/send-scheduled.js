@@ -1,10 +1,20 @@
 require('dotenv').config({ path: require('path').join(__dirname, '../.env') });
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const { spawnSync } = require('child_process');
 const email = require('./lib/email');
 const subscribers = require('./lib/subscribers');
 
 const DRAFTS_DIR = path.join(__dirname, 'drafts');
+
+function cleanupPlist(slug) {
+  const plistPath = path.join(os.homedir(), 'Library', 'LaunchAgents', `com.mattberan.brief.send-${slug}.plist`);
+  if (!fs.existsSync(plistPath)) return;
+  spawnSync('launchctl', ['unload', plistPath]);
+  fs.unlinkSync(plistPath);
+  console.log(`Cleaned up launchd plist for ${slug}.`);
+}
 
 async function run() {
   if (!fs.existsSync(DRAFTS_DIR)) return;
@@ -18,7 +28,7 @@ async function run() {
     try { issue = JSON.parse(fs.readFileSync(filePath, 'utf8')); }
     catch { continue; }
 
-    if (!issue.send_at || issue.status === 'sent') continue;
+    if (!issue.send_at || issue.status === 'published') continue;
 
     const sendAt = new Date(issue.send_at);
     if (sendAt > now) {
@@ -37,9 +47,12 @@ async function run() {
       console.log(`Sent to ${list.length} subscribers.`);
     }
 
-    issue.status = 'sent';
+    issue.status = 'published';
     issue.send_at = null;
     fs.writeFileSync(filePath, JSON.stringify(issue, null, 2));
+
+    // Remove the one-shot launchd plist so it doesn't re-fire next year
+    cleanupPlist(issue.slug);
   }
 }
 

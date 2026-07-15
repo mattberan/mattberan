@@ -14,6 +14,7 @@ app.use('/api/preview', require('./routes/preview'));
 app.use('/api/publish', require('./routes/publish'));
 app.use('/api/social', require('./routes/social'));
 app.use('/api/subscribers', require('./routes/subscribers'));
+app.use('/api/schedule', require('./routes/schedule'));
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui', 'index.html'));

@@ -62,6 +62,7 @@
     <span class="save-status" id="save-status"></span>
     <button class="btn btn-primary" onclick="sendTest()">Send test email</button>
     <button class="btn btn-primary" onclick="pushToSite()">Push to site</button>
+    <button class="btn btn-schedule" onclick="scheduleSend()">&#128197; Schedule send</button>
     <button class="btn btn-publish" onclick="sendEmail()">⚡ Send email</button>
   </div>
 
@@ -86,7 +87,7 @@
           <textarea id="issue-greeting" rows="4" placeholder="Hi! Happy Thursday — hope your week is going well."></textarea>
         </div>
         <div class="field-group">
-          <label>Schedule email <span class="label-note">— sends on next login after this time</span></label>
+          <label>Schedule email <span class="label-note">— set a time, then click "Schedule send" below</span></label>
           <input type="datetime-local" id="issue-send-at">
         </div>
         <div class="delete-draft-row">
