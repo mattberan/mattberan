@@ -376,12 +376,28 @@
     margin-top: 18px;
     padding-top: 16px;
     border-top: 1px solid var(--border);
+    text-align: center;
   }
 
   .newsletter-signup-label {
     font-size: 0.9rem;
     color: var(--text);
     margin-bottom: 12px;
+  }
+
+  .newsletter-substack {
+    margin-top: 10px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .newsletter-substack a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .newsletter-substack a:hover {
+    text-decoration: underline;
   }
 
   .newsletter-signup-form {
@@ -829,6 +845,7 @@
       <input type="email" name="email" placeholder="your@email.com" required>
       <button type="submit">Subscribe</button>
     </form>
+    <p class="newsletter-substack">Also on <a href="https://substack.com/@mattberan" target="_blank" rel="noopener">Substack</a></p>
   </div>
 </header>
 
