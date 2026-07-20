@@ -525,9 +525,13 @@
 
   /* ========== COMMUNITIES ========== */
   .community-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 14px;
+  }
+  .community-item {
+    flex: 0 1 155px;
   }
 
   .community-item {
@@ -765,7 +769,7 @@
     .cta-group { justify-content: center; }
     main { padding: 0 20px 48px; }
     .card-grid.cols-2 { grid-template-columns: 1fr; }
-    .community-grid { grid-template-columns: repeat(2, 1fr); }
+    .community-grid .community-item { flex: 0 1 calc(50% - 7px); }
     .cta { padding: 8px 16px; font-size: 0.85rem; }
     .social-row { flex-wrap: wrap; gap: 12px; }
     .sticky-nav ul { justify-content: flex-start; gap: 2px; }
