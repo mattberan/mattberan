@@ -1220,6 +1220,15 @@
 
   // ===== FADE-IN ON SCROLL =====
   document.addEventListener('DOMContentLoaded', () => {
+    const fadeEls = document.querySelectorAll('.fade-in');
+
+    // Immediately show anything already on screen — no scroll needed
+    fadeEls.forEach(el => {
+      if (el.getBoundingClientRect().top < window.innerHeight) {
+        el.classList.add('visible');
+      }
+    });
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1229,7 +1238,7 @@
       });
     }, { threshold: 0.05, rootMargin: '0px 0px 0px 0px' });
 
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    fadeEls.forEach(el => { if (!el.classList.contains('visible')) observer.observe(el); });
   });
 
   // ===== CARD GLOW EFFECT (dark mode only) =====
