@@ -1,0 +1,49 @@
+# Matt Beran
+
+> The IT Community Connector. Senior Product Marketing Manager at InvGate with 20+ years of ITSM and ITAM experience. International conference speaker, podcast host, community builder, and creator of IT-focused interactive tools and simulations.
+
+Matt Beran helps IT teams skip the painful detours. He connects practitioners across the industry through communities, events, podcasts, and content that translates complex service management concepts into practical guidance.
+
+## About
+
+- Full name: Matt Beran
+- Title: The IT Community Connector
+- Role: Sr. Product Marketing Manager at InvGate
+- Location: Victoria, MN (America/Chicago)
+- Experience: 20+ years in IT Service Management (ITSM) and IT Asset Management (ITAM)
+- Podcast host: Ticket Volume (weekly ITSM podcast)
+- Reddit: u/mattberan
+- LinkedIn: /in/mattberan
+- All handles: mattberan
+
+## Key Pages
+
+- [Home](https://mattberan.com/): Projects, communities, presentations, videos, podcast, and resources
+- [Laws of UX](https://mattberan.com/lawsofUX/): Reference guide to 22 UX principles with taglines and explanations
+- [IT Industry Forums](https://mattberan.com/itindustryforums/): Vertical-specific peer forums for IT leaders; public sector launched, more industries coming
+
+## Projects
+
+- [Trauma Response Simulator](https://psych-response-simulator.vercel.app): Practice responding to high-stress IT workplace scenarios - nine scenarios with debrief scoring
+- [Psychological Safety Simulator](https://psych-safety-sim.vercel.app): Learn psychological safety language through real workplace scenarios and consequences
+- [Work Family Feud](https://psych-game.vercel.app): Family Feud-style leadership team game built around real IT workplace moments
+- [IT Asset Tycoon](https://mattberan.com/projects/it-asset-tycoon/): Browser-based ITAM strategy game
+- [Simulated Information Officer](https://mattberan.com/projects/simulated-information-officer/): IT leadership simulation
+- [Stocked UP](https://stocked-desk-flow.base44.app): Fast-paced IT inventory and asset management game
+
+## Podcast
+
+- [Ticket Volume](https://www.youtube.com/@ticketvolumepodcast): Weekly podcast covering ITSM trends, tools, and community conversations; hosted by Matt Beran
+- [Beran Brief](https://substack.com/@mattberan): Weekly newsletter - three sentences worth reading
+
+## Communities
+
+- Open Service Community (OSC): https://openservicecommunity.com
+- HDI (Help Desk Institute): https://www.thinkhdi.com
+- Service Desk Institute (SDI): https://www.servicedeskinstitute.com
+- SIAM Foundation: https://www.scopism.com/siam-community/
+- IAITAM (International Association of IT Asset Managers): https://www.iaitam.org
+
+## Expertise
+
+IT Service Management, ITSM, ITIL, Service Desk, IT Asset Management, ITAM, Hardware Asset Management, Enterprise Service Management, ESM, User Research, Service Blueprinting, Experience Level Agreements (XLAs), Agentic AI in IT, Product Marketing, Community Building, Conference Speaking
