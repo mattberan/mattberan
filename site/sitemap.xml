@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
   <url>
     <loc>https://mattberan.com/</loc>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://mattberan.com/bb/</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://mattberan.com/lawsofUX/</loc>
+    <lastmod>2026-06-05</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://mattberan.com/bb/01052026/</loc>
-    <changefreq>never</changefreq>
+    <loc>https://mattberan.com/itindustryforums/</loc>
+    <lastmod>2026-06-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mattberan.com/projects/it-asset-tycoon/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://mattberan.com/bb/01052026/diversify-or-die/</loc>
-    <changefreq>never</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://mattberan.com/bb/24042026/</loc>
-    <changefreq>never</changefreq>
+    <loc>https://mattberan.com/projects/simulated-information-officer/</loc>
+    <lastmod>2026-06-01</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  <url>
-    <loc>https://mattberan.com/bb/24042026/vibe-code-thinking-spring26/</loc>
-    <changefreq>never</changefreq>
-    <priority>0.5</priority>
-  </url>
+
 </urlset>
