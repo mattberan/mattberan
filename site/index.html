@@ -764,6 +764,22 @@
     transition: border-color var(--transition-speed) ease;
   }
 
+  .footer-nav {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .footer-nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-nav a:hover { color: var(--accent); }
+
   /* ========== FADE-IN ANIMATION ========== */
   .fade-in {
     opacity: 0;
@@ -1191,7 +1207,10 @@
 </main>
 
 <footer>
-<p>&copy; 2026 Matt Beran. All rights reserved. &middot; <a href="/lawsofUX/">Laws of UX</a></p>
+  <nav class="footer-nav">
+    <a href="/lawsofUX/">Laws of UX</a>
+  </nav>
+  <p>&copy; 2026 Matt Beran. All rights reserved.</p>
 </footer>
 
 <script>
