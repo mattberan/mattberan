@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /bb/
+Disallow: /newsletterstorage/
 Disallow: /thisiswhereistoreallmynewsletters/
 Disallow: /confirm/
 Disallow: /unsubscribe/
@@ -8,22 +9,27 @@ Disallow: /unsubscribe/
 # Block AI training crawlers
 User-agent: GPTBot
 Disallow: /bb/
+Disallow: /newsletterstorage/
 Disallow: /thisiswhereistoreallmynewsletters/
 
 User-agent: Claude-Web
 Disallow: /bb/
+Disallow: /newsletterstorage/
 Disallow: /thisiswhereistoreallmynewsletters/
 
 User-agent: anthropic-ai
 Disallow: /bb/
+Disallow: /newsletterstorage/
 Disallow: /thisiswhereistoreallmynewsletters/
 
 User-agent: CCBot
 Disallow: /bb/
+Disallow: /newsletterstorage/
 Disallow: /thisiswhereistoreallmynewsletters/
 
 User-agent: PerplexityBot
 Disallow: /bb/
+Disallow: /newsletterstorage/
 Disallow: /thisiswhereistoreallmynewsletters/
 
 Sitemap: https://mattberan.com/sitemap.xml
