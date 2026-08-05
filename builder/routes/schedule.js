@@ -6,6 +6,8 @@ const os = require('os');
 const { execFileSync, spawnSync } = require('child_process');
 const { publishSiteOnly } = require('./publish');
 
+const SLUG_RE = /^[a-zA-Z0-9_-]+$/;
+
 const DRAFTS_DIR = path.join(__dirname, '../drafts');
 const OP_BIN = '/opt/homebrew/bin/op';
 const NODE_BIN = '/opt/homebrew/bin/node';
@@ -72,6 +74,7 @@ router.post('/', async (req, res) => {
   const { issue, subject } = req.body;
 
   if (!issue || !issue.slug) return res.status(400).json({ error: 'Invalid issue.' });
+  if (!SLUG_RE.test(issue.slug)) return res.status(400).json({ error: 'Invalid slug.' });
   if (!subject) return res.status(400).json({ error: 'Subject is required before scheduling.' });
   if (!issue.send_at) return res.status(400).json({ error: 'Set a send date/time before scheduling.' });
 

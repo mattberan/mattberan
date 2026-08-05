@@ -13,9 +13,19 @@ const SITE_DIR = path.join(__dirname, '../../site');
 
 const BASE_URL = process.env.SITE_BASE_URL || 'https://mattberan.com';
 
+const SLUG_RE = /^[a-zA-Z0-9_-]+$/;
+
+function assertValidSlugs(issue) {
+  if (!SLUG_RE.test(issue.slug)) throw new Error(`Invalid issue slug: ${issue.slug}`);
+  for (const item of issue.items || []) {
+    if (item.slug && !SLUG_RE.test(item.slug)) throw new Error(`Invalid item slug: ${item.slug}`);
+  }
+}
+
 // Shared: push rendered HTML to git and return live URLs.
 // Used by both /api/publish (siteOnly) and /api/schedule.
 async function publishSiteOnly(issue, subject) {
+  assertValidSlugs(issue);
   const repoRoot = path.join(__dirname, '../..');
 
   const stashOut = spawnSync('git', ['stash'], { cwd: repoRoot }).stdout.toString();

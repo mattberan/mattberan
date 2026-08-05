@@ -1,7 +1,20 @@
 const nodemailer = require('nodemailer');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const { renderEmail, renderEmailHtml } = require('./renderer');
+
+const SECRET_FILE = path.join(__dirname, '../.unsubscribe-secret');
+let _secret = null;
+function getSecret() {
+  if (!_secret) _secret = fs.readFileSync(SECRET_FILE, 'utf8').trim();
+  return _secret;
+}
+
+function makeToken(email) {
+  const hmac = crypto.createHmac('sha256', getSecret()).update(email).digest('base64url');
+  return Buffer.from(email).toString('base64url') + '.' + hmac;
+}
 
 const LOG_FILE = path.join(__dirname, '../../email.log');
 
@@ -51,7 +64,7 @@ async function sendToList(issue, subject, recipients) {
 
   let sent = 0, failed = 0;
   for (const to of recipients) {
-    const token = Buffer.from(to).toString('base64');
+    const token = makeToken(to);
     const unsubscribeLink = `${baseUrl}/unsubscribe/?t=${encodeURIComponent(token)}`;
     try {
       await transport.sendMail({
@@ -84,7 +97,7 @@ async function sendToList(issue, subject, recipients) {
 async function sendConfirmation(to) {
   const transport = getTransport();
   const baseUrl = process.env.SITE_BASE_URL || 'https://mattberan.com';
-  const token = encodeURIComponent(Buffer.from(to).toString('base64'));
+  const token = encodeURIComponent(makeToken(to));
   const confirmLink = `${baseUrl}/confirm/?t=${token}`;
   const text = `Hey — you signed up for The Beran Brief.\n\nClick the link below to confirm your subscription:\n\n${confirmLink}\n\nIf you didn't sign up, you can ignore this email. No action needed.\n\n— Matt`;
   const html = `<p>Hey — you signed up for The Beran Brief.</p><p>Click the link below to confirm your subscription:</p><p><a href="${confirmLink}">${confirmLink}</a></p><p>If you didn't sign up, you can ignore this email. No action needed.</p><p>— Matt</p>`;

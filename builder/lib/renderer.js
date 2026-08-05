@@ -31,9 +31,9 @@ function renderParagraph(text) {
     } else if (match[3] !== undefined) {
       result += `<em>${escapeHtml(match[3])}</em>`;
     } else if (match[4] !== undefined) {
-      result += `<a href="${match[5]}" target="_blank" rel="noopener">${escapeHtml(match[4])}</a>`;
+      result += `<a href="${escapeHtml(match[5])}" target="_blank" rel="noopener">${escapeHtml(match[4])}</a>`;
     } else {
-      result += `<a href="${match[6]}" target="_blank" rel="noopener">${escapeHtml(match[6])}</a>`;
+      result += `<a href="${escapeHtml(match[6])}" target="_blank" rel="noopener">${escapeHtml(match[6])}</a>`;
     }
     lastIdx = match.index + match[0].length;
   }
@@ -123,8 +123,8 @@ function renderIssuePage(issue) {
     : '';
 
   return tmpl
-    .replace(/\{\{slug\}\}/g, issue.slug)
-    .replace(/\{\{date\}\}/g, issue.date)
+    .replace(/\{\{slug\}\}/g, escapeHtml(issue.slug))
+    .replace(/\{\{date\}\}/g, escapeHtml(issue.date || ''))
     .replace(/\{\{subject\}\}/g, escapeHtml(issue.subject || ''))
     .replace(/\{\{greeting\}\}/g, escapeHtml(issue.greeting || ''))
     .replace(/\{\{items\}\}/g, itemsHtml)
@@ -153,9 +153,9 @@ function renderDeepPage(issue, item) {
     .join('\n');
 
   return tmpl
-    .replace(/\{\{slug\}\}/g, issue.slug)
-    .replace(/\{\{item_slug\}\}/g, item.slug)
-    .replace(/\{\{date\}\}/g, issue.date)
+    .replace(/\{\{slug\}\}/g, escapeHtml(issue.slug))
+    .replace(/\{\{item_slug\}\}/g, escapeHtml(item.slug))
+    .replace(/\{\{date\}\}/g, escapeHtml(issue.date || ''))
     .replace(/\{\{category\}\}/g, escapeHtml(item.category))
     .replace(/\{\{sentence\}\}/g, escapeHtml(item.sentence))
     .replace(/\{\{content\}\}/g, contentHtml)

@@ -20,6 +20,6 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'ui', 'index.html'));
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '127.0.0.1', () => {
   console.log(`Beran Brief builder running at http://localhost:${PORT}`);
 });

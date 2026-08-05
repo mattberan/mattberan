@@ -4,3 +4,8 @@ builder/drafts/
 builder/style/edits-log.jsonl
 builder/subscribers.json
 builder/pending.json
+email.log
+scheduler.log
+scheduler-send.log
+gitpull.log
+builder/.unsubscribe-secret
