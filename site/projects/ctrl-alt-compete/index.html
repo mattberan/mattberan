@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ctrl+Alt+Compete - The IT Support Quiz Show</title>
+<meta name="description" content="A 30-question IT support quiz show. Six categories, five difficulty tiers, and a real troubleshooting tip behind every single answer. Windows, Apple, Google, Microsoft 365, browsers, and general computing.">
+<meta property="og:title" content="Ctrl+Alt+Compete - The IT Support Quiz Show">
+<meta property="og:description" content="Pick a tile, answer the question, keep the tip. 120 accurate troubleshooting facts for Windows, Mac, iOS, Chrome, Gmail, and Microsoft 365.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://mattberan.com/projects/ctrl-alt-compete/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #09090F;
+  --surface: #14141D;
+  --surface2: #1C1C27;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --amber: #F59E0B;
+  --green: #10B981;
+  --red: #EF4444;
+  --blue: #3B82F6;
+  --text-primary: #F1F5F9;
+  --text-secondary: #B8C7DC;
+  --text-muted: #6B7E96;
+}
+
+html, body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-size: 16px;
+}
+
+button { cursor: pointer; font-family: inherit; border: none; background: none; color: inherit; }
+a { color: inherit; }
+
+.screen { display: none; }
+.screen.active { display: block; animation: fadeIn 0.25s ease both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes riseIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes popIn { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: none; } }
+@keyframes slideRight { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+
+.eyebrow {
+  display: inline-flex; align-items: center;
+  background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 20px; padding: 6px 16px;
+  font-size: 11px; font-weight: 700; color: var(--amber);
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+
+.label {
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  letter-spacing: 0.08em; text-transform: uppercase;
+}
+
+.btn-primary {
+  background: var(--amber); color: #000;
+  border-radius: 10px; padding: 14px 32px;
+  font-size: 16px; font-weight: 800;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-ghost {
+  background: var(--surface); color: var(--text-secondary);
+  border: 1px solid var(--border-hover); border-radius: 10px;
+  padding: 14px 28px; font-size: 15px; font-weight: 600;
+  text-decoration: none; display: inline-flex; align-items: center; justify-content: center;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.btn-ghost:hover { border-color: var(--amber); color: var(--text-primary); }
+
+/* ---------- START ---------- */
+#screen-start .wrap {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  padding: 40px 24px;
+}
+.start-card { max-width: 560px; width: 100%; text-align: center; animation: riseIn 0.4s ease both; }
+.start-card h1 {
+  font-size: 44px; font-weight: 900; letter-spacing: -0.03em;
+  line-height: 1.05; margin: 20px 0 14px;
+}
+.start-card h1 .accent { color: var(--amber); }
+.start-card .sub { font-size: 17px; color: var(--text-secondary); line-height: 1.6; }
+
+.rules {
+  background: var(--surface); border: 1px solid var(--border-hover);
+  border-radius: 16px; padding: 26px 28px; margin: 32px 0 24px; text-align: left;
+}
+.rules ol { margin: 18px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 11px; }
+.rules li { font-size: 15px; color: var(--text-secondary); line-height: 1.55; }
+.rules li strong { color: var(--text-primary); font-weight: 600; }
+
+.cat-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.cat-chip {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--surface2); border: 1px solid var(--border-hover);
+  border-radius: 8px; padding: 6px 10px; color: var(--text-muted);
+}
+
+/* ---------- BOARD ---------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 14px; margin-bottom: 22px;
+}
+.topbar-title { font-size: 13px; font-weight: 700; color: var(--amber); text-transform: uppercase; letter-spacing: 0.08em; }
+.stats { display: flex; gap: 10px; }
+.stat {
+  background: var(--surface); border: 1px solid var(--border-hover);
+  border-radius: 10px; padding: 8px 16px; text-align: center; min-width: 78px;
+}
+.stat-k { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+.stat-v { font-size: 21px; font-weight: 900; line-height: 1.25; }
+
+#screen-board .wrap, #screen-question .wrap, #screen-final .wrap {
+  max-width: 1180px; margin: 0 auto; padding: 24px;
+}
+
+.board-scroll { overflow-x: auto; padding-bottom: 6px; }
+.board {
+  display: grid; grid-template-columns: repeat(6, minmax(148px, 1fr));
+  gap: 10px; min-width: 900px;
+}
+.board-head {
+  display: flex; align-items: center; justify-content: center; text-align: center;
+  background: linear-gradient(135deg, rgba(245,158,11,0.14), rgba(245,158,11,0.05));
+  border: 1px solid rgba(245,158,11,0.3); border-radius: 12px;
+  padding: 14px 8px; min-height: 62px;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--amber); line-height: 1.3;
+}
+.tile {
+  background: var(--surface); border: 1px solid var(--border-hover);
+  border-radius: 12px; min-height: 74px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; font-weight: 900; color: var(--text-primary);
+  transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.tile:hover:not(.done) { transform: scale(1.04); border-color: var(--amber); background: var(--surface2); }
+.tile.done { cursor: default; font-size: 22px; }
+.tile.done.right { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.35); color: var(--green); }
+.tile.done.wrong { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); color: var(--red); }
+
+.board-foot {
+  margin-top: 22px; display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.hint { font-size: 13px; color: var(--text-muted); }
+
+/* ---------- QUESTION ---------- */
+.q-shell { max-width: 780px; margin: 0 auto; }
+.q-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.q-cat { font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); }
+.q-pts { font-size: 26px; font-weight: 900; color: var(--amber); }
+.q-card {
+  background: var(--surface); border: 1px solid var(--border-hover);
+  border-radius: 14px; padding: 26px 28px; margin-bottom: 18px;
+  animation: riseIn 0.3s ease both;
+}
+.q-text { font-size: 21px; font-weight: 600; line-height: 1.5; }
+
+.options { display: flex; flex-direction: column; gap: 10px; }
+.option {
+  display: flex; align-items: center; gap: 15px; text-align: left;
+  background: var(--surface); border: 1px solid var(--border-hover);
+  border-radius: 12px; padding: 16px 20px;
+  transition: transform 0.1s ease, border-color 0.15s ease, background 0.15s ease;
+  animation: slideRight 0.28s ease both;
+}
+.option:hover:not(:disabled) { border-color: var(--amber); background: var(--surface2); }
+.option:active:not(:disabled) { transform: scale(0.99); }
+.option:disabled { cursor: default; }
+.option-key {
+  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+  background: var(--surface2); color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900;
+}
+.option-text { flex: 1; font-size: 16px; line-height: 1.5; color: var(--text-primary); }
+.option.right { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.5); }
+.option.right .option-key { background: var(--green); color: #000; }
+.option.wrong { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.45); }
+.option.wrong .option-key { background: var(--red); color: #000; }
+.option.muted { opacity: 0.45; }
+
+.tip-card {
+  background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.03));
+  border: 1px solid rgba(245,158,11,0.3); border-radius: 14px;
+  padding: 22px 24px; margin-top: 18px;
+  animation: riseIn 0.3s ease both;
+}
+.tip-head { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 10px; }
+.tip-body { font-size: 16px; color: var(--text-secondary); line-height: 1.65; }
+.verdict { font-size: 15px; font-weight: 800; margin-bottom: 8px; }
+.verdict.right { color: var(--green); }
+.verdict.wrong { color: var(--red); }
+
+.q-foot { margin-top: 20px; display: flex; justify-content: flex-end; }
+
+/* ---------- FINAL ---------- */
+#screen-final .wrap { max-width: 720px; padding: 48px 24px; text-align: center; }
+.final-emoji { font-size: 52px; animation: popIn 0.4s ease both; }
+#screen-final h1 { font-size: 40px; font-weight: 900; letter-spacing: -0.03em; margin: 12px 0 8px; }
+.final-rank { color: var(--amber); }
+.final-sub { font-size: 17px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 36px; }
+.final-stats { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+.final-stat {
+  background: var(--surface); border: 1px solid var(--border-hover);
+  border-radius: 14px; padding: 20px 30px; min-width: 132px;
+}
+.final-stat .k { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 6px; }
+.final-stat .v { font-size: 32px; font-weight: 900; }
+.panel {
+  background: var(--surface); border: 1px solid var(--border-hover);
+  border-radius: 14px; padding: 24px; margin-bottom: 32px; text-align: left;
+}
+.panel-head { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 16px; }
+.bd-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.bd-name { flex: 0 0 130px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); }
+.bd-track { flex: 1; height: 10px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
+.bd-fill { height: 100%; background: var(--amber); border-radius: 5px; transition: width 0.9s ease; }
+.bd-val { flex: 0 0 86px; text-align: right; font-size: 13px; font-weight: 700; color: var(--text-muted); }
+.actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.credit { margin-top: 26px; font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.credit a { color: var(--text-secondary); }
+
+@media (max-width: 640px) {
+  .start-card h1 { font-size: 34px; }
+  #screen-final h1 { font-size: 30px; }
+  .q-text { font-size: 18px; }
+  .option-text { font-size: 15px; }
+  .bd-name { flex-basis: 96px; font-size: 11px; }
+  .bd-val { flex-basis: 70px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ START ============ -->
+<section id="screen-start" class="screen active">
+  <div class="wrap">
+    <div class="start-card">
+      <span class="eyebrow">The IT Support Quiz Show</span>
+      <h1>Ctrl<span class="accent">+</span>Alt<span class="accent">+</span>Compete</h1>
+      <p class="sub">Six categories. Five difficulty tiers. Thirty questions, and a real troubleshooting tip behind every one of them.</p>
+
+      <div class="rules">
+        <div class="label">How it works</div>
+        <ol>
+          <li>Pick any tile on the board. <strong>Higher points means harder question.</strong></li>
+          <li>Four choices, one right answer. Keys <strong>1 through 4</strong> work too.</li>
+          <li>Right answer scores the tile value. Wrong answer scores nothing, and you still get the tip.</li>
+          <li>Clear all thirty tiles for a possible <strong>9,000 points</strong>.</li>
+        </ol>
+        <div class="cat-chips">
+          <span class="cat-chip">Windows</span>
+          <span class="cat-chip">Apple &amp; iOS</span>
+          <span class="cat-chip">Google</span>
+          <span class="cat-chip">Microsoft 365</span>
+          <span class="cat-chip">Browsers &amp; Internet</span>
+          <span class="cat-chip">General Computing</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="btn-start" data-track="calc-start">Start the Show &rarr;</button>
+      <p class="credit">120 questions in the bank. Every session draws a fresh set, so the board is different each time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BOARD ============ -->
+<section id="screen-board" class="screen">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="topbar-title">Ctrl+Alt+Compete &middot; The Board</div>
+      <div class="stats">
+        <div class="stat"><div class="stat-k">Score</div><div class="stat-v" id="s-score">0</div></div>
+        <div class="stat"><div class="stat-k">Correct</div><div class="stat-v" id="s-correct" style="color:var(--green)">0</div></div>
+        <div class="stat"><div class="stat-k">Missed</div><div class="stat-v" id="s-wrong" style="color:var(--red)">0</div></div>
+        <div class="stat"><div class="stat-k">Streak</div><div class="stat-v" id="s-streak" style="color:var(--amber)">0</div></div>
+      </div>
+    </div>
+    <div class="board-scroll">
+      <div class="board" id="board"></div>
+    </div>
+    <div class="board-foot">
+      <span class="hint" id="board-hint">30 tiles left. Pick any one.</span>
+      <button class="btn-ghost" id="btn-finish" style="display:none">Finish early &rarr;</button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUESTION ============ -->
+<section id="screen-question" class="screen">
+  <div class="wrap">
+    <div class="q-shell">
+      <div class="q-meta">
+        <span class="q-cat" id="q-cat"></span>
+        <span class="q-pts" id="q-pts"></span>
+      </div>
+      <div class="q-card"><p class="q-text" id="q-text"></p></div>
+      <div class="options" id="q-options"></div>
+      <div id="q-reveal"></div>
+      <div class="q-foot"><button class="btn-primary" id="btn-next" style="display:none">Back to the Board &rarr;</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL ============ -->
+<section id="screen-final" class="screen">
+  <div class="wrap">
+    <div class="final-emoji" id="f-emoji">🏆</div>
+    <h1><span class="final-rank" id="f-rank"></span></h1>
+    <p class="final-sub" id="f-sub"></p>
+
+    <div class="final-stats">
+      <div class="final-stat"><div class="k">Score</div><div class="v" id="f-score" style="color:var(--amber)">0</div></div>
+      <div class="final-stat"><div class="k">Correct</div><div class="v" id="f-correct" style="color:var(--green)">0</div></div>
+      <div class="final-stat"><div class="k">Best Streak</div><div class="v" id="f-streak">0</div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">Where you were strong</div>
+      <div id="f-breakdown"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">Keep the tips</div>
+      <p style="font-size:15px;color:var(--text-secondary);line-height:1.65;margin-bottom:18px;">
+        All 120 troubleshooting tips in one printable sheet, grouped by category. Print it, tape it to the wall, hand it to a new hire on day one.
+      </p>
+      <button class="btn-primary" id="btn-tipsheet" data-track="calc-tipsheet">Open the Tip Sheet &rarr;</button>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="btn-again">Play Again &rarr;</button>
+      <a class="btn-ghost" href="https://psych-game.vercel.app/" target="_blank" rel="noopener" data-track="calc-to-psychgame">Try Psych Safety Challenge &rarr;</a>
+    </div>
+
+    <p class="credit">
+      Built by <a href="https://mattberan.com">Matt Beran</a>. Every answer is version-durable, so the tips still work after the next OS update.<br>
+      <a href="https://invgate.com/?utm_source=mattberandotcom&utm_medium=matt-organic&utm_campaign=ctrl_alt_compete" target="_blank" rel="noopener" data-track="calc-invgate">Service management software by InvGate &rarr;</a>
+    </p>
+  </div>
+</section>
+
+<script>
+/* =========================================================
+   QUESTION BANK
+   6 categories x 5 point tiers x 4 questions = 120
+   Each tile draws one random question from its pool of 4.
+   c = index of the correct answer before shuffling.
+   ========================================================= */
+const CATS = ['Windows', 'Apple & iOS', 'Google', 'Microsoft 365', 'Browsers & Internet', 'General Computing'];
+const TIERS = [100, 200, 300, 400, 500];
+
+const BANK = {
+'Windows': {
+100: [
+  { q: 'Which keyboard shortcut opens Task Manager directly?',
+    a: ['Ctrl + Shift + Esc', 'Ctrl + Alt + Delete', 'Alt + F4', 'Ctrl + Esc'], c: 0,
+    tip: 'Ctrl + Alt + Delete only takes you to a menu. Ctrl + Shift + Esc jumps straight into Task Manager, which matters when the machine is barely responding.' },
+  { q: 'What does the Windows key + L do?',
+    a: ['Locks the computer', 'Logs you out completely', 'Opens the login options', 'Restarts the machine'], c: 0,
+    tip: 'Win + L locks without closing anything. Teach it to every user who walks away from an unlocked desk.' },
+  { q: 'Which shortcut lets you screenshot just part of the screen?',
+    a: ['Win + Shift + S', 'Print Screen', 'Win + P', 'Ctrl + P'], c: 0,
+    tip: 'Win + Shift + S opens the snip overlay and copies your selection to the clipboard. Plain Print Screen grabs the whole screen instead.' },
+  { q: 'Where do deleted files go by default?',
+    a: ['The Recycle Bin', 'Deleted permanently right away', 'The Downloads folder', 'A hidden system folder'], c: 0,
+    tip: 'Check the Recycle Bin before you panic. Shift + Delete is the one that skips it, and that is the delete you cannot walk back.' }
+],
+200: [
+  { q: 'A laptop is connected to a projector but nothing shows up. Which shortcut gets you to display modes fastest?',
+    a: ['Win + P', 'Win + D', 'Win + Tab', 'Fn + F5'], c: 0,
+    tip: 'Win + P opens Duplicate, Extend, and Second screen only. It fixes more conference room panics than any other key combination.' },
+  { q: 'In Windows 10 and 11, what is the reliable way to reach Safe Mode?',
+    a: ['Hold Shift while clicking Restart', 'Press F8 during startup', 'Press Esc during startup', 'Run "safemode" in Command Prompt'], c: 0,
+    tip: 'F8 has been off by default since Windows 8. Hold Shift and click Restart to land in Advanced startup options, then choose Startup Settings.' },
+  { q: 'What does the command "sfc /scannow" do?',
+    a: ['Scans and repairs protected Windows system files', 'Scans the disk surface for bad sectors', 'Removes viruses', 'Clears temporary files'], c: 0,
+    tip: 'Run it from an admin Command Prompt. It fixes corrupted system files, which is a different problem from a failing disk. Use chkdsk for the disk.' },
+  { q: 'Which shortcut opens File Explorer?',
+    a: ['Win + E', 'Win + F', 'Win + O', 'Win + R'], c: 0,
+    tip: 'Win + E for Explorer, Win + R for Run. Those two get you almost anywhere without touching the Start menu.' }
+],
+300: [
+  { q: 'Which command clears the local DNS resolver cache in Windows?',
+    a: ['ipconfig /flushdns', 'ipconfig /renew', 'netsh reset', 'ping /clear'], c: 0,
+    tip: 'Use it when a site moved servers and one machine still hits the old address. Renew gets a new IP from DHCP, flushdns clears stale name lookups.' },
+  { q: 'In Windows 10 and 11, where do you disable programs that launch at login?',
+    a: ['Task Manager, Startup apps tab', 'Control Panel, Programs and Features', 'Device Manager', 'Disk Cleanup'], c: 0,
+    tip: 'msconfig used to own this list and now just points you at Task Manager. Startup apps is the fastest win on a slow-to-log-in machine.' },
+  { q: 'In Device Manager, what does a yellow exclamation mark next to a device mean?',
+    a: ['Windows sees the device but the driver has a problem', 'The device is disabled by policy', 'The device is out of warranty', 'The device is a duplicate'], c: 0,
+    tip: 'Yellow triangle means driver trouble. A downward arrow means the device is disabled. Two very different fixes, so read the icon before you reinstall anything.' },
+  { q: 'What does chkdsk check?',
+    a: ['File system and disk errors', 'Corrupted Windows system files', 'Registry consistency', 'Installed driver versions'], c: 0,
+    tip: 'chkdsk is for the disk and file system. sfc is for Windows system files. Pick based on the symptom instead of running both by reflex.' }
+],
+400: [
+  { q: 'The screen goes black but the PC is clearly still running. Which shortcut restarts the graphics driver?',
+    a: ['Win + Ctrl + Shift + B', 'Win + Ctrl + D', 'Ctrl + Shift + R', 'Win + Alt + G'], c: 0,
+    tip: 'You hear a short beep and the screen usually comes back. It saves an unsaved-work reboot more often than people expect.' },
+  { q: 'After an unexpected restart, where does Windows keep the record of what happened?',
+    a: ['Event Viewer, under Windows Logs then System', 'The Recycle Bin', 'Task Manager history', 'Windows Update history'], c: 0,
+    tip: 'Filter the System log for Critical and Error around the time of the crash. Event ID 41 is the classic "power was lost unexpectedly" marker.' },
+  { q: 'With Fast Startup enabled, which action actually gives Windows a clean kernel reload?',
+    a: ['Restart', 'Shut Down, then power on', 'Sign out, then sign in', 'Sleep, then wake'], c: 0,
+    tip: 'Fast Startup makes Shut Down closer to hibernation, so it carries state forward. Restart is the real reboot. This is why "restart it" beats "turn it off and on."' },
+  { q: 'Which command shows which process is holding a network port?',
+    a: ['netstat -ano', 'ipconfig /all', 'tasklist /svc', 'route print'], c: 0,
+    tip: 'netstat -ano lists the port and the process ID. Match that PID in Task Manager under Details to name the culprit.' }
+],
+500: [
+  { q: 'sfc /scannow reports it cannot repair some files. What is the standard next step?',
+    a: ['DISM /Online /Cleanup-Image /RestoreHealth', 'Run chkdsk /f', 'Reinstall Windows', 'Roll back the last driver'], c: 0,
+    tip: 'sfc repairs from the local component store. If that store is damaged too, DISM RestoreHealth rebuilds it. Run DISM first, then sfc again.' },
+  { q: 'Where does the %APPDATA% variable point?',
+    a: ['The user\u2019s AppData\\Roaming folder', 'C:\\Program Files', 'C:\\Windows\\System32', 'The Public Documents folder'], c: 0,
+    tip: 'Type %APPDATA% into the address bar of File Explorer to jump there instantly. It is where most per-user app settings and profiles live.' },
+  { q: 'Which shortcut opens the power user menu with Device Manager, Disk Management, and an admin terminal?',
+    a: ['Win + X', 'Win + I', 'Win + S', 'Win + A'], c: 0,
+    tip: 'Win + X is the fastest route to admin tools. Right-clicking the Start button opens the same menu.' },
+  { q: 'Windows says a file is in use and will not let you delete it. Which built-in tool names the process holding it?',
+    a: ['Resource Monitor, using the Associated Handles search', 'Device Manager', 'Disk Cleanup', 'System Restore'], c: 0,
+    tip: 'Resource Monitor, CPU tab, search Associated Handles for the file name. Beats rebooting and hoping, and it beats installing a third-party unlocker.' }
+]
+},
+
+'Apple & iOS': {
+100: [
+  { q: 'How do you force quit an unresponsive app on a Mac?',
+    a: ['Command + Option + Esc', 'Command + Q', 'Command + W', 'Control + Alt + Delete'], c: 0,
+    tip: 'Command + Q asks the app to quit politely, which a frozen app ignores. Command + Option + Esc opens the Force Quit window instead.' },
+  { q: 'Which Mac shortcut captures a selected portion of the screen?',
+    a: ['Command + Shift + 4', 'Command + Shift + 3', 'Command + P', 'Command + Option + S'], c: 0,
+    tip: 'Command + Shift + 3 grabs everything, 4 grabs a selection, and 5 opens the full capture toolbar including screen recording.' },
+  { q: 'What does Command + Space open on a Mac?',
+    a: ['Spotlight search', 'The Dock', 'Mission Control', 'System Settings'], c: 0,
+    tip: 'Spotlight launches apps, finds files, and does math and unit conversion. It is the single best habit to teach a new Mac user.' },
+  { q: 'On an iPhone without a Home button, how do you close an app completely?',
+    a: ['Swipe up from the bottom and pause, then flick the app card up', 'Double press the side button', 'Hold the app icon and choose Close', 'Turn on Airplane Mode'], c: 0,
+    tip: 'Worth knowing, but iOS already manages memory well. Force closing every app all the time does not save battery.' }
+],
+200: [
+  { q: 'On a Face ID iPhone, which buttons take a screenshot?',
+    a: ['Side button plus Volume Up', 'Side button plus Volume Down', 'Both volume buttons', 'Side button held for three seconds'], c: 0,
+    tip: 'Side plus Volume Up on modern iPhones. On older Home button models it is Home plus Side. Volume Down instead of Up starts a shutdown or a force restart sequence.' },
+  { q: 'On a Mac, which key generally replaces Windows\u2019 Control in shortcuts like copy and paste?',
+    a: ['Command', 'Option', 'Control', 'Function'], c: 0,
+    tip: 'Command + C and Command + V. The Mac still has a Control key, and it does different things, which is exactly why switchers get stuck.' },
+  { q: 'What is the force restart sequence on a Face ID iPhone?',
+    a: ['Volume Up, Volume Down, then hold the Side button', 'Hold both volume buttons', 'Hold the Side button for ten seconds', 'Hold Volume Down and the Side button'], c: 0,
+    tip: 'Quick press Volume Up, quick press Volume Down, then hold Side until the Apple logo appears. It works when the screen is frozen and swiping does nothing.' },
+  { q: 'On an Apple silicon Mac, how do you reach startup options including Safe Mode?',
+    a: ['Hold the power button until "Loading startup options" appears', 'Hold Shift at startup', 'Hold Command + R', 'Hold Option + P + R'], c: 0,
+    tip: 'Apple silicon changed this. Hold the power button. On older Intel Macs, holding Shift during boot still gets you Safe Mode.' }
+],
+300: [
+  { q: 'On macOS, which folder holds most per-user app settings and caches?',
+    a: ['~/Library', '/System', '/Applications', '~/Documents'], c: 0,
+    tip: 'It is hidden by default. Hold Option while clicking the Go menu in Finder to reveal Library, then look in Application Support, Caches, and Preferences.' },
+  { q: 'iCloud backups stopped working. How much storage does a free iCloud account include?',
+    a: ['5 GB', '15 GB', '50 GB', '1 GB'], c: 0,
+    tip: 'Photos fill 5 GB fast, and then backups quietly stop. Check Settings, your name, iCloud before you troubleshoot anything else.' },
+  { q: 'An app is installed on an iPhone but missing from the Home Screen. Where do you look?',
+    a: ['The App Library, past the last Home Screen page', 'The App Store purchase history', 'Settings, then General', 'Recently Deleted'], c: 0,
+    tip: 'Swipe left past the final page to reach App Library, or just pull down and search. Icons get hidden or moved far more often than apps get uninstalled.' },
+  { q: 'On an Intel Mac, what does resetting NVRAM with Command + Option + P + R clear?',
+    a: ['Low level settings like volume, display resolution, and startup disk', 'All user files', 'The installed version of macOS', 'Saved Wi-Fi networks only'], c: 0,
+    tip: 'Intel only. Apple silicon Macs check and reset this automatically at boot, so there is no key combination to learn there.' }
+],
+400: [
+  { q: 'Which macOS app is the closest equivalent of Windows Task Manager?',
+    a: ['Activity Monitor', 'Disk Utility', 'Console', 'System Information'], c: 0,
+    tip: 'Activity Monitor shows CPU, memory, energy, disk, and network per process, and lets you force quit from the toolbar.' },
+  { q: 'What does Time Machine do?',
+    a: ['Runs automatic incremental backups to a connected or network drive', 'Rolls macOS back to an older version', 'Restores deleted apps', 'Syncs files to iCloud'], c: 0,
+    tip: 'Hourly for a day, daily for a month, weekly until the disk fills. Ask whether Time Machine is on before you spend an hour recovering a file.' },
+  { q: 'On iOS, what does Reset Network Settings actually erase?',
+    a: ['Saved Wi-Fi passwords, VPN, and cellular settings', 'All apps and data', 'Photos and messages', 'The iCloud account'], c: 0,
+    tip: 'It is a safe first move for stubborn Wi-Fi problems, but the user will need every Wi-Fi password again. Warn them before you tap it.' },
+  { q: 'Which macOS tool checks and repairs a disk\u2019s formatting and directory structure?',
+    a: ['First Aid in Disk Utility', 'Migration Assistant', 'Software Update', 'Screen Time'], c: 0,
+    tip: 'Disk Utility, select the volume, then First Aid. If it fails repeatedly, treat the drive as failing and get the data off before anything else.' }
+],
+500: [
+  { q: 'The Dock and menu bar are misbehaving on a Mac. Which Terminal command restarts them without a reboot?',
+    a: ['killall Dock', 'sudo reboot', 'killall Finder', 'defaults delete Dock'], c: 0,
+    tip: 'killall Dock restarts the Dock and Mission Control instantly and loses nothing. killall Finder does the same for the desktop and Finder windows.' },
+  { q: 'macOS blocks an app because it is from an unidentified developer. What is the built-in way to allow it?',
+    a: ['Right-click the app and choose Open, or approve it under Privacy and Security', 'Turn off the firewall', 'Reinstall macOS', 'Run it from Terminal with sudo'], c: 0,
+    tip: 'Right-click, Open gives you a one-time override with a real warning attached. Never coach a user into disabling Gatekeeper entirely.' },
+  { q: 'What does holding Option while clicking the Wi-Fi icon in the Mac menu bar reveal?',
+    a: ['Detailed connection data including signal strength, channel, and access point', 'A list of nearby printers', 'A speed test', 'The router admin page'], c: 0,
+    tip: 'Signal strength as RSSI, noise, transmit rate, and channel. It turns "the Wi-Fi is bad" into a number you can act on.' },
+  { q: 'On an Intel Mac, which key held at startup shows the boot disk picker?',
+    a: ['Option', 'Command', 'Control', 'Shift'], c: 0,
+    tip: 'Hold Option for the Startup Manager to boot from an external drive or a recovery installer. On Apple silicon, hold the power button instead.' }
+]
+},
+
+'Google': {
+100: [
+  { q: 'In Gmail, what does archiving a message do?',
+    a: ['Removes it from the Inbox but keeps it in All Mail', 'Deletes it after 30 days', 'Marks it as spam', 'Moves it to Drafts'], c: 0,
+    tip: 'Archived mail is never gone. Search finds it, or click All Mail. This is the answer to "I archived it by accident" almost every time.' },
+  { q: 'Which shortcut opens a new Incognito window in Chrome?',
+    a: ['Ctrl or Command + Shift + N', 'Ctrl or Command + N', 'Ctrl or Command + Shift + T', 'Ctrl or Command + I'], c: 0,
+    tip: 'Shift + N for Incognito, plain N for a normal window. Incognito is the fastest way to test whether a problem is caused by your own session or extensions.' },
+  { q: 'In Google Docs, how do you get back an earlier draft?',
+    a: ['File, then Version history', 'Edit, then Undo repeatedly', 'The Trash in Drive', 'Ctrl + Shift + Z'], c: 0,
+    tip: 'Version history keeps named and timestamped versions and lets you restore any of them. Docs almost never truly loses work.' },
+  { q: 'What happens to a file you delete from Google Drive?',
+    a: ['It sits in Trash for 30 days, then is deleted permanently', 'It is deleted immediately', 'It moves to Shared with me', 'It is archived forever'], c: 0,
+    tip: 'Thirty days in Trash. Beyond that, a Workspace admin may still recover it for a short window, so escalate quickly rather than giving up.' }
+],
+200: [
+  { q: 'Which Gmail search operator finds only messages that have attachments?',
+    a: ['has:attachment', 'is:attached', 'filename:all', 'contains:file'], c: 0,
+    tip: 'Combine operators for real power. "has:attachment from:payroll" beats scrolling for ten minutes.' },
+  { q: 'Which shortcut forces a hard refresh that ignores the cached copy of a page?',
+    a: ['Ctrl + Shift + R, or Command + Shift + R', 'F5', 'Ctrl + R', 'Ctrl + F5 only on Mac'], c: 0,
+    tip: 'A plain refresh may reuse cached files. A hard refresh pulls everything fresh, which is the first thing to try when a site looks broken after an update.' },
+  { q: 'You just sent an email in Gmail and instantly regret it. What actually works?',
+    a: ['Click Undo in the popup before the Undo Send window closes', 'Delete it from Sent', 'Mark it unread', 'Recall it from Settings'], c: 0,
+    tip: 'Undo Send defaults to 5 seconds and can be raised to 30 in Settings. Once that window closes, the message is truly gone and Gmail has no recall.' },
+  { q: 'On Android, where do you force stop a misbehaving app?',
+    a: ['Settings, Apps, pick the app, then Force stop', 'The Play Store', 'Developer options', 'Battery settings'], c: 0,
+    tip: 'Force stop, then clear cache. Clear storage is the nuclear option because it wipes the app\u2019s local data and sign-in.' }
+],
+300: [
+  { q: 'Which Gmail operator finds messages larger than 10 megabytes?',
+    a: ['larger:10M', 'size>10MB', 'has:large', 'attachment:10M'], c: 0,
+    tip: 'Pair "larger:10M older_than:1y" to clear space fast when a mailbox hits its quota.' },
+  { q: 'A colleague opens your Drive link and sees "You need access." What is the real fix?',
+    a: ['The owner grants access or changes link sharing', 'The colleague clears their cache', 'The colleague signs out and back in', 'The link is regenerated'], c: 0,
+    tip: 'Nine times out of ten the person is signed into a second Google account. Check which account the browser is using, then fix sharing on the owner side.' },
+  { q: 'In Chrome, where do you clear cookies and data for one specific site?',
+    a: ['The icon to the left of the address bar, then Site settings', 'Settings, then Downloads', 'The Extensions menu', 'The Chrome Task Manager'], c: 0,
+    tip: 'One site at a time beats clearing everything and signing the user out of every service they use. That distinction saves you a second ticket.' },
+  { q: 'In Google Docs, what does Suggesting mode do?',
+    a: ['Proposes edits the owner can accept or reject', 'Turns on spell check only', 'Locks the document', 'Shares the doc publicly'], c: 0,
+    tip: 'The pencil icon in the top right switches between Editing, Suggesting, and Viewing. Suggesting is the Docs answer to tracked changes.' }
+],
+400: [
+  { q: 'What is the real difference between a Gmail label and a traditional folder?',
+    a: ['One message can carry several labels at once', 'Labels cannot be nested', 'Labels expire after a year', 'Labels are visible to everyone in the domain'], c: 0,
+    tip: 'A message lives in one place and wears many labels. That is why "it disappeared from my folder" usually means the label was removed, not the message.' },
+  { q: 'A web page works in Incognito but not in a normal Chrome window. What does that tell you?',
+    a: ['An extension or stored site data is the cause', 'The site is down', 'The network is blocking it', 'Chrome needs reinstalling'], c: 0,
+    tip: 'Incognito loads with extensions off and no cookies. If Incognito works, disable extensions one at a time. This is the single best browser diagnostic there is.' },
+  { q: 'Someone shares a large file with you in Drive. Whose storage quota does it count against?',
+    a: ['The owner\u2019s', 'Yours', 'Both accounts', 'Neither, shared files are free'], c: 0,
+    tip: 'Shared with me costs you nothing. But if you make a copy, the copy is yours and it counts. That is how quotas quietly fill up.' },
+  { q: 'What does Safe Mode do on Android?',
+    a: ['Starts the phone with third-party apps disabled', 'Wipes the device', 'Disables the SIM card', 'Blocks all network access'], c: 0,
+    tip: 'Hold Power, then long press Power off to get Safe mode. If the problem disappears there, a downloaded app is causing it.' }
+],
+500: [
+  { q: 'Which Gmail search operator excludes a term from the results?',
+    a: ['A minus sign in front of the word', 'The word NOT', 'An exclamation mark', 'exclude:'], c: 0,
+    tip: 'Search "invoice -paid" to find every invoice email that does not mention paid. Quotation marks force an exact phrase.' },
+  { q: 'Chrome has its own task manager for tabs and extensions. How do you open it?',
+    a: ['Shift + Esc on Windows, or the Window menu on Mac', 'Ctrl + Alt + Delete', 'Ctrl + Shift + J', 'The three-dot menu, then History'], c: 0,
+    tip: 'It shows memory and CPU per tab and per extension, so you can name the tab eating 4 GB instead of blaming the whole browser.' },
+  { q: 'You need to inspect the delivery path of a suspicious email in Gmail. What do you open?',
+    a: ['Show original, to read the full headers', 'Print preview', 'The attachment', 'Report spam'], c: 0,
+    tip: 'Show original reveals the true sending server plus SPF, DKIM, and DMARC results. A friendly display name proves nothing.' },
+  { q: 'What does Google Takeout do?',
+    a: ['Exports a downloadable copy of your Google data', 'Deletes your account', 'Transfers a file to another owner', 'Backs up only Gmail'], c: 0,
+    tip: 'Use it before someone leaves a personal account behind, or when a user wants their photos and mail off Google entirely.' }
+]
+},
+
+'Microsoft 365': {
+100: [
+  { q: 'An Excel cell shows nothing but ##### signs. What does that mean?',
+    a: ['The column is too narrow to show the value', 'The formula is broken', 'The file is corrupted', 'The cell is protected'], c: 0,
+    tip: 'Double-click the right edge of the column header to auto-fit. It is a display issue, not a data issue, and the value is completely fine.' },
+  { q: 'What does Outlook\u2019s Focused Inbox do?',
+    a: ['Splits mail into Focused and Other tabs', 'Deletes newsletters', 'Blocks external senders', 'Turns off notifications'], c: 0,
+    tip: 'When a user swears mail has vanished, check the Other tab first. Focused Inbox hides more legitimate mail than any spam filter.' },
+  { q: 'Which shortcut mutes and unmutes you in Microsoft Teams on desktop?',
+    a: ['Ctrl + Shift + M', 'Ctrl + M', 'Alt + M', 'Ctrl + Shift + U'], c: 0,
+    tip: 'Ctrl + Shift + M in Teams, and note it is Command + Shift + M on Mac. Holding the spacebar also unmutes you temporarily while you talk.' },
+  { q: 'In File Explorer, a OneDrive file shows a blue cloud icon. What does that mean?',
+    a: ['It exists online and has not been downloaded yet', 'It failed to sync', 'It is shared with others', 'It is read-only'], c: 0,
+    tip: 'Cloud means online-only, green check means downloaded, solid green circle means always kept on this device. Online-only files need a connection to open.' }
+],
+200: [
+  { q: 'A formula returns #DIV/0!. What went wrong?',
+    a: ['It is dividing by zero or by an empty cell', 'The cell reference is misspelled', 'The workbook is protected', 'The number is too large'], c: 0,
+    tip: 'Wrap it: =IFERROR(A1/B1,"") gives a clean sheet instead of a wall of errors. An empty divisor cell counts as zero.' },
+  { q: 'When does Outlook message recall actually work?',
+    a: ['Only inside the same organization, and only if the message is unread', 'Any time within one hour', 'On any recipient with Outlook installed', 'Only on Gmail recipients'], c: 0,
+    tip: 'Recall fails across organizations, and the attempt itself often draws attention to the message. Treat sent mail as sent.' },
+  { q: 'Word closed without saving. Where do you look first?',
+    a: ['File, Info, Manage Document, Recover Unsaved Documents', 'The Recycle Bin', 'The Downloads folder', 'Nowhere, the work is gone'], c: 0,
+    tip: 'AutoRecover saves every 10 minutes by default. Turn that down to 3 minutes for anyone who writes for a living.' },
+  { q: 'What does pressing F4 do while editing an Excel formula?',
+    a: ['Cycles a reference between relative and absolute', 'Recalculates the sheet', 'Repeats the last action', 'Opens the function wizard'], c: 0,
+    tip: 'F4 adds and removes the dollar signs so you do not type $A$1 by hand. It is the fastest fix for a formula that breaks when you drag it down.' }
+],
+300: [
+  { q: 'A formula shows #REF!. What happened?',
+    a: ['It points at a cell that no longer exists', 'The name is misspelled', 'The value is text instead of a number', 'The sheet is hidden'], c: 0,
+    tip: '#REF! usually means somebody deleted a row, column, or sheet the formula depended on. Undo immediately if you just did it.' },
+  { q: 'A webcam works in every app except Teams. What is the most likely cause?',
+    a: ['Another app is holding the camera, or Teams lacks OS camera permission', 'The camera driver is missing', 'The network is too slow', 'Teams needs reinstalling'], c: 0,
+    tip: 'Close Zoom, Chrome tabs with camera access, and any capture software, then check the operating system privacy settings for Teams. Reinstalling is almost never the answer.' },
+  { q: 'In OneDrive, what does Always keep on this device do?',
+    a: ['Downloads and pins a local copy so it opens offline', 'Locks the file from edits', 'Shares it with your team', 'Backs it up twice'], c: 0,
+    tip: 'Pin the folders someone needs on a plane. Free up space does the reverse and reclaims the disk without deleting anything from the cloud.' },
+  { q: 'How do you keep the top row of a large Excel sheet visible while scrolling?',
+    a: ['View, Freeze Panes, Freeze Top Row', 'Insert a page break', 'Format as Table only', 'Split the workbook'], c: 0,
+    tip: 'Freeze Top Row for headers. To freeze rows and columns together, select the cell below and to the right of what you want frozen, then Freeze Panes.' }
+],
+400: [
+  { q: 'Outlook is running in Cached Exchange Mode. Which file holds the local copy of the mailbox?',
+    a: ['An .ost file', 'A .pst file', 'A .msg file', 'An .olm file'], c: 0,
+    tip: 'The .ost is a cache and rebuilds itself from the server. A .pst is a standalone archive, and if you delete one of those the mail is genuinely gone.' },
+  { q: 'A column of numbers will not sum in Excel. What is the usual cause?',
+    a: ['The values are stored as text', 'AutoSum is turned off', 'The sheet is protected', 'The numbers are too precise'], c: 0,
+    tip: 'Text-formatted numbers sit left-aligned and often carry a little green triangle. Use Text to Columns or multiply by 1 to convert the whole range at once.' },
+  { q: 'Teams keeps showing stale data and will not load properly. What is the standard fix?',
+    a: ['Sign out and clear the Teams app cache', 'Reinstall Windows', 'Reset the router', 'Create a new user account'], c: 0,
+    tip: 'Cache clearing fixes a surprising share of Teams weirdness, from missing chats to a dead calendar tab. Quit Teams completely first or the folder repopulates.' },
+  { q: 'Word\u2019s automatic Table of Contents is built from what?',
+    a: ['Heading styles applied to the text', 'Bold text', 'Page breaks', 'Bookmarks'], c: 0,
+    tip: 'No Heading 1 and Heading 2 styles means no working table of contents. Styles are also what makes a document navigable for screen readers.' }
+],
+500: [
+  { q: 'What can XLOOKUP do that VLOOKUP cannot?',
+    a: ['Look to the left, and default to an exact match', 'Handle more than 10,000 rows', 'Work across workbooks', 'Return charts'], c: 0,
+    tip: 'XLOOKUP drops the column index number, searches in any direction, and takes a built-in if-not-found argument. Most VLOOKUP bugs simply stop existing.' },
+  { q: 'How do you start Outlook without any add-ins loaded?',
+    a: ['Hold Ctrl while launching it and accept the Safe Mode prompt', 'Rename the .ost file', 'Start it from Task Manager', 'Disable the network first'], c: 0,
+    tip: 'If Outlook behaves in Safe Mode, an add-in is the problem. Re-enable them one at a time under File, Options, Add-ins.' },
+  { q: 'OneDrive refuses to sync one file. Which is a genuine cause?',
+    a: ['The name contains a blocked character, or the full path is too long', 'The file is over 1 MB', 'The file was created on a Mac', 'The file is not shared'], c: 0,
+    tip: 'Watch for characters like " * : < > ? / \\ | and for very deep folder nesting. Renaming the file often clears a sync error instantly.' },
+  { q: 'Excel says a workbook is corrupted. Which built-in option tries to salvage it?',
+    a: ['File, Open, then Open and Repair', 'Save As a new name', 'Compatibility Mode', 'Protect Workbook'], c: 0,
+    tip: 'Open and Repair offers Repair first, then Extract Data if that fails. Extracting values without formulas still beats losing the file.' }
+]
+},
+
+'Browsers & Internet': {
+100: [
+  { q: 'What does clearing the browser cache actually do?',
+    a: ['Deletes stored copies of page files so they download fresh', 'Deletes your bookmarks', 'Signs you out of every site', 'Resets your home page'], c: 0,
+    tip: 'Cache is stored files. Cookies are your logins. Clearing cache is low risk, clearing cookies signs people out, so pick deliberately.' },
+  { q: 'What does the padlock in the address bar actually tell you?',
+    a: ['The connection to the site is encrypted', 'The site is safe and trustworthy', 'The site has been reviewed by Google', 'Your data is anonymous'], c: 0,
+    tip: 'Encryption is not endorsement. Phishing sites get free certificates too, so the padlock only means nobody is reading the traffic in transit.' },
+  { q: 'Which shortcut reopens the tab you just closed?',
+    a: ['Ctrl or Command + Shift + T', 'Ctrl or Command + T', 'Ctrl or Command + Z', 'F5'], c: 0,
+    tip: 'Press it repeatedly to walk back through recently closed tabs, and it restores a whole window after a crash too.' },
+  { q: 'What is a cookie?',
+    a: ['A small file a site stores in your browser to remember you', 'A type of virus', 'A cached image', 'A browser extension'], c: 0,
+    tip: 'Cookies hold session state, which is why deleting them logs everyone out. That is also why it fixes so many "stuck logged in wrong" problems.' }
+],
+200: [
+  { q: 'What does power cycling a router actually accomplish?',
+    a: ['Clears its working memory and re-establishes the connection', 'Resets it to factory settings', 'Upgrades the firmware', 'Changes your public IP permanently'], c: 0,
+    tip: 'Unplug for 30 seconds so it fully discharges. Never confuse this with holding the reset pinhole, which wipes the configuration.' },
+  { q: 'What does an HTTP 404 mean?',
+    a: ['The server is fine but that page does not exist', 'The server is down', 'You are not logged in', 'The connection timed out'], c: 0,
+    tip: '404 means you reached the server and the path was wrong. Check the URL for a typo before you report an outage.' },
+  { q: 'What does Incognito or Private mode NOT do?',
+    a: ['Hide your activity from your employer, network, or the sites you visit', 'Skip saving your browsing history locally', 'Discard cookies when you close it', 'Start the session signed out'], c: 0,
+    tip: 'Private mode is local privacy only. The network, the ISP, and every site you visit still see everything.' },
+  { q: 'What does Ctrl + F or Command + F do on a web page?',
+    a: ['Finds text on the current page', 'Opens the favorites bar', 'Refreshes the page', 'Opens the print dialog'], c: 0,
+    tip: 'It works in PDFs, chat logs, settings pages, and long documents. It is the single most underused shortcut in support work.' }
+],
+300: [
+  { q: 'What does an HTTP 403 mean?',
+    a: ['The server understood the request and is refusing it', 'The page was not found', 'The server crashed', 'The request timed out'], c: 0,
+    tip: '403 is permissions, 404 is a wrong address. That difference tells you whether to fix the link or fix the access.' },
+  { q: 'A machine can ping 8.8.8.8 but no website loads by name. What is broken?',
+    a: ['DNS', 'The network cable', 'The default gateway', 'The firewall'], c: 0,
+    tip: 'Reaching an IP but not a name means name resolution failed. Check the configured DNS servers, then run a flush of the DNS cache.' },
+  { q: 'What is the practical difference between clearing cache and clearing cookies?',
+    a: ['Cache removes stored files, cookies removes your logged-in sessions', 'They do exactly the same thing', 'Cookies removes files and cache removes logins', 'Neither affects the current page'], c: 0,
+    tip: 'Start with cache. Only clear cookies when the symptom is a broken login or a session that will not update.' },
+  { q: 'Every site on one machine suddenly shows a certificate error. What is the classic cause?',
+    a: ['The device clock is wrong', 'The browser needs reinstalling', 'The ISP is blocking HTTPS', 'The sites all expired at once'], c: 0,
+    tip: 'Certificates are valid for a date range, so a wrong clock invalidates all of them at once. Check the date and time zone first, every time.' }
+],
+400: [
+  { q: 'A site returns 502 Bad Gateway. Where is the problem?',
+    a: ['On the server side, not on the user\u2019s machine', 'In the browser cache', 'In the local DNS settings', 'In the user\u2019s firewall'], c: 0,
+    tip: '5xx codes are server-side. Stop troubleshooting the endpoint and go check the status page or tell the user to wait.' },
+  { q: 'What does tracert or traceroute show you?',
+    a: ['Each network hop between you and the destination, with timing', 'The bandwidth of your connection', 'Which ports are open', 'The server\u2019s location'], c: 0,
+    tip: 'Look for where the latency jumps or the replies stop. That is roughly where the problem lives, and it tells you whose problem it is.' },
+  { q: 'A user on VPN can browse the internet but cannot reach internal sites. What is the likely cause?',
+    a: ['Internal names are resolving through a public DNS server', 'The VPN password expired', 'The laptop needs a reboot', 'The firewall blocked port 443'], c: 0,
+    tip: 'Split tunneling plus the wrong DNS is the usual culprit. Try the internal server by IP. If the IP works and the name does not, you have confirmed DNS.' },
+  { q: 'What is 127.0.0.1?',
+    a: ['Localhost, the machine itself', 'The default router address', 'A public Google DNS server', 'An invalid address'], c: 0,
+    tip: 'Pinging localhost only proves the network stack is alive. It says nothing about the cable, the Wi-Fi, or the internet.' }
+],
+500: [
+  { q: 'Which port does HTTPS use by default?',
+    a: ['443', '80', '8080', '25'], c: 0,
+    tip: '443 for HTTPS, 80 for plain HTTP, 25 for SMTP mail. Knowing these three turns most firewall conversations into a two-minute check.' },
+  { q: 'A PC reports an IP address starting with 169.254. What does that mean?',
+    a: ['It could not reach a DHCP server and assigned itself an address', 'It is on a guest network', 'It has a static IP', 'The network adapter has failed'], c: 0,
+    tip: 'A 169.254 address means no DHCP reply. Check the cable, the switch port, and the DHCP scope. Nothing routes from that range.' },
+  { q: 'What does nslookup do?',
+    a: ['Queries DNS to see what a name resolves to', 'Tests connection speed', 'Lists open network shares', 'Scans for nearby Wi-Fi'], c: 0,
+    tip: 'nslookup tells you what the machine is being told an address is. Compare it against a public resolver to catch a stale or hijacked record.' },
+  { q: 'What is the practical trade-off between 2.4 GHz and 5 GHz Wi-Fi?',
+    a: ['2.4 reaches further through walls, 5 is faster over shorter distances', '5 GHz always performs better', '2.4 GHz is more secure', 'They are identical in practice'], c: 0,
+    tip: '2.4 GHz travels further and is far more congested. Move a video call to 5 GHz, and keep the far corner of the building on 2.4.' }
+]
+},
+
+'General Computing': {
+100: [
+  { q: 'Which one loses its contents when you power the machine off?',
+    a: ['RAM', 'The SSD', 'The hard drive', 'A USB stick'], c: 0,
+    tip: 'RAM is temporary working memory, storage is permanent. That is exactly why "restart it" clears so many odd problems.' },
+  { q: 'What does a UPS do?',
+    a: ['Keeps equipment running on battery briefly during a power loss', 'Filters network traffic', 'Backs up your files', 'Cools the equipment'], c: 0,
+    tip: 'Its real job is a graceful shutdown, not working through a long outage. Test the battery yearly, because they die quietly.' },
+  { q: 'For an important video call, which connection is generally more reliable?',
+    a: ['Wired Ethernet', 'Wi-Fi on 2.4 GHz', 'A mobile hotspot', 'A Wi-Fi extender'], c: 0,
+    tip: 'Wired removes interference, roaming, and neighbors from the equation. It is the fastest fix for a person whose calls always drop.' },
+  { q: 'What does two-factor authentication add?',
+    a: ['A second proof of identity beyond the password', 'A stronger password', 'Encryption of your files', 'A backup of your account'], c: 0,
+    tip: 'It means a stolen password alone is not enough. An app-based code or a hardware key beats SMS, which can be intercepted.' }
+],
+200: [
+  { q: 'A printer produces garbled pages or nothing at all. What do you clear first?',
+    a: ['The print queue, then restart the print spooler', 'The browser cache', 'The router', 'The toner'], c: 0,
+    tip: 'One stuck job blocks every job behind it. Clear the queue, restart the spooler service, then print a single test page.' },
+  { q: 'A 6 GB file will not copy to a USB drive that shows plenty of free space. Why?',
+    a: ['The drive is formatted FAT32, which caps a single file at 4 GB', 'The drive is write protected', 'The file is corrupted', 'USB cannot transfer large files'], c: 0,
+    tip: 'Reformat to exFAT to keep it readable on Windows and Mac, or to NTFS for Windows only. The free space number was never the problem.' },
+  { q: 'What is the main benefit of a password manager?',
+    a: ['A unique strong password for every site without memorizing any of them', 'It blocks phishing sites', 'It replaces two-factor authentication', 'It encrypts your hard drive'], c: 0,
+    tip: 'Reused passwords are what turn one breach into six. A manager also spots the moment you are on a lookalike domain, because it will not autofill.' },
+  { q: 'What is phishing?',
+    a: ['Tricking someone into handing over credentials or clicking a malicious link', 'Scanning a network for open ports', 'Encrypting files for ransom', 'Flooding a server with traffic'], c: 0,
+    tip: 'Urgency plus a link plus a request for credentials is the pattern. Teach people to reach the site through their own bookmark instead of the email.' }
+],
+300: [
+  { q: 'A laptop is slow and the fan runs constantly. What do you check first?',
+    a: ['Which process is consuming the CPU', 'The amount of free disk space', 'The Wi-Fi signal', 'The battery health'], c: 0,
+    tip: 'Task Manager or Activity Monitor, sort by CPU. A runaway update service or a browser tab explains this far more often than aging hardware.' },
+  { q: 'Which maintenance task should you NOT run on an SSD?',
+    a: ['Defragmentation', 'An error check', 'A firmware update', 'A backup'], c: 0,
+    tip: 'SSDs have no moving heads to seek, so defragmenting only burns write cycles. Modern operating systems run TRIM instead, automatically.' },
+  { q: 'What does the 3-2-1 backup rule mean?',
+    a: ['Three copies, on two kinds of media, with one kept offsite', 'Three backups per day for two weeks on one drive', 'Three users, two admins, one owner', 'Three folders, two drives, one cloud account only'], c: 0,
+    tip: 'The offsite copy is the one that survives fire, theft, and ransomware. A sync folder is not a backup, because deletions sync too.' },
+  { q: 'The monitor shows No signal but the computer is clearly powered on. What is the most useful first check?',
+    a: ['The monitor\u2019s input source and the cable', 'The graphics driver version', 'The operating system version', 'The power supply wattage'], c: 0,
+    tip: 'Monitors sit on the wrong input constantly, especially after someone unplugs a cable. Cycle the inputs before you open the case.' }
+],
+400: [
+  { q: 'A machine has random crashes and file corruption across unrelated programs. Which hardware is the classic suspect?',
+    a: ['RAM', 'The keyboard', 'The network card', 'The monitor'], c: 0,
+    tip: 'Run a memory diagnostic overnight. Bad RAM produces symptoms that look like a dozen different software problems at once.' },
+  { q: 'What is a driver?',
+    a: ['Software that lets the operating system talk to a piece of hardware', 'A background service that starts at boot', 'A type of firmware inside the CPU', 'A disk partition'], c: 0,
+    tip: 'When new hardware misbehaves, get the driver from the manufacturer rather than a driver-updater tool. Those tools cause more tickets than they close.' },
+  { q: 'A user signs in fine on one computer but not another, same password. What does that tell you?',
+    a: ['The account is fine, so the problem is local to that machine', 'The password expired', 'The account is locked', 'The network is down'], c: 0,
+    tip: 'Testing the same credentials elsewhere splits the problem in half in about ten seconds. Do it before you reset anything.' },
+  { q: 'What is the difference between a full and an incremental backup?',
+    a: ['Full copies everything, incremental copies only what changed since the last one', 'Full runs weekly, incremental runs daily, by definition', 'Incremental copies everything but compresses it', 'There is no practical difference'], c: 0,
+    tip: 'Incrementals are quick to write and slower to restore, because the restore needs the chain intact. Test a restore, or you do not actually have backups.' }
+],
+500: [
+  { q: 'What is MFA fatigue, sometimes called push bombing?',
+    a: ['An attacker spams approval prompts hoping the user finally taps Approve', 'A phone losing sync with the authenticator app', 'Too many passwords to remember', 'A code that expires too quickly'], c: 0,
+    tip: 'Unexpected prompts mean somebody already has the password. Deny, then change that password immediately and report it. Number matching helps stop this.' },
+  { q: 'What shortens a lithium-ion battery\u2019s life the fastest?',
+    a: ['Heat', 'Charging overnight to 100 percent', 'Using the device while it charges', 'Occasional full discharges'], c: 0,
+    tip: 'Heat is the real enemy, so get the laptop off the couch cushion and out of the hot car. Sitting at 100 percent constantly is second on the list.' },
+  { q: 'A computer works normally in Safe Mode but not in a normal boot. What have you just proved?',
+    a: ['A third-party driver, service, or startup app is causing it', 'The hardware is failing', 'The operating system needs reinstalling', 'The disk is full'], c: 0,
+    tip: 'Safe Mode loads almost nothing extra, so success there points squarely at added software. This test works on Windows, Mac, and Android alike.' },
+  { q: 'What is the difference between authentication and authorization?',
+    a: ['Authentication proves who you are, authorization decides what you may do', 'They are two words for the same check', 'Authorization happens first', 'Authentication only applies to admins'], c: 0,
+    tip: 'A user who signs in but cannot open the folder is authenticated and not authorized. Naming that correctly routes the ticket to the right place.' }
+]
+}
+};
+
+/* =========================================================
+   STATE
+   ========================================================= */
+const state = {
+  score: 0, correct: 0, wrong: 0, streak: 0, bestStreak: 0,
+  tiles: [],          // { cat, pts, q, status }
+  perCat: {},         // cat -> earned points
+  current: null,
+  answered: false
+};
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function newGame() {
+  state.score = 0; state.correct = 0; state.wrong = 0;
+  state.streak = 0; state.bestStreak = 0;
+  state.tiles = []; state.perCat = {}; state.current = null;
+
+  CATS.forEach(cat => {
+    state.perCat[cat] = 0;
+    TIERS.forEach(pts => {
+      state.tiles.push({ cat: cat, pts: pts, q: pick(BANK[cat][pts]), status: 'open' });
+    });
+  });
+
+  renderBoard();
+  updateStats();
+  show('board');
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function show(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function tileAt(cat, pts) {
+  return state.tiles.find(t => t.cat === cat && t.pts === pts);
+}
+
+function renderBoard() {
+  const board = document.getElementById('board');
+  board.innerHTML = '';
+
+  CATS.forEach(cat => {
+    const h = document.createElement('div');
+    h.className = 'board-head';
+    h.textContent = cat;
+    board.appendChild(h);
+  });
+
+  TIERS.forEach(pts => {
+    CATS.forEach(cat => {
+      const t = tileAt(cat, pts);
+      const b = document.createElement('button');
+      b.className = 'tile';
+      if (t.status === 'open') {
+        b.textContent = pts;
+        b.addEventListener('click', () => openQuestion(t));
+      } else {
+        b.classList.add('done', t.status === 'right' ? 'right' : 'wrong');
+        b.textContent = t.status === 'right' ? '\u2713 ' + pts : '\u2717';
+        b.disabled = true;
+      }
+      board.appendChild(b);
+    });
+  });
+}
+
+function updateStats() {
+  document.getElementById('s-score').textContent = state.score.toLocaleString();
+  document.getElementById('s-correct').textContent = state.correct;
+  document.getElementById('s-wrong').textContent = state.wrong;
+  document.getElementById('s-streak').textContent = state.streak;
+
+  const left = state.tiles.filter(t => t.status === 'open').length;
+  document.getElementById('board-hint').textContent =
+    left === 0 ? 'Board cleared.' : left + (left === 1 ? ' tile left.' : ' tiles left. Pick any one.');
+  document.getElementById('btn-finish').style.display =
+    (left > 0 && left < 30) ? 'inline-flex' : 'none';
+}
+
+/* =========================================================
+   QUESTION FLOW
+   ========================================================= */
+function openQuestion(tile) {
+  const q = tile.q;
+  const opts = shuffle(q.a.map((text, i) => ({ text: text, right: i === q.c })));
+
+  state.current = { tile: tile, opts: opts };
+  state.answered = false;
+
+  document.getElementById('q-cat').textContent = tile.cat;
+  document.getElementById('q-pts').textContent = tile.pts + ' pts';
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-reveal').innerHTML = '';
+  document.getElementById('btn-next').style.display = 'none';
+
+  const wrap = document.getElementById('q-options');
+  wrap.innerHTML = '';
+  opts.forEach((o, i) => {
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.style.animationDelay = (i * 0.05) + 's';
+    b.innerHTML = '<span class="option-key">' + (i + 1) + '</span><span class="option-text"></span>';
+    b.querySelector('.option-text').textContent = o.text;
+    b.addEventListener('click', () => answer(i));
+    wrap.appendChild(b);
+  });
+
+  show('question');
+}
+
+function answer(index) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const { tile, opts } = state.current;
+  const gotIt = opts[index].right;
+  const buttons = Array.from(document.querySelectorAll('#q-options .option'));
+
+  buttons.forEach((b, i) => {
+    b.disabled = true;
+    if (opts[i].right) b.classList.add('right');
+    else if (i === index) b.classList.add('wrong');
+    else b.classList.add('muted');
+  });
+
+  if (gotIt) {
+    state.score += tile.pts;
+    state.correct += 1;
+    state.streak += 1;
+    state.bestStreak = Math.max(state.bestStreak, state.streak);
+    state.perCat[tile.cat] += tile.pts;
+    tile.status = 'right';
+  } else {
+    state.wrong += 1;
+    state.streak = 0;
+    tile.status = 'wrong';
+  }
+
+  const reveal = document.getElementById('q-reveal');
+  const streakLine = (gotIt && state.streak >= 3) ? ' Streak of ' + state.streak + '.' : '';
+  reveal.innerHTML =
+    '<div class="tip-card">' +
+      '<div class="verdict ' + (gotIt ? 'right' : 'wrong') + '">' +
+        (gotIt ? '\u2713 Correct. +' + tile.pts + ' points.' + streakLine : '\u2717 Not this time. No points.') +
+      '</div>' +
+      '<div class="tip-head">The tip worth keeping</div>' +
+      '<div class="tip-body"></div>' +
+    '</div>';
+  reveal.querySelector('.tip-body').textContent = tile.q.tip;
+
+  const next = document.getElementById('btn-next');
+  const left = state.tiles.filter(t => t.status === 'open').length;
+  next.textContent = left === 0 ? 'See Your Results \u2192' : 'Back to the Board \u2192';
+  next.style.display = 'inline-block';
+}
+
+function afterQuestion() {
+  renderBoard();
+  updateStats();
+  if (state.tiles.every(t => t.status !== 'open')) finish();
+  else show('board');
+}
+
+/* =========================================================
+   FINAL
+   ========================================================= */
+const RANKS = [
+  { min: 8500, emoji: '\u{1F3C6}', rank: 'Wizard of the Help Desk',
+    sub: 'That is a near-perfect board. You are the person other technicians quietly ask before they escalate.' },
+  { min: 7000, emoji: '\u{1F9E0}', rank: 'Escalation Engineer',
+    sub: 'Strong across the board. You would clear a tier two queue without breaking a sweat.' },
+  { min: 5000, emoji: '\u{1F527}', rank: 'Tier Two Certified',
+    sub: 'Solid working knowledge. The gaps that showed up are the exact ones worth reading twice.' },
+  { min: 3200, emoji: '\u{1F6E0}', rank: 'Tier One, Holding the Line',
+    sub: 'You have the fundamentals. Print the tip sheet and you will move up a tier fast.' },
+  { min: 0, emoji: '\u{1F4DA}', rank: 'Ticket Taker in Training',
+    sub: 'Everybody starts here. The tip sheet below is genuinely the whole point of this game.' }
+];
+
+function finish() {
+  const r = RANKS.find(x => state.score >= x.min);
+  document.getElementById('f-emoji').textContent = r.emoji;
+  document.getElementById('f-rank').textContent = r.rank;
+  document.getElementById('f-sub').textContent =
+    state.score.toLocaleString() + ' out of 9,000 points. ' + r.sub;
+  document.getElementById('f-score').textContent = state.score.toLocaleString();
+  document.getElementById('f-correct').textContent = state.correct + ' / ' + (state.correct + state.wrong);
+  document.getElementById('f-streak').textContent = state.bestStreak;
+
+  const bd = document.getElementById('f-breakdown');
+  bd.innerHTML = '';
+  const ranked = CATS.slice().sort((a, b) => state.perCat[b] - state.perCat[a]);
+  ranked.forEach(cat => {
+    const earned = state.perCat[cat];
+    const row = document.createElement('div');
+    row.className = 'bd-row';
+    row.innerHTML =
+      '<div class="bd-name"></div>' +
+      '<div class="bd-track"><div class="bd-fill" style="width:0%"></div></div>' +
+      '<div class="bd-val">' + earned.toLocaleString() + ' / 1,500</div>';
+    row.querySelector('.bd-name').textContent = cat;
+    bd.appendChild(row);
+    requestAnimationFrame(() => {
+      row.querySelector('.bd-fill').style.width = Math.round((earned / 1500) * 100) + '%';
+    });
+  });
+
+  show('final');
+}
+
+/* =========================================================
+   PRINTABLE TIP SHEET (all 120)
+   ========================================================= */
+function esc(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function openTipSheet() {
+  let body = '';
+  CATS.forEach(cat => {
+    body += '<div class="cat"><h2>' + esc(cat) + '</h2>';
+    TIERS.forEach(pts => {
+      BANK[cat][pts].forEach(q => {
+        body +=
+          '<div class="tip">' +
+            '<div class="tip-q">' + esc(q.q) + '</div>' +
+            '<div class="tip-a"><strong>' + esc(q.a[q.c]) + '</strong></div>' +
+            '<div class="tip-t">' + esc(q.tip) + '</div>' +
+          '</div>';
+      });
+    });
+    body += '</div>';
+  });
+
+  const html =
+'<!doctype html><html lang="en"><head><meta charset="UTF-8">' +
+'<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+'<title>IT Support Tip Sheet - Ctrl+Alt+Compete</title><style>' +
+"@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');" +
+'*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}' +
+':root{--amber:#B45309;--text:#111827;--muted:#6B7280;--border:#E5E7EB;--surface:#F9FAFB}' +
+"body{font-family:'Inter',system-ui,sans-serif;color:var(--text);background:#fff;font-size:13px;line-height:1.6;max-width:820px;margin:0 auto;padding:44px 40px}" +
+'.no-print{background:var(--amber);color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:36px;font-family:inherit}' +
+'.header{margin-bottom:34px;border-bottom:3px solid var(--amber);padding-bottom:22px}' +
+'.header-label{font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}' +
+'h1{font-size:30px;font-weight:900;letter-spacing:-0.03em;line-height:1.1;margin-bottom:8px}' +
+'.subtitle{font-size:14px;color:var(--muted)}' +
+'.cat{margin-bottom:30px;page-break-inside:avoid}' +
+'h2{font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--amber);border-bottom:1px solid var(--border);padding-bottom:7px;margin-bottom:14px}' +
+'.tip{padding:11px 14px;border-left:3px solid var(--border);margin-bottom:11px;background:var(--surface);border-radius:0 6px 6px 0;page-break-inside:avoid}' +
+'.tip-q{font-weight:600;margin-bottom:3px}' +
+'.tip-a{font-size:12px;color:var(--amber);margin-bottom:5px}' +
+'.tip-t{font-size:12px;color:var(--muted)}' +
+'.foot{margin-top:34px;padding-top:18px;border-top:1px solid var(--border);font-size:11px;color:var(--muted)}' +
+'@media print{.no-print{display:none}body{padding:0;font-size:11px}}' +
+'</style></head><body>' +
+'<button class="no-print" onclick="window.print()">Print this sheet</button>' +
+'<div class="header"><div class="header-label">Ctrl+Alt+Compete</div>' +
+'<h1>The IT Support Tip Sheet</h1>' +
+'<p class="subtitle">120 troubleshooting facts for Windows, Apple, Google, Microsoft 365, browsers, and general computing. Every one of them version-durable.</p></div>' +
+body +
+'<div class="foot">Built by Matt Beran &middot; mattberan.com/projects/ctrl-alt-compete/</div>' +
+'</body></html>';
+
+  const w = window.open('', '_blank');
+  if (!w) { alert('Your browser blocked the pop-up. Allow pop-ups for this page and try again.'); return; }
+  w.document.write(html);
+  w.document.close();
+}
+
+/* =========================================================
+   WIRING
+   ========================================================= */
+document.getElementById('btn-start').addEventListener('click', newGame);
+document.getElementById('btn-again').addEventListener('click', newGame);
+document.getElementById('btn-next').addEventListener('click', afterQuestion);
+document.getElementById('btn-finish').addEventListener('click', finish);
+document.getElementById('btn-tipsheet').addEventListener('click', openTipSheet);
+
+document.addEventListener('keydown', e => {
+  const onQuestion = document.getElementById('screen-question').classList.contains('active');
+  if (!onQuestion) return;
+  if (!state.answered && ['1', '2', '3', '4'].includes(e.key)) {
+    const i = parseInt(e.key, 10) - 1;
+    const b = document.querySelectorAll('#q-options .option')[i];
+    if (b) b.click();
+  } else if (state.answered && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault();
+    afterQuestion();
+  }
+});
+</script>
+
+<script data-goatcounter="https://mattberan.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-track]');
+  if (!el || typeof window.goatcounter === 'undefined') return;
+  window.goatcounter.count({ path: el.dataset.track, event: true });
+});
+</script>
+</body>
+</html>
