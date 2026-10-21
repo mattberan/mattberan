@@ -9,3 +9,4 @@ scheduler.log
 scheduler-send.log
 gitpull.log
 builder/.unsubscribe-secret
+.vercel
