@@ -48,12 +48,16 @@ section.doc:first-of-type{border-top:none}
 .btn:hover{border-color:var(--z-400)}
 .btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.primary:hover{background:var(--blue-dark)}
-a.btn.dl-btn,.ro-note{display:none}
+a.btn.dl-btn{display:none}
 a.btn{text-decoration:none;display:inline-flex;align-items:center}
 body.readonly #editBtn,body.readonly #saveBtn{display:none}
 body.readonly a.btn.dl-btn{display:inline-flex}
-body.readonly .ro-note{display:block;background:var(--blue-50);border:1px solid var(--blue-100);color:var(--z-800);font-size:13.5px;padding:10px 14px;border-radius:10px;margin:0 0 4px}
-@media print{body.readonly .ro-note{display:none!important}}
+.ro-modal{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(9,9,11,.55)}
+.ro-modal[hidden]{display:none}
+.ro-modal .box{background:#fff;border-radius:14px;max-width:440px;width:100%;padding:24px;box-shadow:0 20px 50px rgba(9,9,11,.3)}
+.ro-modal p{margin:0 0 18px;font-size:15px;color:var(--z-800)}
+.ro-modal .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+@media print{.ro-modal{display:none!important}}
 .btn.editing-on{background:var(--amber);border-color:var(--amber);color:#fff}
 
 /* Editable */
@@ -174,6 +178,16 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 </div>
 <div class="edit-hint">Edit mode is on — click any highlighted area to change the text, including table cells. Your edits stay in the page. When finished, click <b>Save my copy</b> to download your customized version as a new HTML file.</div>
 
+<div class="ro-modal" id="roModal" role="dialog" aria-modal="true" aria-labelledby="roMsg" hidden>
+  <div class="box">
+    <p id="roMsg">You are viewing a read-only version, but when you download this you can edit every flow and description to match your needs.</p>
+    <div class="acts">
+      <button class="btn" id="roClose">Keep browsing</button>
+      <a class="btn primary" href="./index.html" download="InvGate-IT-Operating-Process-Template.html" id="roDl">⬇ Download template</a>
+    </div>
+  </div>
+</div>
+
 <aside class="sidebar">
   <div class="logo">
     <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true"><path d="M7.5 19.5V11M13 7h5.5M23 11.5V19" stroke="#71717A" stroke-width="1.6"/><circle cx="7.5" cy="23" r="3.5" fill="#3B82F6"/><rect x="2" y="3" width="11" height="8" rx="2" stroke="#3B82F6" stroke-width="2"/><path d="M23 2.5l4.5 4.5-4.5 4.5-4.5-4.5z" stroke="#3B82F6" stroke-width="2" stroke-linejoin="round"/><rect x="17" y="19" width="11" height="8" rx="2" fill="#8B5CF6"/></svg>
@@ -198,7 +212,6 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 <main class="main">
 
 <div class="dochead">
-  <p class="ro-note">You're viewing a read-only copy. Click <b>Download template</b> to save it, then open the file in any browser to edit it, save your own version, or print it.</p>
   <div class="kicker keep-case">InvGate Service Management</div>
   <h1><span data-e>InvGate IT Operating Process Template</span></h1>
   <p class="lede" data-e>The definitive starting point for your IT operating model: six core IT processes with goals, roles, RACI, BPMN process maps, step descriptions, procedure-level work instructions, InvGate implementation guidance, and compliance alignment — ready to adapt to your organization.</p>
@@ -1303,7 +1316,23 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 </main>
 
 <script>
-if(/^https?:$/.test(location.protocol)) document.body.classList.add('readonly');
+if(/^https?:$/.test(location.protocol)){
+  document.body.classList.add('readonly');
+  // read-only notice: shown once per browser, on the first visit only
+  (function(){
+    var seen=false;
+    try{ seen=localStorage.getItem('roNoticeSeen')==='1'; localStorage.setItem('roNoticeSeen','1'); }catch(e){}
+    if(seen) return;
+    var m=document.getElementById('roModal'), c=document.getElementById('roClose');
+    function close(){ m.hidden=true; document.removeEventListener('keydown',esc); }
+    function esc(e){ if(e.key==='Escape') close(); }
+    m.hidden=false; c.focus();
+    c.addEventListener('click',close);
+    document.getElementById('roDl').addEventListener('click',close);
+    m.addEventListener('click',function(e){ if(e.target===m) close(); });
+    document.addEventListener('keydown',esc);
+  })();
+}
 function toggleEdit(){
   var on = document.body.classList.toggle('editing');
   document.querySelectorAll('[data-e]').forEach(function(el){ if(on){ el.setAttribute('contenteditable','true'); } else { el.removeAttribute('contenteditable'); } });
@@ -1317,6 +1346,7 @@ function saveCopy(){
   if(meta[3]) meta[3].textContent = new Date().toISOString().slice(0,10);
   var clone = document.documentElement.cloneNode(true);
   clone.querySelector('body').classList.remove('editing','readonly');
+  var rm=clone.querySelector('#roModal'); if(rm) rm.setAttribute('hidden','');
   clone.querySelectorAll('[data-e]').forEach(function(el){ el.removeAttribute('contenteditable'); });
   var html = '<!DOCTYPE html>\n' + clone.outerHTML;
   var org = (meta[0] ? meta[0].textContent.trim() : 'MyOrg').replace(/[^\w\- ]/g,'').replace(/\s+/g,'-') || 'MyOrg';
