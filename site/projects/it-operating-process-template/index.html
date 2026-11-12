@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IT Operating Process Template — InvGate Service Management</title>
+<title>InvGate IT Operating Process Template</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -199,7 +199,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 <div class="dochead">
   <p class="ro-note">You're viewing a read-only copy. Click <b>Download template</b> to save it, then open the file in any browser to edit it, save your own version, or print it.</p>
   <div class="kicker">InvGate Service Management</div>
-  <h1><span data-e>IT Operating Process Template</span></h1>
+  <h1><span data-e>InvGate IT Operating Process Template</span></h1>
   <p class="lede" data-e>The definitive starting point for your IT operating model: six core IT processes with goals, roles, RACI, BPMN process maps, step descriptions, procedure-level work instructions, InvGate implementation guidance, and compliance alignment — ready to adapt to your organization.</p>
   <div class="meta">
     <div><b data-e>Your Organization Name</b>Organization</div>
@@ -220,12 +220,12 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
       <p style="font-size:13.5px" data-e>1. Click <b>Edit template</b> in the top-right corner.<br>2. Replace organization name, owners, roles, and any step that doesn't match how you work. Every table cell is editable.<br>3. Delete what you don't need — fewer, honest process steps beat aspirational ones.<br>4. Click <b>Save my copy</b> to download your customized version. Re-open it any time to keep editing.<br>5. Use <b>Print / PDF</b> for a formatted document to circulate for sign-off.</p>
     </div>
     <div class="card"><h4>Adoption sequence (recommended)</h4>
-      <p style="font-size:13.5px" data-e><b>Weeks 1–4:</b> Incident + Service Request live in InvGate Service Management (IGSM) with the service catalog and priority matrix configured.<br><b>Weeks 5–8:</b> Change Enablement with the no-code Workflow Builder and approvals.<br><b>Weeks 9–12:</b> Knowledge base seeded from resolved tickets; Problem Management begins with your top 5 recurring incidents.<br><b>Weeks 13–16:</b> IT Asset Management: InvGate Asset Management (IGAM) discovery deployed, inventory reconciled, lifecycle and disposal procedures live.</p>
+      <p style="font-size:13.5px" data-e><b>Weeks 1–4:</b> Incident + Service Request live in InvGate Service Management with the service catalog and priority matrix configured.<br><b>Weeks 5–8:</b> Change Enablement with the no-code Workflow Builder and approvals.<br><b>Weeks 9–12:</b> Knowledge base seeded from resolved tickets; Problem Management begins with your top 5 recurring incidents.<br><b>Weeks 13–16:</b> IT Asset Management: InvGate Asset Management discovery deployed, inventory reconciled, lifecycle and disposal procedures live.</p>
     </div>
   </div>
 
-  <div class="callout"><b>How this template maps to InvGate</b><span data-e>Every process step in this document names the IGSM capability that implements it — service catalog, no-code Workflow Builder, approvals, priority matrix, SLAs/OLAs, AI Hub, knowledge base, dashboards, and the ticket audit trail. Where a step touches InvGate Asset Management (IGAM), it is tagged in purple. Configuration notes assume administrator access.</span></div>
-  <div class="callout gray"><b>A note on right-sizing</b><span data-e>This template reflects ITIL 4 practice guidance sized for mid-market IT teams (roughly 5–50 IT staff). One person can hold several roles — what matters is that each accountability in the RACI is assigned to somebody. Do not create a CAB of ten people if three will do.</span></div>
+  <div class="callout"><b>How this template maps to InvGate</b><span data-e>Every process step in this document names the InvGate Service Management capability that implements it — service catalog, no-code Workflow Builder, approvals, priority matrix, SLAs/OLAs, AI Hub, knowledge base, dashboards, and the ticket audit trail. Where a step touches InvGate Asset Management, it is tagged in purple. Configuration notes assume administrator access.</span></div>
+  <div class="callout gray"><b>A note on right-sizing</b><span data-e>This template is sized for mid-market IT teams (roughly 5–50 IT staff). One person can hold several roles — what matters is that each accountability in the RACI is assigned to somebody. Do not create a CAB of ten people if three will do. KPI targets and P1–P4 SLA times are sensible defaults; adjust them to your organization.</span></div>
 </section>
 
 <section class="doc" id="connections">
@@ -274,10 +274,10 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <tr><td data-e>Change → Incident</td><td data-e>Change window opens / change fails</td><td data-e>Change calendar entry; failed-change incidents linked to the RFC</td><td data-e>Service desk checks change schedule during diagnosis of every P1/P2</td></tr>
     <tr><td data-e>Knowledge → Incident / Request</td><td data-e>Article published or updated</td><td data-e>KB article surfaced in portal search and agent view</td><td data-e>Agents attach the article used to the ticket (enables deflection reporting)</td></tr>
     <tr><td data-e>Request → Change</td><td data-e>Request falls outside the pre-approved catalog scope</td><td data-e>RFC linked to the originating request</td><td data-e>Change Manager confirms classification within 2 business days</td></tr>
-    <tr><td data-e>Incident ↔ Request</td><td data-e>Ticket logged under wrong type</td><td data-e>Type conversion in IGSM (history preserved in audit trail)</td><td data-e>Reclassify without resetting the clock visible to the user</td></tr>
-    <tr><td data-e>Request → Asset</td><td data-e>Hardware/software fulfilled or returned</td><td data-e>IGAM asset record updated (assignment, status) via IGSM–IGAM integration</td><td data-e>Reflect assignment same day; flag mismatches at next reconciliation</td></tr>
-    <tr><td data-e>Change → Asset / CMDB</td><td data-e>Change closes affecting any CI</td><td data-e>Updated CI record in IGAM CMDB, linked to the RFC</td><td data-e>Verify CI accuracy at post-implementation review — a stale CMDB fails audits silently</td></tr>
-    <tr><td data-e>Asset → Incident / Change</td><td data-e>Diagnosis or risk assessment needs asset context</td><td data-e>IGAM asset/CI data (owner, model, warranty, health, business impact) surfaced on the ticket</td><td data-e>Check warranty/health before hardware troubleshooting; use business-impact mapping in change risk scoring</td></tr>
+    <tr><td data-e>Incident ↔ Request</td><td data-e>Ticket logged under wrong type</td><td data-e>Type conversion in InvGate Service Management (history preserved in audit trail)</td><td data-e>Reclassify without resetting the clock visible to the user</td></tr>
+    <tr><td data-e>Request → Asset</td><td data-e>Hardware/software fulfilled or returned</td><td data-e>InvGate Asset Management asset record updated (assignment, status) via InvGate Service Management–InvGate Asset Management integration</td><td data-e>Reflect assignment same day; flag mismatches at next reconciliation</td></tr>
+    <tr><td data-e>Change → Asset / CMDB</td><td data-e>Change closes affecting any CI</td><td data-e>Updated CI record in InvGate Asset Management CMDB, linked to the RFC</td><td data-e>Verify CI accuracy at post-implementation review — a stale CMDB fails audits silently</td></tr>
+    <tr><td data-e>Asset → Incident / Change</td><td data-e>Diagnosis or risk assessment needs asset context</td><td data-e>InvGate Asset Management asset/CI data (owner, model, warranty, health, business impact) surfaced on the ticket</td><td data-e>Check warranty/health before hardware troubleshooting; use business-impact mapping in change risk scoring</td></tr>
   </table>
 </section>
 
@@ -350,7 +350,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <div class="card"><h4>Goals</h4>
       <p style="font-size:13.5px" data-e>• Restore service within agreed SLA targets, prioritized by business impact.<br>• Give users a single, effortless way to report issues and see status.<br>• Capture clean incident data (category, CI, resolution) so Problem Management has something to mine.<br>• Contain major incidents with a rehearsed, named-role response.</p>
     </div>
-    <div class="card"><h4>KPIs (IGSM dashboard)</h4>
+    <div class="card"><h4>KPIs (InvGate Service Management dashboard)</h4>
       <table style="margin:6px 0 0;font-size:12.5px">
         <tr><th>Metric</th><th>Starting target</th></tr>
         <tr><td data-e>SLA resolution compliance</td><td data-e>≥ 95%</td></tr>
@@ -380,20 +380,20 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
   <h3>Process steps</h3>
   <table id="inc-steps">
     <tr><th style="width:4%">#</th><th style="width:18%">Step</th><th>Description</th><th style="width:26%">Key output</th></tr>
-    <tr><td class="c">1</td><td data-e>Log &amp; categorize</td><td data-e>Every incident becomes a ticket, whatever the channel. IGSM auto-creates from portal, AI agent (Slack/Teams), and email; agents log walk-ups manually. Category and affected service/CI are set from the category tree.</td><td data-e>Ticket with category, service, and reporter — the unit of all later evidence</td></tr>
-    <tr><td class="c">2</td><td data-e>Prioritize</td><td data-e>Priority = impact × urgency from the priority matrix, not the loudest voice. P1/P2 definitions are documented in procedure 1.2 and encoded in IGSM so SLA timers start correctly.</td><td data-e>Priority with SLA targets attached</td></tr>
+    <tr><td class="c">1</td><td data-e>Log &amp; categorize</td><td data-e>Every incident becomes a ticket, whatever the channel. InvGate Service Management auto-creates from portal, AI agent (Slack/Teams), and email; agents log walk-ups manually. Category and affected service/CI are set from the category tree.</td><td data-e>Ticket with category, service, and reporter — the unit of all later evidence</td></tr>
+    <tr><td class="c">2</td><td data-e>Prioritize</td><td data-e>Priority = impact × urgency from the priority matrix, not the loudest voice. P1/P2 definitions are documented in procedure 1.2 and encoded in InvGate Service Management so SLA timers start correctly.</td><td data-e>Priority with SLA targets attached</td></tr>
     <tr><td class="c">3</td><td data-e>Initial diagnosis</td><td data-e>L1 searches the knowledge base (agent view + AI suggestions), applies known workarounds, and gathers diagnostic basics before any escalation. Checks the change calendar for recent related changes.</td><td data-e>Resolution at L1, or an escalation package worth receiving</td></tr>
-    <tr><td class="c">4</td><td data-e>Escalate, investigate &amp; diagnose</td><td data-e>Functional escalation to the right L2/L3 group via IGSM assignment; @-collaboration keeps L1 and the user informed without ping-pong. Hierarchic escalation to the Incident Manager if SLA is at risk.</td><td data-e>Confirmed cause of this occurrence (not root cause)</td></tr>
+    <tr><td class="c">4</td><td data-e>Escalate, investigate &amp; diagnose</td><td data-e>Functional escalation to the right L2/L3 group via InvGate Service Management assignment; @-collaboration keeps L1 and the user informed without ping-pong. Hierarchic escalation to the Incident Manager if SLA is at risk.</td><td data-e>Confirmed cause of this occurrence (not root cause)</td></tr>
     <tr><td class="c">5</td><td data-e>Resolve &amp; recover</td><td data-e>Apply the fix or workaround; if the fix requires altering production, raise an RFC — emergency change procedure for P1s. Confirm service is actually restored, not just the error gone.</td><td data-e>Restored service; linked RFC if change was needed</td></tr>
     <tr><td class="c">6</td><td data-e>Document resolution</td><td data-e>Record resolution code and notes; attach the KB article used, or flag "KB gap" to draft one. This single habit powers deflection metrics and problem analysis.</td><td data-e>Reusable resolution data</td></tr>
-    <tr><td class="c">7</td><td data-e>Verify &amp; close</td><td data-e>User confirms resolution via the portal; auto-close after 3 business days of silence (configurable). Closure requires category and resolution fields — enforced by IGSM required fields.</td><td data-e>Closed ticket with complete data</td></tr>
+    <tr><td class="c">7</td><td data-e>Verify &amp; close</td><td data-e>User confirms resolution via the portal; auto-close after 3 business days of silence (configurable). Closure requires category and resolution fields — enforced by InvGate Service Management required fields.</td><td data-e>Closed ticket with complete data</td></tr>
     <tr><td class="c">8</td><td data-e>Review trends</td><td data-e>Weekly: Incident Manager reviews dashboards for repeats, SLA breaches, and aging tickets. Three similar incidents in 30 days or any major incident → problem record (see Problem Management).</td><td data-e>Problem candidates; improvement actions</td></tr>
   </table>
 
   <h3>Procedures</h3>
   <details class="proc" id="proc-incident-1"><summary>1.1 — Logging &amp; categorization (L1 Agent)</summary><div class="body" data-e>
     <ol>
-      <li>If the ticket arrived via portal, AI agent, or email, verify the auto-captured details; for calls/walk-ups, create the ticket in IGSM before troubleshooting — no ticket, no work.</li>
+      <li>If the ticket arrived via portal, AI agent, or email, verify the auto-captured details; for calls/walk-ups, create the ticket in InvGate Service Management before troubleshooting — no ticket, no work.</li>
       <li>Confirm the reporter, location, and affected service. Select the category from the tree (max 3 levels deep — if agents can't find a category in 10 seconds, the tree is too deep).</li>
       <li>Write a symptom-based summary: what the user cannot do, since when, error text verbatim. Avoid diagnosis in the summary.</li>
       <li>Check for duplicates and existing outages; if a matching major incident exists, link this ticket as a child so users are informed together.</li>
@@ -404,16 +404,16 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <ol>
       <li>Set <b>Impact</b>: High = whole org or critical business service; Medium = department/team; Low = single user.</li>
       <li>Set <b>Urgency</b>: High = work stopped, no workaround; Medium = degraded, workaround exists; Low = inconvenience.</li>
-      <li>IGSM's priority matrix computes priority: P1 (High/High) target 4h resolve · P2 8h · P3 2 business days · P4 5 business days. Adjust targets to your SLAs and encode them in IGSM so the timers match this document.</li>
+      <li>InvGate Service Management's priority matrix computes priority: P1 (High/High) target 4h resolve · P2 8h · P3 2 business days · P4 5 business days. Adjust targets to your SLAs and encode them in InvGate Service Management so the timers match this document.</li>
       <li>Never lower a priority to protect an SLA. If priority changes, note why — the audit trail records who and when automatically.</li>
     </ol>
   </div></details>
   <details class="proc" id="proc-incident-3"><summary>1.3 — Escalation (L1 → L2/L3)</summary><div class="body" data-e>
     <ol>
       <li>Escalate when: you've exhausted KB and standard diagnostics, ~15 minutes on P1/P2, or the fix requires privileges/skills you don't have.</li>
-      <li>Reassign to the correct IGSM group (not a named individual) with the escalation package: symptoms, steps tried, diagnostics, user impact, business context.</li>
+      <li>Reassign to the correct InvGate Service Management group (not a named individual) with the escalation package: symptoms, steps tried, diagnostics, user impact, business context.</li>
       <li>Use @-mentions to consult specialists without transferring ownership — the assignee remains responsible.</li>
-      <li>SLA-risk automation: IGSM workflow notifies the Incident Manager at 75% of SLA elapsed, and the Service Desk Manager on breach.</li>
+      <li>SLA-risk automation: InvGate Service Management workflow notifies the Incident Manager at 75% of SLA elapsed, and the Service Desk Manager on breach.</li>
       <li>Never bounce a ticket back without a comment explaining what's missing. Two bounces = Incident Manager arbitrates.</li>
     </ol>
   </div></details>
@@ -437,7 +437,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>InvGate implementation</h3>
   <table>
-    <tr><th style="width:24%">Process element</th><th style="width:32%">IGSM capability</th><th>Configuration notes</th></tr>
+    <tr><th style="width:24%">Process element</th><th style="width:32%">InvGate Service Management capability</th><th>Configuration notes</th></tr>
     <tr><td data-e>Omnichannel intake</td><td data-e>Self-service portal, AI agent for Slack / MS Teams, email-to-ticket, mobile app</td><td data-e>Enable the AI agent where users already work; map inbound mailboxes to the incident type with default category.</td></tr>
     <tr><td data-e>Categorization</td><td data-e>Category tree + required fields; AI-assisted field suggestions</td><td data-e>Keep the tree ≤3 levels; review "Other" usage monthly — it's your taxonomy debt signal.</td></tr>
     <tr><td data-e>Prioritization</td><td data-e>Priority matrix (impact × urgency)</td><td data-e>Encode the P1–P4 definitions from procedure 1.2; hide the raw priority field from users so the matrix governs.</td></tr>
@@ -451,8 +451,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>Compliance alignment</h3>
   <table class="comp">
-    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in IGSM</th></tr>
-    <tr><td data-e>ITIL 4</td><td data-e>Incident Management practice</td><td data-e>Full lifecycle: detect → log → prioritize → resolve → close, with major incident procedure and swarming/collaboration.</td><td data-e>Process doc + live tickets</td></tr>
+    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in InvGate Service Management</th></tr>
     <tr><td data-e>ISO 20000-1</td><td data-e>§8.6.1 Incident management</td><td data-e>Documented procedure, prioritization scheme, major-incident procedure, records kept.</td><td data-e>This chapter + ticket records + MI reviews</td></tr>
     <tr><td data-e>SOC 2</td><td data-e>CC7.3–CC7.5 (evaluate, respond, recover from security events)</td><td data-e>Security-relevant incidents follow the same tracked lifecycle with escalation to the security owner; recovery verified with users.</td><td data-e>Incident population export; audit trail per sample</td></tr>
     <tr><td data-e>ISO 27001</td><td data-e>A.5.24–A.5.28 (incident planning, assessment, response, learning, evidence), A.6.8 (event reporting)</td><td data-e>Users report via portal/AI agent (A.6.8); assessment = prioritization step; lessons feed Problem Management (A.5.27); tickets preserve evidence (A.5.28).</td><td data-e>Tickets + linked problem records</td></tr>
@@ -512,7 +511,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <!-- purple links -->
     <rect data-view="knowledge" class="xnode" x="80" y="395" width="260" height="36" rx="18"/><text class="xtxt" x="210" y="417" text-anchor="middle">Knowledge: how-to articles deflect requests</text>
     <rect data-view="change" class="xnode" x="390" y="395" width="255" height="36" rx="18"/><text class="xtxt" x="517" y="417" text-anchor="middle">Change: non-standard scope → raise RFC</text>
-    <rect data-view="asset" class="xnode" x="695" y="395" width="255" height="36" rx="18"/><text class="xtxt" x="822" y="417" text-anchor="middle">Asset Mgmt (IGAM): record asset assignment</text>
+    <rect data-view="asset" class="xnode" x="695" y="395" width="255" height="36" rx="18"/><text class="xtxt" x="822" y="417" text-anchor="middle">Asset Mgmt: record asset assignment</text>
     <path class="xflow" marker-end="url(#rp)" d="M 188 79 C 188 200, 195 340, 205 391"/>
     <path class="xflow" marker-end="url(#rp)" d="M 490 284 C 500 330, 510 360, 517 391"/>
     <path class="xflow" marker-end="url(#rp)" d="M 665 284 C 720 330, 780 360, 810 391"/>
@@ -525,7 +524,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <div class="card"><h4>Goals</h4>
       <p style="font-size:13.5px" data-e>• One unified catalog where users never have to guess whether a request goes to IT, HR, or Facilities.<br>• Standardize fulfillment so identical requests take identical, predictable paths.<br>• Automate approvals and routing — humans only touch steps that need judgment.<br>• Make access requests auditable end-to-end (who asked, who approved, who provisioned, when).</p>
     </div>
-    <div class="card"><h4>KPIs (IGSM dashboard)</h4>
+    <div class="card"><h4>KPIs (InvGate Service Management dashboard)</h4>
       <table style="margin:6px 0 0;font-size:12.5px">
         <tr><th>Metric</th><th>Starting target</th></tr>
         <tr><td data-e>Fulfillment SLA compliance</td><td data-e>≥ 95%</td></tr>
@@ -554,8 +553,8 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
   <table id="req-steps">
     <tr><th style="width:4%">#</th><th style="width:18%">Step</th><th>Description</th><th style="width:26%">Key output</th></tr>
     <tr><td class="c">1</td><td data-e>Submit via catalog</td><td data-e>Requester picks the item from the unified catalog (portal or AI agent) and completes the item-specific form. Required fields are defined per item, so fulfillment never starts with missing information.</td><td data-e>Complete, routable request record</td></tr>
-    <tr><td class="c">2</td><td data-e>Approve</td><td data-e>The IGSM workflow requests approval only where the item requires it (cost, access, license). Approvers act from email or portal without a license. Multi-step and conditional approvals per item; auto-escalate to the Approval Manager after 2 business days.</td><td data-e>Recorded approval decision with timestamp</td></tr>
-    <tr><td class="c">3</td><td data-e>Execute workflow</td><td data-e>IGSM's Workflow Builder runs the fulfillment path: parallel or sequential tasks to the right teams, integrations (AD, Azure DevOps, Jira) triggered where configured.</td><td data-e>Tasks completed in a repeatable sequence</td></tr>
+    <tr><td class="c">2</td><td data-e>Approve</td><td data-e>The InvGate Service Management workflow requests approval only where the item requires it (cost, access, license). Approvers act from email or portal without a license. Multi-step and conditional approvals per item; auto-escalate to the Approval Manager after 2 business days.</td><td data-e>Recorded approval decision with timestamp</td></tr>
+    <tr><td class="c">3</td><td data-e>Execute workflow</td><td data-e>InvGate Service Management's Workflow Builder runs the fulfillment path: parallel or sequential tasks to the right teams, integrations (AD, Azure DevOps, Jira) triggered where configured.</td><td data-e>Tasks completed in a repeatable sequence</td></tr>
     <tr><td class="c">4</td><td data-e>Provision / deliver</td><td data-e>The fulfillment team grants access, ships hardware, installs software. Access grants follow least privilege — the request record documents exactly what was granted.</td><td data-e>Delivered service; asset/access records updated</td></tr>
     <tr><td class="c">5</td><td data-e>Verify &amp; close</td><td data-e>Requester confirms via portal prompt; CSAT survey attached at closure. Auto-close after 3 business days of silence.</td><td data-e>Closed request + satisfaction signal</td></tr>
     <tr><td class="c">6</td><td data-e>Maintain the catalog</td><td data-e>Quarterly: Request Fulfillment Owner reviews demand, retires unused items, adds frequently emailed requests as catalog items, and tightens workflows where wait time concentrates.</td><td data-e>A catalog that matches real demand</td></tr>
@@ -569,7 +568,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
       <li>Decide the approval rule: none (pre-approved standard), line manager, budget owner, or system owner — encode it in the item's workflow, not in agents' heads.</li>
       <li>Build the fulfillment workflow in the drag-and-drop Workflow Builder: tasks, assignment groups, conditions, integrations. Test with a dry run before publishing.</li>
       <li>Attach the SLA (fulfillment target) and the related KB article ("what to expect").</li>
-      <li>Publish to the right audience — IGSM supports audience-scoped catalog visibility (e.g., only managers see "new hire onboarding").</li>
+      <li>Publish to the right audience — InvGate Service Management supports audience-scoped catalog visibility (e.g., only managers see "new hire onboarding").</li>
     </ol>
   </div></details>
   <details class="proc" id="proc-request-2"><summary>2.2 — Access requests (Fulfillment Team)</summary><div class="body" data-e>
@@ -577,7 +576,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
       <li>Verify the approval chain completed in the ticket — never grant access on a verbal ok. The approval record is the control auditors sample.</li>
       <li>Grant exactly what was requested and approved; document the entitlement granted (system, role, permission level) in the ticket.</li>
       <li>For privileged access, add the system owner as a second approver in the item workflow.</li>
-      <li>Set a review date for temporary access; an IGSM automation creates the revocation task automatically.</li>
+      <li>Set a review date for temporary access; an InvGate Service Management automation creates the revocation task automatically.</li>
       <li>Offboarding is the mirror image: a single "leaver" catalog item spawns revocation tasks across all systems — target completion within 1 business day of departure.</li>
     </ol>
   </div></details>
@@ -591,20 +590,19 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>InvGate implementation</h3>
   <table>
-    <tr><th style="width:24%">Process element</th><th style="width:32%">IGSM capability</th><th>Configuration notes</th></tr>
+    <tr><th style="width:24%">Process element</th><th style="width:32%">InvGate Service Management capability</th><th>Configuration notes</th></tr>
     <tr><td data-e>Unified catalog</td><td data-e>Service catalog across IT, HR, Facilities, Finance</td><td data-e>One catalog, department-scoped categories — users should never need to know which team owns fulfillment.</td></tr>
     <tr><td data-e>Request intake</td><td data-e>Portal, AI agent for Slack/Teams, mobile app</td><td data-e>The AI agent can raise catalog requests conversationally — highest-adoption channel for simple items.</td></tr>
     <tr><td data-e>Approvals</td><td data-e>Multi-step, conditional approvals; approve from email; approval reassignment; cancellation branch</td><td data-e>Approvers don't consume licenses. Configure the third branch (canceled/expired) so stuck approvals route to the Approval Manager instead of dying silently.</td></tr>
     <tr><td data-e>Fulfillment automation</td><td data-e>No-code drag-and-drop Workflow Builder</td><td data-e>Reusable building blocks per fulfillment pattern; mini-map/search helps maintain larger workflows.</td></tr>
-    <tr><td data-e>Asset linkage</td><td data-e>IGAM integration (Insight)</td><td data-e><span class="tag p">IGAM</span>Hardware items update asset assignment automatically — request record and asset record stay consistent.</td></tr>
+    <tr><td data-e>Asset linkage</td><td data-e>InvGate Asset Management integration (Insight)</td><td data-e><span class="tag p">InvGate Asset Management</span>Hardware items update asset assignment automatically — request record and asset record stay consistent.</td></tr>
     <tr><td data-e>Measurement</td><td data-e>SLAs on fulfillment, workflow time measurement, CSAT surveys, dashboards</td><td data-e>Measure total workflow time initiation→completion to find where waits concentrate (usually approvals).</td></tr>
     <tr><td data-e>Evidence</td><td data-e>Approval records + ticket audit trail</td><td data-e>The who-approved-what-when chain is the core evidence for access-control audits.</td></tr>
   </table>
 
   <h3>Compliance alignment</h3>
   <table class="comp">
-    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in IGSM</th></tr>
-    <tr><td data-e>ITIL 4</td><td data-e>Service Request Management practice</td><td data-e>Catalog-based, workflow-driven fulfillment with defined approval models.</td><td data-e>Catalog + workflow definitions</td></tr>
+    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in InvGate Service Management</th></tr>
     <tr><td data-e>ISO 20000-1</td><td data-e>§8.6.2 Service request management</td><td data-e>Requests recorded, prioritized, fulfilled to defined procedures; users kept informed of progress.</td><td data-e>Request records + portal status</td></tr>
     <tr><td data-e>SOC 2</td><td data-e>CC6.1–CC6.3 (logical access: provisioning, authorization, removal)</td><td data-e>Access granted only through approved catalog requests; offboarding item revokes access; every grant traceable to an approval.</td><td data-e>Access-request population with approval chain per sample</td></tr>
     <tr><td data-e>ISO 27001</td><td data-e>A.5.16 identity management, A.5.18 access rights</td><td data-e>Joiner/mover/leaver catalog items implement the identity lifecycle; entitlements documented per grant.</td><td data-e>JML request records; revocation tasks</td></tr>
@@ -690,7 +688,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <div class="card"><h4>Goals</h4>
       <p style="font-size:13.5px" data-e>• Every production change is assessed, authorized, scheduled, and recorded — no exceptions, including emergencies.<br>• Route by risk: standard changes flow without friction, normal changes get proportionate review, emergencies get speed plus retrospective rigor.<br>• Grow the standard-change library so the CAB reviews less, not more, over time.<br>• Give the service desk a change calendar it actually checks.</p>
     </div>
-    <div class="card"><h4>KPIs (IGSM dashboard)</h4>
+    <div class="card"><h4>KPIs (InvGate Service Management dashboard)</h4>
       <table style="margin:6px 0 0;font-size:12.5px">
         <tr><th>Metric</th><th>Starting target</th></tr>
         <tr><td data-e>Change success rate</td><td data-e>≥ 95%</td></tr>
@@ -722,8 +720,8 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <tr><td class="c">1</td><td data-e>Raise RFC</td><td data-e>Initiator submits the RFC via the catalog: what, why, when, affected services/CIs, implementation plan, test evidence, backout plan. Incomplete RFCs are returned, not queued.</td><td data-e>Assessable RFC</td></tr>
     <tr><td class="c">2</td><td data-e>Validate &amp; classify</td><td data-e>Change Manager routes by type: <b>Standard</b> (in the pre-approved library) flows straight to implementation; <b>Emergency</b> (active P1/major incident) takes the expedited path; everything else is <b>Normal</b>.</td><td data-e>Classified RFC on the right track</td></tr>
     <tr><td class="c">3</td><td data-e>Assess risk &amp; impact</td><td data-e>Initiator + Change Manager score likelihood × impact, considering affected services, timing, dependencies, and backout confidence. Low-risk normal changes can be authorized by the Change Manager alone.</td><td data-e>Risk score driving the review depth</td></tr>
-    <tr><td class="c">4</td><td data-e>CAB review (high risk only)</td><td data-e>CAB reviews asynchronously in IGSM where possible, meeting only for genuinely contentious changes. The CAB advises; the Change Manager decides. Standing agenda: failed changes, emergency changes, calendar conflicts.</td><td data-e>Documented recommendation</td></tr>
-    <tr><td class="c">5</td><td data-e>Authorize &amp; schedule</td><td data-e>Approval recorded in IGSM (approver needs no license). Scheduled in the change calendar respecting freeze periods and business events; conflicts on shared CIs flagged.</td><td data-e>Authorized, visible change window</td></tr>
+    <tr><td class="c">4</td><td data-e>CAB review (high risk only)</td><td data-e>CAB reviews asynchronously in InvGate Service Management where possible, meeting only for genuinely contentious changes. The CAB advises; the Change Manager decides. Standing agenda: failed changes, emergency changes, calendar conflicts.</td><td data-e>Documented recommendation</td></tr>
+    <tr><td class="c">5</td><td data-e>Authorize &amp; schedule</td><td data-e>Approval recorded in InvGate Service Management (approver needs no license). Scheduled in the change calendar respecting freeze periods and business events; conflicts on shared CIs flagged.</td><td data-e>Authorized, visible change window</td></tr>
     <tr><td class="c">6</td><td data-e>Build &amp; test</td><td data-e>Implementer prepares and tests in non-production, including a backout rehearsal for high-risk changes. Test evidence attached to the RFC.</td><td data-e>Tested change + proven backout</td></tr>
     <tr><td class="c">7</td><td data-e>Implement</td><td data-e>Execute in the approved window only. If the window is missed, reschedule — don't slide silently. Verify success criteria; if failing and unfixable in-window, back out.</td><td data-e>Deployed (or cleanly backed-out) change</td></tr>
     <tr><td class="c">8</td><td data-e>Review &amp; close</td><td data-e>Post-implementation review: success criteria met? Incidents caused? Docs and CI records updated? Failed changes get a mini-retrospective; repeat offenders become problem records.</td><td data-e>Closed RFC with outcome recorded</td></tr>
@@ -735,7 +733,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
       <li>Score <b>Likelihood of failure</b> 1–3: proven+rehearsed / done before / novel or complex.</li>
       <li>Score <b>Impact if it fails</b> 1–3: single team / department or important service / org-wide or critical service.</li>
       <li>Risk = L × I. <b>1–2:</b> Change Manager authorizes directly. <b>3–4:</b> Change Manager + Service Owner. <b>6–9:</b> CAB review required.</li>
-      <li>Record scores in the RFC's custom fields so the IGSM workflow routes the approval path automatically.</li>
+      <li>Record scores in the RFC's custom fields so the InvGate Service Management workflow routes the approval path automatically.</li>
       <li>Auto-escalators regardless of score: touches authentication, backup, or network core; no tested backout; during a freeze period.</li>
     </ol>
   </div></details>
@@ -753,13 +751,13 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
       <li>Valid only to resolve an active P1/major incident or imminent security exposure. "I forgot to raise it earlier" is not an emergency.</li>
       <li>Get verbal/chat authorization from the Change Manager or designated deputy (the ECAB — two named people minimum, with an on-call rotation).</li>
       <li>Implement with a second person aware (no solo emergency changes on critical systems).</li>
-      <li>Create the RFC in IGSM within 24 hours, backdated honestly, linked to the driving incident, with the approval noted.</li>
+      <li>Create the RFC in InvGate Service Management within 24 hours, backdated honestly, linked to the driving incident, with the approval noted.</li>
       <li>Every emergency change is reviewed at the next CAB. More than ~10% emergency rate means planning is failing — treat as a problem.</li>
     </ol>
   </div></details>
   <details class="proc" id="proc-change-4"><summary>3.4 — Change calendar &amp; freeze periods (Change Manager)</summary><div class="body" data-e>
     <ol>
-      <li>Maintain the forward schedule of change in IGSM; the service desk checks it during diagnosis of every P1/P2 (procedure 1.3).</li>
+      <li>Maintain the forward schedule of change in InvGate Service Management; the service desk checks it during diagnosis of every P1/P2 (procedure 1.3).</li>
       <li>Declare freeze periods (fiscal close, peak season, major business events) at least a quarter ahead; only emergency changes run during a freeze.</li>
       <li>Flag conflicts: two changes touching the same service/CI in overlapping windows require Change Manager arbitration.</li>
       <li>Publish a weekly "changes this week" announcement to the portal for business visibility.</li>
@@ -768,7 +766,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>InvGate implementation</h3>
   <table>
-    <tr><th style="width:24%">Process element</th><th style="width:32%">IGSM capability</th><th>Configuration notes</th></tr>
+    <tr><th style="width:24%">Process element</th><th style="width:32%">InvGate Service Management capability</th><th>Configuration notes</th></tr>
     <tr><td data-e>RFC intake</td><td data-e>Change request type + catalog item with required fields</td><td data-e>Make plan/backout/test-evidence required fields — incomplete RFCs can't be submitted.</td></tr>
     <tr><td data-e>Classification &amp; routing</td><td data-e>No-code Workflow Builder with conditional branches</td><td data-e>One workflow, three branches (standard/normal/emergency) driven by the type field and risk score.</td></tr>
     <tr><td data-e>Approvals</td><td data-e>Multi-option approvals; approval branching (approved/rejected/canceled); approval reassignment</td><td data-e>CAB members approve from email without licenses; the canceled/expired branch returns the RFC to the Change Manager rather than stalling.</td></tr>
@@ -780,8 +778,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>Compliance alignment</h3>
   <table class="comp">
-    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in IGSM</th></tr>
-    <tr><td data-e>ITIL 4</td><td data-e>Change Enablement practice</td><td data-e>Risk-based change authority (standard/normal/emergency), change schedule, PIR loop.</td><td data-e>Change records by type</td></tr>
+    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in InvGate Service Management</th></tr>
     <tr><td data-e>ISO 20000-1</td><td data-e>§8.5.1 Change management</td><td data-e>Change policy (this chapter), classification criteria, approval before deployment, review of outcomes.</td><td data-e>RFC population + PIR notes</td></tr>
     <tr><td data-e>SOC 2</td><td data-e>CC8.1 (changes authorized, designed, tested, approved, implemented)</td><td data-e>Guardrails prevent unapproved implementation; test evidence attached pre-approval; emergency path preserves authorization with 24 h documentation.</td><td data-e>Full change export: approver, timestamps, test evidence per sample</td></tr>
     <tr><td data-e>ISO 27001</td><td data-e>A.8.32 Change management</td><td data-e>All changes to information-processing facilities follow the documented, risk-assessed, authorized procedure.</td><td data-e>Change records + risk scores</td></tr>
@@ -854,7 +851,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <div class="card"><h4>Goals</h4>
       <p style="font-size:13.5px" data-e>• Reduce recurring incident volume by eliminating root causes.<br>• Publish workarounds and known errors so incidents that can't yet be prevented are at least resolved fast.<br>• Guarantee every major incident gets a root cause analysis — blameless, written down, acted on.<br>• Feed a steady stream of well-justified RFCs into Change Enablement.</p>
     </div>
-    <div class="card"><h4>KPIs (IGSM dashboard)</h4>
+    <div class="card"><h4>KPIs (InvGate Service Management dashboard)</h4>
       <table style="margin:6px 0 0;font-size:12.5px">
         <tr><th>Metric</th><th>Starting target</th></tr>
         <tr><td data-e>Recurring-incident volume (top 10 categories)</td><td data-e>−25% year over year</td></tr>
@@ -920,7 +917,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>InvGate implementation</h3>
   <table>
-    <tr><th style="width:24%">Process element</th><th style="width:32%">IGSM capability</th><th>Configuration notes</th></tr>
+    <tr><th style="width:24%">Process element</th><th style="width:32%">InvGate Service Management capability</th><th>Configuration notes</th></tr>
     <tr><td data-e>Problem records</td><td data-e>Problem request type with its own workflow &amp; statuses</td><td data-e>Statuses: Logged → Investigating → Known Error → Fix in Progress → Verifying → Closed. Add a "parked (risk accepted)" status with mandatory reason field.</td></tr>
     <tr><td data-e>Incident linkage</td><td data-e>Related requests / parent-child links</td><td data-e>Linking incidents to problems is what makes "incidents avoided" measurable — enforce it in the trend-review procedure.</td></tr>
     <tr><td data-e>Trend detection</td><td data-e>Dashboards + saved views by category/CI/date</td><td data-e>Build the "repeat offenders" view once; the weekly review then takes 20 minutes, not 2 hours.</td></tr>
@@ -931,8 +928,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>Compliance alignment</h3>
   <table class="comp">
-    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in IGSM</th></tr>
-    <tr><td data-e>ITIL 4</td><td data-e>Problem Management practice</td><td data-e>Reactive + proactive identification, known-error control, workaround management, fix verification.</td><td data-e>Problem records + known errors</td></tr>
+    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in InvGate Service Management</th></tr>
     <tr><td data-e>ISO 20000-1</td><td data-e>§8.6.3 Problem management</td><td data-e>Problems identified and recorded, root causes analyzed, known errors and resolutions recorded and communicated.</td><td data-e>Problem lifecycle records</td></tr>
     <tr><td data-e>SOC 2</td><td data-e>CC7.4–CC7.5 (respond, recover, and remediate identified issues)</td><td data-e>Root-cause remediation of security-relevant incidents is tracked to completion through linked problem → RFC records.</td><td data-e>MI → problem → RFC chains</td></tr>
     <tr><td data-e>ISO 27001</td><td data-e>A.5.27 Learning from information security incidents</td><td data-e>Mandatory RCA on major incidents institutionalizes learning; actions tracked as tickets with owners.</td><td data-e>RCA records with actions</td></tr>
@@ -1003,7 +999,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <div class="card"><h4>Goals</h4>
       <p style="font-size:13.5px" data-e>• Grow the knowledge base from real demand — resolved tickets and flagged gaps, not aspirational wiki projects.<br>• Keep articles trustworthy: reviewed on a cycle, retired when stale. A wrong article is worse than no article.<br>• Deflect: users self-solve via portal search and the AI agent before raising a ticket.<br>• Accelerate: agents resolve with articles instead of tribal memory, making L1 as capable as its knowledge.</p>
     </div>
-    <div class="card"><h4>KPIs (IGSM dashboard)</h4>
+    <div class="card"><h4>KPIs (InvGate Service Management dashboard)</h4>
       <table style="margin:6px 0 0;font-size:12.5px">
         <tr><th>Metric</th><th>Starting target</th></tr>
         <tr><td data-e>Self-service deflection rate</td><td data-e>≥ 15%, growing</td></tr>
@@ -1055,7 +1051,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
       <li>Past-due articles: assign re-verification to the owning SME with a 2-week deadline; auto-unpublish user-facing articles 30 days past due (stale public articles destroy trust fastest).</li>
       <li>Zero-result searches: the top recurring ones become the authoring backlog — this is your users telling you exactly what to write.</li>
       <li>Low-rated articles: read the feedback comments, fix or retire within the month.</li>
-      <li>Report the four KPI numbers to the Service Desk Manager; celebrate the top-contributing authors (IGSM gamification does this visibly).</li>
+      <li>Report the four KPI numbers to the Service Desk Manager; celebrate the top-contributing authors (InvGate Service Management gamification does this visibly).</li>
     </ol>
   </div></details>
   <details class="proc" id="proc-knowledge-3"><summary>5.3 — New service knowledge package (Knowledge Manager + Service Owner)</summary><div class="body" data-e>
@@ -1068,7 +1064,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>InvGate implementation</h3>
   <table>
-    <tr><th style="width:24%">Process element</th><th style="width:32%">IGSM capability</th><th>Configuration notes</th></tr>
+    <tr><th style="width:24%">Process element</th><th style="width:32%">InvGate Service Management capability</th><th>Configuration notes</th></tr>
     <tr><td data-e>Authoring from tickets</td><td data-e>Create KB article from ticket; article templates</td><td data-e>Template per article type (how-to, troubleshooting, known error, FAQ) keeps quality consistent at speed.</td></tr>
     <tr><td data-e>Review &amp; approval</td><td data-e>Article approval workflow with states (draft → review → published)</td><td data-e>Simple two-step flow; don't build a publishing bureaucracy that makes agents stop contributing.</td></tr>
     <tr><td data-e>Audience scoping</td><td data-e>Visibility by audience/group; agent-only articles</td><td data-e>Known errors and internal procedures agent-only; end-user articles written in user language.</td></tr>
@@ -1079,8 +1075,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>Compliance alignment</h3>
   <table class="comp">
-    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in IGSM</th></tr>
-    <tr><td data-e>ITIL 4</td><td data-e>Knowledge Management practice</td><td data-e>Demand-driven capture, review lifecycle, delivery at the point of work, measured value.</td><td data-e>KB analytics + lifecycle states</td></tr>
+    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in InvGate Service Management</th></tr>
     <tr><td data-e>ISO 20000-1</td><td data-e>§7.6 Knowledge</td><td data-e>Knowledge needed to operate services is identified, maintained, and available to those who need it.</td><td data-e>Published KB with review dates</td></tr>
     <tr><td data-e>SOC 2</td><td data-e>CC2.2–CC2.3 (internal &amp; external communication of information)</td><td data-e>Operating procedures and user guidance are documented, current, and communicated through the portal.</td><td data-e>Article review history</td></tr>
     <tr><td data-e>ISO 27001</td><td data-e>A.5.37 Documented operating procedures</td><td data-e>Operational procedures (agent-scoped articles and this document) are documented, reviewed on a cycle, and access-controlled by audience.</td><td data-e>Agent-only article set + review log</td></tr>
@@ -1096,7 +1091,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
   <div class="kicker" style="color:var(--purple)">Process 6 · InvGate Asset Management</div>
   <h2>IT Asset Management</h2>
   <div class="viewbar"><button class="btn back" data-view="connections">&#10554; Process map</button><span class="hint">Click any step in the diagram to open its instructions below · purple pills jump to connected processes · the diagram stays pinned while you scroll.</span></div>
-  <p class="lede" data-e>Know what you own, where it is, who has it, what it costs, and prove it — from acquisition to certified disposal. Asset Management is the data backbone under the other five processes, and this chapter aligns to the IAITAM Best Practice Library's 12 Key Process Areas, implemented in InvGate Asset Management (IGAM).</p>
+  <p class="lede" data-e>Know what you own, where it is, who has it, what it costs, and prove it — from acquisition to certified disposal. Asset Management is the data backbone under the other five processes, implemented in InvGate Asset Management.</p>
 
   <h3>Process map (BPMN) — the asset lifecycle</h3>
   <div class="bpmn-wrap">
@@ -1118,7 +1113,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <rect data-goto="ast-steps:2" class="btp" x="300" y="34" width="150" height="48" rx="8"/><text class="btxt" x="375" y="54" text-anchor="middle">2. Procure — PO via</text><text class="btxt" x="375" y="67" text-anchor="middle">approved vendor + contract</text>
     <path class="flow" marker-end="url(#aa)" d="M 258 58 L 296 58"/>
     <!-- technician -->
-    <rect data-goto="#proc-asset-1" class="btp" x="300" y="266" width="150" height="48" rx="8"/><text class="btxt" x="375" y="286" text-anchor="middle">3. Receive, tag &amp;</text><text class="btxt" x="375" y="299" text-anchor="middle">record in IGAM</text>
+    <rect data-goto="#proc-asset-1" class="btp" x="300" y="266" width="150" height="48" rx="8"/><text class="btxt" x="375" y="286" text-anchor="middle">3. Receive, tag &amp;</text><text class="btxt" x="375" y="299" text-anchor="middle">record in InvGate</text>
     <path class="flow" marker-end="url(#aa)" d="M 375 82 L 375 262"/>
     <rect data-goto="ast-steps:4" class="btp" x="490" y="266" width="140" height="48" rx="8"/><text class="btxt" x="560" y="286" text-anchor="middle">4. Deploy &amp; assign</text><text class="btxt" x="560" y="299" text-anchor="middle">to user / location</text>
     <path class="flow" marker-end="url(#aa)" d="M 450 290 L 486 290"/>
@@ -1143,14 +1138,14 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <path class="xflow" style="stroke:var(--blue)" marker-end="url(#ab)" d="M 660 180 C 700 230, 780 380, 810 411"/>
   </svg>
   </div>
-  <p class="bpmn-key">Purple tasks = IGAM-managed lifecycle stages · blue pills = connections into the ITSM processes (note the reversed color convention in this chapter: here, ITSM is the "other" process).</p>
+  <p class="bpmn-key">Purple tasks = InvGate Asset Management-managed lifecycle stages · blue pills = connections into the ITSM processes (note the reversed color convention in this chapter: here, ITSM is the "other" process).</p>
 
   <h3>Goals &amp; measures</h3>
   <div class="grid2">
     <div class="card"><h4>Goals</h4>
       <p style="font-size:13.5px" data-e>• One trustworthy inventory: every hardware, software, SaaS, and cloud asset discovered, recorded, and owned by someone.<br>• Full lifecycle control — plan, acquire, receive, deploy, manage, retire, dispose — with a record at every stage.<br>• Financial visibility: cost, depreciation, contracts, and license position ready for budget and audit without a spreadsheet scramble.<br>• Risk reduction: no unmanaged devices, no unlicensed software, no data walking out the door on retired drives.</p>
     </div>
-    <div class="card"><h4>KPIs (IGAM dashboard)</h4>
+    <div class="card"><h4>KPIs (InvGate Asset Management dashboard)</h4>
       <table style="margin:6px 0 0;font-size:12.5px">
         <tr><th>Metric</th><th>Starting target</th></tr>
         <tr><td data-e>Inventory accuracy (physical vs. recorded)</td><td data-e>≥ 98%</td></tr>
@@ -1181,41 +1176,24 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
   <h3>Process steps</h3>
   <table id="ast-steps">
     <tr><th style="width:4%">#</th><th style="width:18%">Step</th><th>Description</th><th style="width:26%">Key output</th></tr>
-    <tr><td class="c">1</td><td data-e>Plan &amp; budget</td><td data-e>Annual and rolling: refresh cycles by asset class (e.g., laptops 4 years), demand forecast from headcount and project plans, budget by department using IGAM cost-allocation data. Standards defined here (approved models, configurations) make every later step cheaper.</td><td data-e>Approved standards, refresh calendar, budget</td></tr>
-    <tr><td class="c">2</td><td data-e>Procure</td><td data-e>Purchases only through approved vendors against defined standards, initiated from the service catalog where possible. PO number, vendor, cost, warranty, and contract recorded — acquisition is where clean asset data is born (IAITAM: Acquisition &amp; Vendor Management).</td><td data-e>PO + contract data attached to incoming assets</td></tr>
-    <tr><td class="c">3</td><td data-e>Receive, tag &amp; record</td><td data-e>Physical receipt verified against PO; asset tagged and created in IGAM with serial, model, cost, warranty (auto-detected where supported), location, and status "In stock". Non-connected devices (monitors, peripherals, lab gear) recorded too — if it can be lost or audited, it's an asset.</td><td data-e>Complete asset record before first use</td></tr>
+    <tr><td class="c">1</td><td data-e>Plan &amp; budget</td><td data-e>Annual and rolling: refresh cycles by asset class (e.g., laptops 4 years), demand forecast from headcount and project plans, budget by department using InvGate Asset Management cost-allocation data. Standards defined here (approved models, configurations) make every later step cheaper.</td><td data-e>Approved standards, refresh calendar, budget</td></tr>
+    <tr><td class="c">2</td><td data-e>Procure</td><td data-e>Purchases only through approved vendors against defined standards, initiated from the service catalog where possible. PO number, vendor, cost, warranty, and contract recorded — acquisition is where clean asset data is born.</td><td data-e>PO + contract data attached to incoming assets</td></tr>
+    <tr><td class="c">3</td><td data-e>Receive, tag &amp; record</td><td data-e>Physical receipt verified against PO; asset tagged and created in InvGate Asset Management with serial, model, cost, warranty (auto-detected where supported), location, and status "In stock". Non-connected devices (monitors, peripherals, lab gear) recorded too — if it can be lost or audited, it's an asset.</td><td data-e>Complete asset record before first use</td></tr>
     <tr><td class="c">4</td><td data-e>Deploy &amp; assign</td><td data-e>Configured to standard (deployment plans for software/patches), assigned to a named user or location, status "In use". Assignment recorded at handover — this is the accountability chain HIPAA and SOC 2 auditors follow.</td><td data-e>Asset with a named custodian</td></tr>
     <tr><td class="c">5</td><td data-e>Manage in service</td><td data-e>The long middle: automated discovery keeps records honest (procedure 6.2), health-status rules and policy enforcement flag drift, contracts and warranties tracked with alerts, license position monitored via normalization and metering, financial data (depreciation) accrues automatically.</td><td data-e>A living inventory that matches reality</td></tr>
     <tr><td class="c">6</td><td data-e>Recover &amp; sanitize</td><td data-e>At end of life, leaver offboarding, or refresh: asset recovered (tied to the leaver catalog item), data sanitized per NIST SP 800-88 method appropriate to media and data sensitivity, sanitization recorded on the asset. Reusable assets return to stock.</td><td data-e>Sanitized asset; documented method + operator</td></tr>
     <tr><td class="c">7</td><td data-e>Dispose</td><td data-e>Physical disposal only via certified ITAD partner (R2/e-Stewards); certificate of destruction/recycling attached to the asset record; status "Disposed"; finance notified for book removal. The asset record is retained — disposal ends the asset, not the evidence.</td><td data-e>Closed lifecycle with audit-proof paper trail</td></tr>
   </table>
 
-  <h3>IAITAM Key Process Area alignment</h3>
-  <p data-e>The IAITAM Best Practice Library (IBPL) defines 12 Key Process Areas for a complete ITAM program. This table shows where each KPA lives in this template and how IGAM supports it — use it to demonstrate program completeness to auditors and leadership.</p>
-  <table>
-    <tr><th style="width:20%">IAITAM KPA</th><th>Where it lives in this template</th><th style="width:38%">IGAM support</th></tr>
-    <tr><td data-e>Program Management</td><td data-e>This chapter's goals, KPIs, and named IT Asset Manager role; monthly program reporting.</td><td data-e>Executive dashboards with operational + financial KPIs</td></tr>
-    <tr><td data-e>Policy Management</td><td data-e>Procedures 6.1–6.5 plus your acceptable-use and asset policies (reference them here).</td><td data-e>Policy enforcement engine turns written policy into monitored rules with automated remediation</td></tr>
-    <tr><td data-e>Acquisition Management</td><td data-e>Steps 1–2; purchases initiated via the service catalog (Process 2).</td><td data-e>PO/cost/vendor fields; catalog-to-asset flow via IGSM integration</td></tr>
-    <tr><td data-e>Asset Identification</td><td data-e>Procedure 6.1 (tag &amp; record) and 6.2 (reconciliation).</td><td data-e>Agent + network discovery, non-connected device records, smart tags, automatic warranty detection</td></tr>
-    <tr><td data-e>Compliance Management</td><td data-e>Procedure 6.3 (license position) and 6.6-style audit readiness; compliance table below.</td><td data-e>Software normalization, license metering, audit-ready reports and logs</td></tr>
-    <tr><td data-e>Legislation Management</td><td data-e>Compliance mappings per chapter; legal/GRC review noted as required; data-residency choices documented.</td><td data-e>On-prem, hybrid, and air-gapped deployment options support jurisdictional requirements</td></tr>
-    <tr><td data-e>Disposal Management</td><td data-e>Steps 6–7 and procedure 6.5 (sanitization + certified ITAD + certificates).</td><td data-e>Lifecycle statuses, disposal records with attached certificates, retained asset history</td></tr>
-    <tr><td data-e>Documentation Management</td><td data-e>Every lifecycle event is a record; the handoff-contract table defines required artifacts.</td><td data-e>Timestamped audit logs on every asset action</td></tr>
-    <tr><td data-e>Financial Management</td><td data-e>Step 1 (budgeting) and step 5 (ongoing cost data); finance notified at disposal.</td><td data-e>Automated depreciation, cost allocation by department/location, financial dashboards, renewal costs tied to usage</td></tr>
-    <tr><td data-e>Vendor Management</td><td data-e>Procedure 6.4 (contracts &amp; renewals); approved-vendor rule in step 2.</td><td data-e>Contract tracking with expiration alerts, vendor-level spend breakdowns for negotiations</td></tr>
-    <tr><td data-e>Communication &amp; Education</td><td data-e>Asset policies published as KB articles (Process 5); users informed at assignment handover.</td><td data-e>Portal articles, custom alerts, role-based dashboards</td></tr>
-    <tr><td data-e>Project Management</td><td data-e>ITAM rollouts and refresh waves run through Change Enablement (Process 3) with task workflows.</td><td data-e>Deployment plans; IGSM workflows for multi-step rollout projects</td></tr>
-  </table>
 
   <h3>Procedures</h3>
   <details class="proc" id="proc-asset-1"><summary>6.1 — Receiving, tagging &amp; recording (IT Technician)</summary><div class="body" data-e>
     <ol>
       <li>Verify delivery against the PO (model, quantity, condition); report discrepancies to Procurement before accepting.</li>
       <li>Apply the asset tag (barcode/QR). Tag before the asset leaves the receiving area — untagged assets in circulation are how inventories rot.</li>
-      <li>Create the record in IGAM: serial number, model, PO/cost, vendor, warranty (auto-detected where supported — verify), location, status "In stock". Link the linked catalog request if one exists.</li>
+      <li>Create the record in InvGate Asset Management: serial number, model, PO/cost, vendor, warranty (auto-detected where supported — verify), location, status "In stock". Link the linked catalog request if one exists.</li>
       <li>Record non-connected assets (monitors, docks, lab and network gear) manually or via bulk import — discovery won't see them, but auditors will.</li>
-      <li>For software: record license entitlements (quantity, metric, contract) in IGAM at purchase, before deployment. Entitlement first, install second.</li>
+      <li>For software: record license entitlements (quantity, metric, contract) in InvGate Asset Management at purchase, before deployment. Entitlement first, install second.</li>
     </ol>
   </div></details>
   <details class="proc" id="proc-asset-2"><summary>6.2 — Discovery &amp; reconciliation (IT Asset Manager, weekly)</summary><div class="body" data-e>
@@ -1229,16 +1207,16 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
   </div></details>
   <details class="proc" id="proc-asset-3"><summary>6.3 — License compliance review (IT Asset Manager, monthly)</summary><div class="body" data-e>
     <ol>
-      <li>Run the license position by product: entitlements (from contracts in IGAM) vs. installs/usage (from normalization + metering).</li>
+      <li>Run the license position by product: entitlements (from contracts in InvGate Asset Management) vs. installs/usage (from normalization + metering).</li>
       <li>Over-deployed: remediate before it becomes a true-up — uninstall, reharvest, or buy. Document the decision.</li>
-      <li>Under-used: reclaim licenses unused &gt;60 days (IGAM low-usage reports); feed savings into the quarterly program report.</li>
+      <li>Under-used: reclaim licenses unused &gt;60 days (InvGate Asset Management low-usage reports); feed savings into the quarterly program report.</li>
       <li>SaaS: review usage vs. seats ahead of each renewal (procedure 6.4) — renewal negotiations without usage data are donations.</li>
       <li>Keep the position export with the month's date — a dated, repeatable license position is exactly what a software auditor asks for first.</li>
     </ol>
   </div></details>
   <details class="proc" id="proc-asset-4"><summary>6.4 — Contract &amp; renewal management (IT Asset Manager + Procurement)</summary><div class="body" data-e>
     <ol>
-      <li>Every contract (support, warranty, lease, SaaS, maintenance) lives in IGAM with dates, cost, renewal terms, and the assets/licenses it covers.</li>
+      <li>Every contract (support, warranty, lease, SaaS, maintenance) lives in InvGate Asset Management with dates, cost, renewal terms, and the assets/licenses it covers.</li>
       <li>Alerts at 90/60/30 days before expiry route to the Asset Manager and contract owner.</li>
       <li>At 90 days: pull usage and coverage data; decide renew / renegotiate / drop with the business owner. At 30 days: escalate anything undecided to Procurement leadership.</li>
       <li>Auto-renewal clauses are flagged at intake so the 90-day review happens before the opt-out window closes, not after.</li>
@@ -1257,7 +1235,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
   <h3>InvGate implementation</h3>
   <table>
-    <tr><th style="width:24%">Process element</th><th style="width:32%">IGAM capability</th><th>Configuration notes</th></tr>
+    <tr><th style="width:24%">Process element</th><th style="width:32%">InvGate Asset Management capability</th><th>Configuration notes</th></tr>
     <tr><td data-e>Discovery</td><td data-e>Agent-based + network discovery; SCIM/SSO for identity</td><td data-e>Deploy the agent via your software distribution at onboarding; schedule network discovery per subnet; alert on agents silent &gt;7 days.</td></tr>
     <tr><td data-e>Full inventory incl. offline assets</td><td data-e>Non-connected device records, smart tags, bulk import</td><td data-e>Smart tags for refresh waves, projects, and audit scopes — they turn one inventory into many views.</td></tr>
     <tr><td data-e>Software intelligence</td><td data-e>Software normalization, license metering, low-usage reports</td><td data-e>Normalization cleans raw install data into products; metering powers reclamation and true-up defense.</td></tr>
@@ -1266,15 +1244,14 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <tr><td data-e>Financials</td><td data-e>Automated depreciation, cost allocation, financial dashboards</td><td data-e>Set depreciation schedules per asset class once; department/location allocation makes showback possible.</td></tr>
     <tr><td data-e>CMDB &amp; business context</td><td data-e>Business Applications CMDB with impact mapping</td><td data-e>Map critical business apps to their supporting CIs — this is what Change risk scoring (procedure 3.1) reads.</td></tr>
     <tr><td data-e>Software deployment</td><td data-e>Deployment plans for software, patches, updates</td><td data-e>Standard-build deployment at step 4; patch waves as scheduled plans.</td></tr>
-    <tr><td data-e>ITSM integration</td><td data-e>IGSM ↔ IGAM (Insight) integration</td><td data-e>Asset context on tickets; catalog fulfillment updates assignments; CI links on RFCs. This integration is the connective tissue of the whole template.</td></tr>
+    <tr><td data-e>ITSM integration</td><td data-e>InvGate Service Management ↔ InvGate Asset Management (Insight) integration</td><td data-e>Asset context on tickets; catalog fulfillment updates assignments; CI links on RFCs. This integration is the connective tissue of the whole template.</td></tr>
     <tr><td data-e>Evidence</td><td data-e>Audit-ready reports, timestamped logs, role-based access (ACLs)</td><td data-e>Scope auditor access read-only via ACLs; saved reports for inventory, license position, and disposal register.</td></tr>
-    <tr><td data-e>Deployment model</td><td data-e>Cloud, on-prem, hybrid, or air-gapped</td><td data-e>Choose per data-residency and security requirements (IAITAM: Legislation Management).</td></tr>
+    <tr><td data-e>Deployment model</td><td data-e>Cloud, on-prem, hybrid, or air-gapped</td><td data-e>Choose per data-residency and security requirements.</td></tr>
   </table>
 
   <h3>Compliance alignment</h3>
   <table class="comp">
-    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in IGAM</th></tr>
-    <tr><td data-e>ITIL 4</td><td data-e>IT Asset Management practice</td><td data-e>Full lifecycle management with financial, contractual, and inventory dimensions integrated with the service value chain.</td><td data-e>Lifecycle records + dashboards</td></tr>
+    <tr><th style="width:16%">Framework</th><th style="width:30%">Requirement</th><th>How this process satisfies it</th><th style="width:24%">Evidence in InvGate Asset Management</th></tr>
     <tr><td data-e>ISO 20000-1</td><td data-e>§8.2.5 Asset management; §8.2.6 Configuration management</td><td data-e>Assets used to deliver services are managed to meet obligations; CIs recorded with controlled updates (via Change).</td><td data-e>Asset register; CMDB with RFC-linked updates</td></tr>
     <tr><td data-e>SOC 2</td><td data-e>CC6.1 (asset inventory underpinning access control); CC6.5 (disposal — data destroyed before assets leave control)</td><td data-e>Complete inventory with ownership; sanitization + certified destruction before any asset exits; certificates retained.</td><td data-e>Inventory export; disposal register with certificates</td></tr>
     <tr><td data-e>ISO 27001</td><td data-e>A.5.9 inventory of assets; A.5.11 return of assets; A.7.10 storage media; A.7.14 secure disposal/re-use</td><td data-e>Discovery-verified inventory with owners (A.5.9); leaver recovery task (A.5.11); media sanitized per NIST 800-88 before re-use or disposal (A.7.10/A.7.14).</td><td data-e>Reconciliation logs; recovery tasks; sanitization records</td></tr>
@@ -1288,18 +1265,16 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 <section class="doc" id="compliance-guide">
   <div class="kicker">Reference</div>
   <h2>Compliance frameworks: how to read the mappings</h2>
-  <p data-e>Each process chapter ends with a compliance mapping table. These mappings identify where the process, operated as documented in IGSM, produces the evidence an auditor asks for. They are a starting point for your compliance program, not a substitute for it — control applicability depends on your audit scope, and your compliance or legal team should validate each mapping.</p>
+  <p data-e>Each process chapter ends with a compliance mapping table. These mappings identify where the process, operated as documented in InvGate Service Management, produces the evidence an auditor asks for. They are a starting point for your compliance program, not a substitute for it — control applicability depends on your audit scope, and your compliance or legal team should validate each mapping.</p>
   <table>
     <tr><th style="width:20%">Framework</th><th>What it is</th><th style="width:38%">What auditors typically want from ITSM processes</th></tr>
-    <tr><td data-e>ITIL 4</td><td data-e>The de facto service management practice framework. IGSM is ITIL-verified.</td><td data-e>Not audited directly, but ISO 20000 and customer due-diligence questionnaires assume ITIL-shaped processes.</td></tr>
     <tr><td data-e>ISO/IEC 20000-1:2018</td><td data-e>The international standard for service management systems (SMS).</td><td data-e>Documented processes (clause 8), records of operation, defined roles, and evidence of continual improvement.</td></tr>
     <tr><td data-e>SOC 2 (Trusted Services Criteria)</td><td data-e>Attestation report on controls for security, availability, and related criteria (CC-series common criteria).</td><td data-e>Populations and samples: every change approved before deploy (CC8.1), incidents tracked to resolution (CC7.3–7.5), access provisioned with approval (CC6.1–6.3).</td></tr>
     <tr><td data-e>ISO/IEC 27001:2022</td><td data-e>Information security management system standard; Annex A controls.</td><td data-e>Incident management records (A.5.24–A.5.28), change management (A.8.32), access provisioning (A.5.16, A.5.18), documented procedures (A.5.37).</td></tr>
     <tr><td data-e>NIST CSF 2.0</td><td data-e>US cybersecurity framework: Govern, Identify, Protect, Detect, Respond, Recover.</td><td data-e>Common in public sector and as a maturity yardstick; maps ITSM processes to Respond/Recover (incident), Protect (change, access), Identify/Improve (problem).</td></tr>
     <tr><td data-e>HIPAA Security Rule</td><td data-e>US healthcare regulation for protecting ePHI (45 CFR §164).</td><td data-e>Security incident procedures §164.308(a)(6), workforce access management §164.308(a)(3)–(4), periodic evaluation §164.308(a)(8), activity review §164.308(a)(1)(ii)(D), device &amp; media controls §164.310(d).</td></tr>
-    <tr><td data-e>IAITAM IBPL</td><td data-e>The IT Asset Management best-practice framework: 12 Key Process Areas covering the full ITAM program.</td><td data-e>Not audited directly, but the KPA alignment table in Process 6 demonstrates ITAM program completeness — useful for software audits, cyber-insurance questionnaires, and due diligence.</td></tr>
   </table>
-  <div class="callout"><b>The universal evidence engine</b><span data-e>Across all six frameworks, the recurring audit asks are the same: a complete population of records, timestamps, approvals, and who-did-what. IGSM's ticket audit trail, approval records, workflow history, and dashboard exports provide these natively — the discipline this template adds is making sure every event actually becomes a ticket.</span></div>
+  <div class="callout"><b>The universal evidence engine</b><span data-e>Across all six frameworks, the recurring audit asks are the same: a complete population of records, timestamps, approvals, and who-did-what. InvGate Service Management's ticket audit trail, approval records, workflow history, and dashboard exports provide these natively — the discipline this template adds is making sure every event actually becomes a ticket.</span></div>
 </section>
 
 <section class="doc" id="roles-glossary">
@@ -1317,12 +1292,11 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
     <tr><td data-e>CAB (Change Advisory Board)</td><td data-e>Cross-functional risk review for normal changes; advises, Change Manager decides.</td><td data-e>—</td></tr>
     <tr><td data-e>Problem Manager</td><td data-e>Owns problem investigations, the known-error record, and follow-through on permanent fixes.</td><td data-e>—</td></tr>
     <tr><td data-e>Knowledge Manager</td><td data-e>Owns article standards, review cycles, and knowledge base health metrics.</td><td data-e>—</td></tr>
-    <tr><td data-e>IT Asset Manager</td><td data-e>Owns the ITAM program: inventory accuracy, lifecycle procedures, license position, contracts, and disposal evidence. IAITAM CAMSE/CITAM certification recommended.</td><td data-e>—</td></tr>
+    <tr><td data-e>IT Asset Manager</td><td data-e>Owns the ITAM program: inventory accuracy, lifecycle procedures, license position, contracts, and disposal evidence.</td><td data-e>—</td></tr>
     <tr><td data-e>Asset Custodian</td><td data-e>The named user or location an asset is assigned to; accountable for its care and return at offboarding or refresh.</td><td data-e>Per assignment</td></tr>
-    <tr><td data-e>Approver</td><td data-e>Authorizes requests or changes within their scope (line manager, budget owner, system owner). In IGSM, approvers do not consume a license.</td><td data-e>—</td></tr>
+    <tr><td data-e>Approver</td><td data-e>Authorizes requests or changes within their scope (line manager, budget owner, system owner). In InvGate Service Management, approvers do not consume a license.</td><td data-e>—</td></tr>
     <tr><td data-e>End User / Requester</td><td data-e>Reports incidents, submits requests via the portal or AI agent, confirms resolution.</td><td data-e>All staff</td></tr>
   </table>
-  <p style="color:var(--z-500);font-size:12.5px;margin-top:26px" data-e>Template provided by InvGate as a customer starting point. Process guidance aligns with ITIL® 4 and the IAITAM Best Practice Library (IBPL); compliance mappings are indicative and should be validated against your audit scope. Built for use with InvGate Service Management and InvGate Asset Management.</p>
 </section>
 
 </main>
