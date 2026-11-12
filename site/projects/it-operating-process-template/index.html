@@ -24,6 +24,7 @@ h3{font-weight:600;font-size:18px;margin:28px 0 10px;color:var(--z-800)}
 h4{font-weight:600;font-size:15px;margin:20px 0 8px;color:var(--z-700)}
 p{margin:8px 0}
 .kicker{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+.kicker.keep-case{text-transform:none;letter-spacing:.02em}
 .lede{color:var(--z-600);font-size:16px;max-width:70ch}
 
 /* Layout */
@@ -175,8 +176,8 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
 <aside class="sidebar">
   <div class="logo">
-    <svg width="30" height="30" viewBox="0 0 30 30"><circle cx="15" cy="15" r="13" fill="none" stroke="#3B82F6" stroke-width="2.6"/><circle cx="15" cy="15" r="4.5" fill="#3B82F6"/><circle cx="24.5" cy="8" r="2.6" fill="#3B82F6"/></svg>
-    <div class="lw">invgate<small>IT Operating Process Template</small></div>
+    <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true"><path d="M7.5 19.5V11M13 7h5.5M23 11.5V19" stroke="#71717A" stroke-width="1.6"/><circle cx="7.5" cy="23" r="3.5" fill="#3B82F6"/><rect x="2" y="3" width="11" height="8" rx="2" stroke="#3B82F6" stroke-width="2"/><path d="M23 2.5l4.5 4.5-4.5 4.5-4.5-4.5z" stroke="#3B82F6" stroke-width="2" stroke-linejoin="round"/><rect x="17" y="19" width="11" height="8" rx="2" fill="#8B5CF6"/></svg>
+    <div class="lw">InvGate<small>IT Operating Process Template</small></div>
   </div>
   <nav>
     <a href="#connections">Process map · start here</a>
@@ -198,7 +199,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
 <div class="dochead">
   <p class="ro-note">You're viewing a read-only copy. Click <b>Download template</b> to save it, then open the file in any browser to edit it, save your own version, or print it.</p>
-  <div class="kicker">InvGate Service Management</div>
+  <div class="kicker keep-case">InvGate Service Management</div>
   <h1><span data-e>InvGate IT Operating Process Template</span></h1>
   <p class="lede" data-e>The definitive starting point for your IT operating model: six core IT processes with goals, roles, RACI, BPMN process maps, step descriptions, procedure-level work instructions, InvGate implementation guidance, and compliance alignment — ready to adapt to your organization.</p>
   <div class="meta">
@@ -1088,7 +1089,7 @@ svg .maplab{font:500 10.5px 'Inter',sans-serif;fill:var(--z-600)}
 
 
 <section class="doc" id="asset">
-  <div class="kicker" style="color:var(--purple)">Process 6 · InvGate Asset Management</div>
+  <div class="kicker keep-case" style="color:var(--purple)">Process 6 · InvGate Asset Management</div>
   <h2>IT Asset Management</h2>
   <div class="viewbar"><button class="btn back" data-view="connections">&#10554; Process map</button><span class="hint">Click any step in the diagram to open its instructions below · purple pills jump to connected processes · the diagram stays pinned while you scroll.</span></div>
   <p class="lede" data-e>Know what you own, where it is, who has it, what it costs, and prove it — from acquisition to certified disposal. Asset Management is the data backbone under the other five processes, implemented in InvGate Asset Management.</p>
