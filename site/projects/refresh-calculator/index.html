@@ -250,6 +250,16 @@ button {
   color: var(--surface);
 }
 button.secondary { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+a.download {
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 9px 16px;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  text-decoration: none;
+}
+a.download:hover { border-color: var(--muted); }
+a.download:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .status { font-size: 0.9rem; color: var(--muted); }
 textarea {
@@ -300,6 +310,7 @@ footer p { margin: 0 0 8px; }
       <div class="actions">
         <button type="button" id="copy">Copy summary</button>
         <button type="button" class="secondary" id="reset">Reset to defaults</button>
+        <a class="download" href="Laptop-Refresh-Calculator-Model.xlsx" download data-track="download-refresh-calculator-xlsx">Download Excel model</a>
         <span class="status" id="status"></span>
       </div>
       <textarea id="fallback" readonly aria-label="Summary text"></textarea>
