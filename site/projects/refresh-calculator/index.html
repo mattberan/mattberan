@@ -124,6 +124,12 @@ legend {
 }
 .field:first-of-type { border-top: 0; }
 .field label { font-size: 0.95rem; }
+.field .unsure { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.8rem; color: var(--muted); cursor: pointer; width: fit-content; }
+.field .unsure input { width: 15px; height: 15px; margin: 0; accent-color: var(--focus); }
+.input.est { opacity: 0.6; border-style: dashed; }
+.input input:disabled { cursor: not-allowed; -webkit-text-fill-color: var(--ink); }
+.estimates { font-size: 0.9rem; color: var(--muted); margin: -12px 0 18px; }
+.estimates:empty { display: none; }
 .input {
   display: flex;
   align-items: center;
@@ -287,6 +293,7 @@ footer p { margin: 0 0 8px; }
     <section class="results" aria-live="polite">
       <p class="verdict" id="verdict"></p>
       <p class="contrast" id="contrast"></p>
+      <p class="estimates" id="estimates"></p>
       <label class="switch"><input type="checkbox" id="incSlow" checked> Count time lost to slow devices</label>
       <div class="rows" id="rows"></div>
       <div class="legend" id="legend"></div>
@@ -312,33 +319,33 @@ footer p { margin: 0 0 8px; }
     { name: "Your fleet", items: [
       { id: "fleet", label: "Devices in your fleet", value: 500, step: 10, min: 1 },
       { id: "current", label: "Current refresh cycle", value: 5, select: [3, 4, 5, 6], suffix: "years" },
-      { id: "hr", label: "Loaded cost of one employee hour", value: 48, prefix: "$", step: 1 }
+      { id: "hr", unsure: true, label: "Loaded cost of one employee hour", value: 48, prefix: "$", step: 1 }
     ]},
     { name: "Buying and deploying", items: [
       { id: "price", label: "Purchase price per device", value: 1400, prefix: "$", step: 50 },
-      { id: "deploy", label: "Labor to image, ship and swap one device", value: 175, prefix: "$", step: 5 },
-      { id: "resale", label: "Resale value after 3 years", value: 15, suffix: "% of price", step: 1, max: 100 },
+      { id: "deploy", unsure: true, label: "Labor to image, ship and swap one device", value: 175, prefix: "$", step: 5 },
+      { id: "resale", unsure: true, label: "Resale value after 3 years", value: 15, suffix: "% of price", step: 1, max: 100 },
       { id: "warranty", label: "Warranty length", value: 3, suffix: "years", step: 1, max: 6 }
     ]},
     { name: "Support tickets", items: [
-      { id: "t1", label: "Hardware tickets per device in year 1", value: 1.2, step: 0.1 },
-      { id: "tg", label: "More tickets for each year of age", value: 30, suffix: "%", step: 5 },
-      { id: "tc", label: "Cost to resolve one ticket", value: 22, prefix: "$", step: 1 }
+      { id: "t1", unsure: true, label: "Hardware tickets per device in year 1", value: 1.2, step: 0.1 },
+      { id: "tg", unsure: true, label: "More tickets for each year of age", value: 30, suffix: "%", step: 5 },
+      { id: "tc", unsure: true, label: "Cost to resolve one ticket", value: 22, prefix: "$", step: 1 }
     ]},
     { name: "Failures and repairs", items: [
-      { id: "f1", label: "Devices that fail in year 1", value: 3, suffix: "%", step: 0.5 },
-      { id: "fg", label: "Added failure rate for each year of age", value: 3, suffix: "points", step: 0.5 },
-      { id: "ri", label: "Repair cost under warranty", value: 60, prefix: "$", step: 5 },
-      { id: "ro", label: "Repair cost out of warranty", value: 380, prefix: "$", step: 10 },
-      { id: "dh", label: "Work hours lost per failure", value: 6, suffix: "hours", step: 0.5 }
+      { id: "f1", unsure: true, label: "Devices that fail in year 1", value: 3, suffix: "%", step: 0.5 },
+      { id: "fg", unsure: true, label: "Added failure rate for each year of age", value: 3, suffix: "points", step: 0.5 },
+      { id: "ri", unsure: true, label: "Repair cost under warranty", value: 60, prefix: "$", step: 5 },
+      { id: "ro", unsure: true, label: "Repair cost out of warranty", value: 380, prefix: "$", step: 10 },
+      { id: "dh", unsure: true, label: "Work hours lost per failure", value: 6, suffix: "hours", step: 0.5 }
     ]},
     { name: "Slow devices", items: [
-      { id: "sm", label: "Minutes lost per week, for each year past year 2", value: 6, suffix: "min", step: 1 },
+      { id: "sm", unsure: true, label: "Minutes lost per week, for each year past year 2", value: 6, suffix: "min", step: 1 },
       { id: "wk", label: "Working weeks per year", value: 46, suffix: "weeks", step: 1 }
     ]},
     { name: "End of support", items: [
-      { id: "eos", label: "Year the device loses vendor security support", value: 6, prefix: "Year", step: 1, min: 2 },
-      { id: "ec", label: "Yearly cost of extended support or extra controls", value: 200, prefix: "$", step: 10 }
+      { id: "eos", unsure: true, label: "Year the device loses vendor security support", value: 6, prefix: "Year", step: 1, min: 2 },
+      { id: "ec", unsure: true, label: "Yearly cost of extended support or extra controls", value: 200, prefix: "$", step: 10 }
     ]}
   ];
 
@@ -354,6 +361,7 @@ footer p { margin: 0 0 8px; }
   var STORE = "refresh-calc-v1";
   var form = document.getElementById("form");
   var defaults = {};
+  var unsureIds = [];
 
   groups.forEach(function (g) {
     var fs = document.createElement("fieldset");
@@ -390,7 +398,20 @@ footer p { margin: 0 0 8px; }
       el.value = f.value;
       box.appendChild(el);
       if (f.suffix) { var s = document.createElement("span"); s.textContent = f.suffix; box.appendChild(s); }
-      row.appendChild(lab);
+      var labCol = document.createElement("div");
+      labCol.appendChild(lab);
+      if (f.unsure) {
+        unsureIds.push(f.id);
+        var u = document.createElement("label");
+        u.className = "unsure";
+        var cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = "u-" + f.id;
+        u.appendChild(cb);
+        u.appendChild(document.createTextNode("I don't know"));
+        labCol.appendChild(u);
+      }
+      row.appendChild(labCol);
       row.appendChild(box);
       fs.appendChild(row);
     });
@@ -407,12 +428,33 @@ footer p { margin: 0 0 8px; }
         if (el) el.value = saved.v[k];
       });
       if (typeof saved.inc === "boolean") incSlow.checked = saved.inc;
+      (saved.u || []).forEach(function (k) {
+        var cb = document.getElementById("u-" + k);
+        if (cb) cb.checked = true;
+      });
     }
   } catch (e) {}
+
+  function unknowns() {
+    return unsureIds.filter(function (k) { return document.getElementById("u-" + k).checked; });
+  }
+
+  function syncUnsure() {
+    unsureIds.forEach(function (k) {
+      var on = document.getElementById("u-" + k).checked;
+      var el = document.getElementById(k);
+      if (on) el.value = defaults[k];
+      el.disabled = on;
+      el.parentNode.classList.toggle("est", on);
+    });
+  }
+  syncUnsure();
 
   function vals() {
     var v = {};
     Object.keys(defaults).forEach(function (k) {
+      var cb = document.getElementById("u-" + k);
+      if (cb && cb.checked) { v[k] = defaults[k]; return; }
       var n = parseFloat(document.getElementById(k).value);
       v[k] = isFinite(n) ? n : defaults[k];
     });
@@ -469,6 +511,12 @@ footer p { margin: 0 0 8px; }
       contrast.textContent = altLabel + ", the lowest-cost cycle moves to " + altBest.n + " years. That gap is usually where the refresh debate with finance actually lives.";
     }
 
+    var unk = unknowns();
+    var est = document.getElementById("estimates");
+    est.textContent = unk.length === 0 ? "" : unk.length === 1
+      ? "1 input uses a typical value because you marked it \u201cI don\u2019t know.\u201d"
+      : unk.length + " inputs use typical values because you marked them \u201cI don\u2019t know.\u201d";
+
     var wrap = document.getElementById("rows");
     wrap.innerHTML = "";
     rows.forEach(function (r) {
@@ -520,20 +568,26 @@ footer p { margin: 0 0 8px; }
       "\n\nLowest cost: " + best.n + " years." +
       (best.n !== cur ? " Our current " + cur + "-year cycle costs " + usd.format(gapFleet) + " more per year." : " That matches our current cycle.") +
       "\n" + contrast.textContent +
+      (unk.length ? "\n" + est.textContent : "") +
       "\n\nCalculated with Matt Beran\u2019s laptop refresh cycle calculator.";
 
     try {
-      localStorage.setItem(STORE, JSON.stringify({ v: v, inc: inc }));
+      localStorage.setItem(STORE, JSON.stringify({ v: v, inc: inc, u: unk }));
     } catch (e) {}
   }
 
   form.addEventListener("input", render);
-  form.addEventListener("change", render);
+  form.addEventListener("change", function (e) {
+    if (e.target.id && e.target.id.indexOf("u-") === 0) syncUnsure();
+    render();
+  });
   incSlow.addEventListener("change", render);
 
   document.getElementById("reset").addEventListener("click", function () {
     Object.keys(defaults).forEach(function (k) { document.getElementById(k).value = defaults[k]; });
     incSlow.checked = true;
+    unsureIds.forEach(function (k) { document.getElementById("u-" + k).checked = false; });
+    syncUnsure();
     render();
     flash("Defaults restored.");
   });
