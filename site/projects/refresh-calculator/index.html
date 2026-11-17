@@ -130,6 +130,12 @@ legend {
 .input input:disabled { cursor: not-allowed; -webkit-text-fill-color: var(--ink); }
 .estimates { font-size: 0.9rem; color: var(--muted); margin: -12px 0 18px; }
 .estimates:empty { display: none; }
+.modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(9, 12, 18, 0.55); }
+.modal[hidden] { display: none; }
+.modal-box { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; max-width: 480px; width: 100%; padding: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); }
+.modal-box h2 { font-size: 1.3rem; line-height: 1.2; font-variation-settings: "wdth" 110; margin: 0 0 12px; }
+.modal-box p { margin: 0 0 12px; }
+.modal-box .actions { margin-top: 18px; }
 .input {
   display: flex;
   align-items: center;
@@ -324,6 +330,18 @@ footer p { margin: 0 0 8px; }
   </footer>
 </div>
 
+<div class="modal" id="hrModal" hidden role="dialog" aria-modal="true" aria-labelledby="hrModalTitle">
+  <div class="modal-box">
+    <h2 id="hrModalTitle">This is the one number to keep</h2>
+    <p>The calculator will not be accurate without the loaded cost of one employee hour. It drives downtime and the time lost to slow devices, the biggest costs of older laptops.</p>
+    <p>If you don't know it, use the estimate of <strong class="hrEst"></strong> an hour. It's a low number for most organizations. Without it, every result will lean toward keeping laptops forever.</p>
+    <div class="actions">
+      <button type="button" id="hrUseEst">Use the <span class="hrEst"></span> estimate</button>
+      <button type="button" class="secondary" id="hrSkip">Skip it anyway</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
   var groups = [
@@ -373,6 +391,7 @@ footer p { margin: 0 0 8px; }
   var form = document.getElementById("form");
   var defaults = {};
   var unsureIds = [];
+  var hrOut = false;
 
   groups.forEach(function (g) {
     var fs = document.createElement("fieldset");
@@ -419,7 +438,7 @@ footer p { margin: 0 0 8px; }
         cb.type = "checkbox";
         cb.id = "u-" + f.id;
         u.appendChild(cb);
-        u.appendChild(document.createTextNode("I don't know"));
+        u.appendChild(document.createTextNode("Skip"));
         labCol.appendChild(u);
       }
       row.appendChild(labCol);
@@ -439,6 +458,7 @@ footer p { margin: 0 0 8px; }
         if (el) el.value = saved.v[k];
       });
       if (typeof saved.inc === "boolean") incSlow.checked = saved.inc;
+      hrOut = saved.hrOut === true;
       (saved.u || []).forEach(function (k) {
         var cb = document.getElementById("u-" + k);
         if (cb) cb.checked = true;
@@ -454,7 +474,10 @@ footer p { margin: 0 0 8px; }
     unsureIds.forEach(function (k) {
       var on = document.getElementById("u-" + k).checked;
       var el = document.getElementById(k);
-      if (on) el.value = defaults[k];
+      var out = on && k === "hr" && hrOut;
+      if (out) { el.value = ""; el.placeholder = "Not counted"; }
+      else if (on) { el.value = defaults[k]; el.placeholder = ""; }
+      else { el.placeholder = ""; if (el.value === "") el.value = defaults[k]; }
       el.disabled = on;
       el.parentNode.classList.toggle("est", on);
     });
@@ -465,7 +488,7 @@ footer p { margin: 0 0 8px; }
     var v = {};
     Object.keys(defaults).forEach(function (k) {
       var cb = document.getElementById("u-" + k);
-      if (cb && cb.checked) { v[k] = defaults[k]; return; }
+      if (cb && cb.checked) { v[k] = (k === "hr" && hrOut) ? 0 : defaults[k]; return; }
       var n = parseFloat(document.getElementById(k).value);
       v[k] = isFinite(n) ? n : defaults[k];
     });
@@ -524,9 +547,12 @@ footer p { margin: 0 0 8px; }
 
     var unk = unknowns();
     var est = document.getElementById("estimates");
-    est.textContent = unk.length === 0 ? "" : unk.length === 1
-      ? "1 input uses a typical value because you marked it \u201cI don\u2019t know.\u201d"
-      : unk.length + " inputs use typical values because you marked them \u201cI don\u2019t know.\u201d";
+    var typ = unk.filter(function (k) { return !(k === "hr" && hrOut); }).length;
+    var notes = [];
+    if (typ === 1) notes.push("1 input uses a typical value because you marked it \u201cSkip.\u201d");
+    if (typ > 1) notes.push(typ + " inputs use typical values because you marked them \u201cSkip.\u201d");
+    if (unk.indexOf("hr") >= 0 && hrOut) notes.push("The loaded cost of one employee hour is left out, so these results lean toward keeping laptops longer than you should.");
+    est.textContent = notes.join(" ");
 
     var wrap = document.getElementById("rows");
     wrap.innerHTML = "";
@@ -583,12 +609,32 @@ footer p { margin: 0 0 8px; }
       "\n\nCalculated with Matt Beran\u2019s laptop refresh cycle calculator.";
 
     try {
-      localStorage.setItem(STORE, JSON.stringify({ v: v, inc: inc, u: unk }));
+      localStorage.setItem(STORE, JSON.stringify({ v: v, inc: inc, u: unk, hrOut: hrOut }));
     } catch (e) {}
   }
 
   form.addEventListener("input", render);
+  var modal = document.getElementById("hrModal");
+  var hrBox = document.getElementById("u-hr");
+  Array.prototype.forEach.call(document.querySelectorAll(".hrEst"), function (el) { el.textContent = usd.format(defaults.hr); });
+  function closeModal(checked, out) {
+    modal.hidden = true;
+    hrBox.checked = checked;
+    hrOut = out;
+    syncUnsure();
+    render();
+    hrBox.focus();
+  }
+  document.getElementById("hrUseEst").addEventListener("click", function () { closeModal(true, false); });
+  document.getElementById("hrSkip").addEventListener("click", function () { closeModal(true, true); });
+  modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(false, false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) closeModal(false, false); });
+
   form.addEventListener("change", function (e) {
+    if (e.target === hrBox) {
+      if (hrBox.checked) { modal.hidden = false; document.getElementById("hrUseEst").focus(); return; }
+      hrOut = false;
+    }
     if (e.target.id && e.target.id.indexOf("u-") === 0) syncUnsure();
     render();
   });
@@ -598,6 +644,7 @@ footer p { margin: 0 0 8px; }
     Object.keys(defaults).forEach(function (k) { document.getElementById(k).value = defaults[k]; });
     incSlow.checked = true;
     unsureIds.forEach(function (k) { document.getElementById("u-" + k).checked = false; });
+    hrOut = false;
     syncUnsure();
     render();
     flash("Defaults restored.");
