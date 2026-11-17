@@ -132,8 +132,10 @@ legend {
 .estimates:empty { display: none; }
 .modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(9, 12, 18, 0.55); }
 .modal[hidden] { display: none; }
-.modal-box { background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; max-width: 480px; width: 100%; padding: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); }
-.modal-box h2 { font-size: 1.3rem; line-height: 1.2; font-variation-settings: "wdth" 110; margin: 0 0 12px; }
+.modal-box { position: relative; background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; max-width: 480px; width: 100%; padding: 24px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); }
+.modal-box h2 { font-size: 1.3rem; line-height: 1.2; font-variation-settings: "wdth" 110; margin: 0 0 12px; padding-right: 32px; }
+.modal-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; color: var(--muted); border-radius: 4px; }
+.modal-close:hover { color: var(--ink); background: var(--line); }
 .modal-box p { margin: 0 0 12px; }
 .modal-box .actions { margin-top: 18px; }
 .input {
@@ -332,6 +334,7 @@ footer p { margin: 0 0 8px; }
 
 <div class="modal" id="hrModal" hidden role="dialog" aria-modal="true" aria-labelledby="hrModalTitle">
   <div class="modal-box">
+    <button type="button" class="modal-close" id="hrClose" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
     <h2 id="hrModalTitle">This is the one number to keep</h2>
     <p>The calculator will not be accurate without the loaded cost of one employee hour. It drives downtime and the time lost to slow devices, the biggest costs of older laptops.</p>
     <p>If you don't know it, use the estimate of <strong class="hrEst"></strong> an hour. It's a low number for most organizations. Without it, every result will lean toward keeping laptops forever.</p>
@@ -628,6 +631,7 @@ footer p { margin: 0 0 8px; }
   document.getElementById("hrUseEst").addEventListener("click", function () { closeModal(true, false); });
   document.getElementById("hrSkip").addEventListener("click", function () { closeModal(true, true); });
   modal.addEventListener("click", function (e) { if (e.target === modal) closeModal(false, false); });
+  document.getElementById("hrClose").addEventListener("click", function () { closeModal(false, false); });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) closeModal(false, false); });
 
   form.addEventListener("change", function (e) {
