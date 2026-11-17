@@ -36,7 +36,6 @@ Matt Beran helps IT teams skip the painful detours. He connects practitioners ac
 ## Podcast
 
 - [Ticket Volume](https://www.youtube.com/@ticketvolumepodcast): Weekly podcast covering ITSM trends, tools, and community conversations; hosted by Matt Beran
-- [Beran Brief](https://substack.com/@mattberan): Weekly newsletter - three sentences worth reading
 
 ## Communities
 
