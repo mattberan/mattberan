@@ -247,7 +247,7 @@
   .hero-top {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     gap: 12px;
     margin-bottom: 6px;
   }
@@ -278,6 +278,8 @@
     border-radius: 50%;
     object-fit: cover;
   }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
   header h1 {
     font-size: 1.45rem;
@@ -767,7 +769,7 @@
     </div>
     <div class="hero-content">
       <div class="hero-top">
-        <h1>Thanks for visiting me!</h1>
+        <h1 class="sr-only">Matt Beran</h1>
         <div class="theme-switch-wrapper">
           <span class="theme-label" id="labelDark">Dark</span>
           <label class="theme-switch" aria-label="Toggle light/dark mode">
